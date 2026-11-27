@@ -99,7 +99,7 @@ func (c *Config) check() error {
 		return errors.New("no want")
 	}
 	if c.ReferenceCPU != "" {
-		if _, ok := ovh.CPU(c.ReferenceCPU); !ok {
+		if r, ok := ovh.CPU(c.ReferenceCPU); !ok || r.Mark == 0 || r.Single == 0 {
 			return fmt.Errorf("reference_cpu %q is not one of: %s", c.ReferenceCPU, strings.Join(ovh.CPUNames(), ", "))
 		}
 	}

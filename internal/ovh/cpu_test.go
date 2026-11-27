@@ -26,4 +26,14 @@ func TestCPU(t *testing.T) {
 	if _, ok := CPU("Intel Pentium 4"); ok {
 		t.Error("unknown CPU found")
 	}
+	// The catalogs' products spell some as "AMD EPYC GENOA 9354".
+	if c, ok := CPU("AMD EPYC GENOA 9354"); !ok || c.Mark == 0 {
+		t.Errorf("genoa: %+v", c)
+	}
+	// Every entry has cores; one without a PassMark figure says why.
+	for name, c := range cpus {
+		if c.Cores == 0 || c.Threads < c.Cores || (c.Mark == 0 && c.Note == "") {
+			t.Errorf("%s: %+v", name, c)
+		}
+	}
 }

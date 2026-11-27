@@ -16,12 +16,13 @@ OVH dedicated server stock watcher. Go, stdlib + `trick77/toolkit/notify`. No JS
 - Availability RAM speed may disagree with the catalog (KS-1-B: 2133 vs 2400): fallback to the single addon of the same
   size. ~2% of variants stay unpriced: configs the catalog doesn't sell (24sk50-v1 2x4000sa, 27skle03 64g, noraid-0
   Scale/HCI). Unpriced never matches `price_max_eur`.
-- KS-LE plans have no CPU in `invoiceName`.
+- KS-LE, Scale, HGR plans have no CPU in `invoiceName`; `products[]` (by the plan's `product`) has it in
+  `description` ("2x AMD Epyc 9354", "1x …") and `blobs.technical.server.cpu` (cores, threads, number).
 - Only Kimsufi has a per-server order page: `eco.ovhcloud.com/fr/kimsufi/<name lowercased>/`, all 22 KS names 200,
   unknown names 404. So you Start's `/fr/so-you-start/` 404s.
 
-- Catalog has no CPU data (`blobs` = `commercial` only, 2026-11): cores/threads and speed come from
-  `internal/ovh/cpus.json`, PassMark CPU Mark + single thread, looked up by hand. A CPU OVH adds later shows `?`
+- Speed + cores/threads: `internal/ovh/cpus.json`, PassMark CPU Mark + single thread, looked up by hand. The
+  catalog's own `score` is missing on some products and not PassMark's current figure. A CPU OVH adds later shows `?`
   until added there. Invoices spell one chip several ways (`Xeon-E3 1230 v6`, `i7-6700k`, `EPYC TURIN 9455`):
   `cpuKey` normalizes.
 

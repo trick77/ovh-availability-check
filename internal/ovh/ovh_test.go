@@ -133,6 +133,33 @@ func TestName(t *testing.T) {
 	if u := cat.OrderURL("24sk202", name); u != "https://eco.ovhcloud.com/fr/kimsufi/ks-2/" {
 		t.Errorf("order URL %s", u)
 	}
+
+	// No CPU in the invoice name: the product's description has it.
+	var raw rawCatalog
+	raw.Plans = []product{{PlanCode: "27skle01-v1", InvoiceName: "KS-LE-1", Product: "27skle01"},
+		{PlanCode: "x", InvoiceName: "HGR-STOR-1", Product: "y"}}
+	raw.Products = append(raw.Products,
+		struct {
+			Name        string `json:"name"`
+			Description string `json:"description"`
+		}{"27skle01", "Intel Xeon E3-1245v2"},
+		struct {
+			Name        string `json:"name"`
+			Description string `json:"description"`
+		}{"y", "1x Intel Xeon Gold 6554S"})
+	cat.add("eco", raw)
+	raw.Plans = append(raw.Plans, product{PlanCode: "m", InvoiceName: "PROMO-1", Product: "z"})
+	raw.Products = append(raw.Products, struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+	}{"z", "Our best server for the price"})
+	cat.add("eco", raw)
+	for code, want := range map[string]string{"27skle01-v1": "Intel Xeon E3-1245v2", "x": "Intel Xeon Gold 6554S",
+		"m": ""} {
+		if name, cpu := cat.Name(code); name == "" || cpu != want {
+			t.Errorf("%s: %q, %q", code, name, cpu)
+		}
+	}
 }
 
 func TestAvailabilitiesEmptyIsError(t *testing.T) {
