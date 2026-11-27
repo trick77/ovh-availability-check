@@ -123,17 +123,23 @@ func serve(ctx context.Context, addr string, notifyTest, digestNow bool) error {
 	dataDir := cmp.Or(os.Getenv("BACKEND_DATA_DIR"), "data")
 	confDir := cmp.Or(os.Getenv("BACKEND_CONF_DIR"), "conf")
 
-	// URLs are whitespace separated: a shoutrrr URL may hold a comma.
+	urls, off, err := notifyURLs(os.Getenv("BACKEND_NOTIFY_URLS"))
+	if err != nil {
+		return fmt.Errorf("BACKEND_NOTIFY_URLS: %w", err)
+	}
 	var channels *notify.Channels
-	if urls := strings.Fields(os.Getenv("BACKEND_NOTIFY_URLS")); len(urls) > 0 {
-		var err error
+	if len(urls) > 0 {
 		if channels, err = notify.NewChannels(urls); err != nil {
 			return fmt.Errorf("BACKEND_NOTIFY_URLS: %w", err)
 		}
 	}
+	noChannel := "BACKEND_NOTIFY_URLS is empty"
+	if len(off) > 0 {
+		noChannel = "every channel in BACKEND_NOTIFY_URLS is switched off"
+	}
 	if notifyTest {
 		if channels == nil {
-			return errors.New("BACKEND_NOTIFY_URLS is empty")
+			return errors.New(noChannel)
 		}
 		if err := channels.Send("OVH availability check", "Test push, sent by -notify-test."); err != nil {
 			return err
@@ -152,9 +158,9 @@ func serve(ctx context.Context, addr string, notifyTest, digestNow bool) error {
 		return err
 	}
 	slog.Info("config", "version", version.String(), "datacenters", cfg.Datacenters, "interval", cfg.Interval.String(), "wants", len(cfg.Want),
-		"channels", channels.Labels())
+		"channels", channels.Labels(), "off", off)
 	if channels == nil {
-		slog.Warn("BACKEND_NOTIFY_URLS is empty: nothing is pushed, and nothing counts as pushed")
+		slog.Warn(noChannel + ": nothing is pushed, and nothing counts as pushed")
 	}
 
 	svc, err := llmFromEnv(dataDir)
@@ -167,7 +173,7 @@ func serve(ctx context.Context, addr string, notifyTest, digestNow bool) error {
 
 	client := ovh.NewClient()
 	client.Base = apiBase
-	w := &watcher{cfg: cfg, client: client, channels: channels, state: state, statePath: statePath, predict: svc,
+	w := &watcher{cfg: cfg, client: client, channels: channels, off: off, state: state, statePath: statePath, predict: svc,
 		digestNow: digestNow}
 	var wg sync.WaitGroup
 	if svc.Configured() {
@@ -193,6 +199,7 @@ type watcher struct {
 	cfg       watch.Config
 	client    *ovh.Client
 	channels  *notify.Channels
+	off       []string // channels switched off with "!", by scheme, for the page
 	statePath string
 
 	catalog     *ovh.Catalog
@@ -299,6 +306,24 @@ func (w *watcher) poll(ctx context.Context) {
 	}
 	w.predict.Update(next, scope, now)
 	slog.Info("polled", "variants", len(vs), "wanted_in_stock", len(cur), "new", len(fresh))
+}
+
+// notifyURLs splits BACKEND_NOTIFY_URLS into the channels to use and the ones switched off with a leading "!",
+// named by their scheme only: the rest of a URL may hold a password or an ntfy topic, and notify.Scheme never
+// returns more than the scheme, even for a typo without "://". URLs are whitespace separated: a shoutrrr URL may
+// hold a comma. A lone "!" ("! smtp://…") is refused: it would leave the channel on that the user meant to switch off.
+func notifyURLs(s string) (on, off []string, err error) {
+	for _, u := range strings.Fields(s) {
+		if rest, ok := strings.CutPrefix(u, "!"); ok {
+			if rest == "" {
+				return nil, nil, errors.New(`a lone "!": write it right before the URL, as in !smtp://…`)
+			}
+			off = append(off, notify.Scheme(rest))
+			continue
+		}
+		on = append(on, u)
+	}
+	return on, off, nil
 }
 
 func latest(a, b time.Time) time.Time {
