@@ -220,7 +220,7 @@ table.v .setup .pd { margin-right: 4px; }
 </section>
 {{end}}
 
-<div class="h2"><h2>History</h2><p>Last {{.Days}} days, wanted and just above. Patterns from 90 days.</p><span class="more seg">{{if eq .Days 30}}<b>30 days</b><a href="?days=7">7 days</a>{{else}}<a href="?days=30">30 days</a><b>7 days</b>{{end}}</span></div>
+<div class="h2"><h2>History</h2><p>Last {{.Days}} days, wanted and just above. Patterns from 90 days.</p><span class="more seg">{{if eq .Days 30}}<b>30 days</b><a href="?days=7{{if .ShowAll}}&all=1{{end}}">7 days</a>{{else}}<a href="?days=30{{if .ShowAll}}&all=1{{end}}">30 days</a><b>7 days</b>{{end}}</span></div>
 <section class="panel hist">
   <div class="legend"><span><i style="background:var(--online)"></i>Orderable 1H</span><span><i style="background:var(--ochre)"></i>Orderable 72H</span><span><i style="background:var(--bad-1)"></i>Sold out</span><span><i style="background:var(--cell-empty);outline:1px solid var(--border)"></i>No data</span><span><i class="lp"></i>Predicted window</span></div>
 {{range $h := .History}}  <div class="hv"><h3>{{.Name}}{{if .Near}}<span class="near">just above: {{.Near}}</span>{{end}}<span>{{.Desc}}</span>{{if .Was.Text}}<span class="was">{{.Was.Text}}</span>{{end}}</h3>
