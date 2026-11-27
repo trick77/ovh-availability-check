@@ -145,6 +145,30 @@ func TestServeNotifyTest(t *testing.T) {
 	}
 }
 
+func TestNotifyURLsOff(t *testing.T) {
+	on, off, err := notifyURLs("!SMTP://user:s3cret@mail.example.com:587/?to=a@b.ch  ntfy://ntfy.example.com/topic")
+	if err != nil || len(on) != 1 || !strings.HasPrefix(on[0], "ntfy://") || len(off) != 1 || off[0] != "smtp" {
+		t.Errorf("on %v off %v %v", on, off, err)
+	}
+	// A typo without "://" must not show the rest: it may hold the password.
+	if _, off, _ := notifyURLs("!smtp:user:s3cret@mail.example.com"); len(off) != 1 || strings.Contains(off[0], "s3cret") {
+		t.Errorf("typo leaks: %v", off)
+	}
+	// A lone "!" would leave the next URL on.
+	if _, _, err := notifyURLs("! smtp://u:p@mail.example.com"); err == nil {
+		t.Error("lone ! accepted")
+	}
+	// Only switched-off channels: -notify-test has nothing to send to.
+	h, url := newHook(t)
+	t.Setenv("BACKEND_NOTIFY_URLS", "!"+url)
+	if err := serve(context.Background(), "127.0.0.1:0", true, false); err == nil {
+		t.Error("test push with every channel off")
+	}
+	if len(h.bodies) != 0 {
+		t.Error("switched-off channel got a push")
+	}
+}
+
 func TestServeRefusesBadConfig(t *testing.T) {
 	t.Setenv("BACKEND_NOTIFY_URLS", "")
 	dirs(t, `{"datacenters":["gra"],"want":[{"ram_max":64}]}`)

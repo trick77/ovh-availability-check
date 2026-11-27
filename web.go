@@ -75,6 +75,7 @@ type pageData struct {
 	Datacenters []string
 	DCLabels    []cell // the table headers: short name, full name as tooltip
 	Channels    []string
+	ChannelsOff []string // switched off with "!", by scheme
 	Since       time.Time
 	RefCPU      string
 	Ref         *ovh.CPUInfo
@@ -206,7 +207,7 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 		PolledAt:    w.polledAt, PollErr: w.pollErr, CatalogAt: w.catalogAt, CatErr: w.catErr,
 		Interval:    short(time.Duration(w.cfg.Interval)),
 		ShowAll:     r.URL.Query().Get("all") == "1",
-		Datacenters: w.cfg.Datacenters, Channels: w.channels.Labels(),
+		Datacenters: w.cfg.Datacenters, Channels: w.channels.Labels(), ChannelsOff: w.off,
 		AllCount: len(vs),
 		Days:     30,
 	}

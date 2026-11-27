@@ -55,7 +55,7 @@ func TestPage(t *testing.T) {
 		s = s.Observe(vs, cfg.Wanted, t, 2*time.Minute)
 	}
 	s = s.AddPush(watch.Push{At: now, Title: "OVH: 1 server in stock", Body: "KS-2", Err: "failed on channel 1 (ntfy)"})
-	w := &watcher{cfg: cfg, channels: ch, variants: vs, polledAt: now, state: s}
+	w := &watcher{cfg: cfg, channels: ch, off: []string{"smtp"}, variants: vs, polledAt: now, state: s}
 	get := func(path string) string {
 		rec := httptest.NewRecorder()
 		w.routes().ServeHTTP(rec, httptest.NewRequest("GET", path, nil))
@@ -85,7 +85,7 @@ func TestPage(t *testing.T) {
 	if strings.Contains(body, "s3cret") || strings.Contains(body, "ntfy.example.com") {
 		t.Error("page leaks the notify URL")
 	}
-	for _, want := range []string{"<h2>Notifications</h2>", "notify: ", "Last 30 days", `href="?days=7"`,
+	for _, want := range []string{"<h2>Notifications</h2>", "notify: ", ">smtp</s> off", "Last 30 days", `href="?days=7"`,
 		"Just above", "multi </span><span class=\"x up\""} { // the tile's figures coloured like the table
 		if !strings.Contains(body, want) {
 			t.Errorf("/ lacks %q", want)
