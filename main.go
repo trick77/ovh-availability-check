@@ -1,4 +1,4 @@
-// Command ovh-availability-check polls OVHcloud's dedicated server stock, pushes when a wanted variant comes into
+// Command ovh-restock polls OVHcloud's dedicated server stock, pushes when a wanted variant comes into
 // stock and serves a read-only status page.
 package main
 
@@ -24,9 +24,9 @@ import (
 	"github.com/trick77/toolkit/llmwire"
 	"github.com/trick77/toolkit/notify"
 
-	"github.com/trick77/ovh-availability-check/internal/ovh"
-	"github.com/trick77/ovh-availability-check/internal/predict"
-	"github.com/trick77/ovh-availability-check/internal/watch"
+	"github.com/trick77/ovh-restock/internal/ovh"
+	"github.com/trick77/ovh-restock/internal/predict"
+	"github.com/trick77/ovh-restock/internal/watch"
 
 	// The page's times are in TZ; distroless has no zoneinfo.
 	_ "time/tzdata"
@@ -141,7 +141,7 @@ func serve(ctx context.Context, addr string, notifyTest, digestNow bool) error {
 		if channels == nil {
 			return errors.New(noChannel)
 		}
-		if err := channels.Send("OVH availability check", "Test push, sent by -notify-test."); err != nil {
+		if err := channels.Send("OVH restock", "Test push, sent by -notify-test."); err != nil {
 			return err
 		}
 		fmt.Println("sent to", strings.Join(channels.Labels(), ", "))

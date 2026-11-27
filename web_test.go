@@ -11,9 +11,9 @@ import (
 
 	"github.com/trick77/toolkit/notify"
 
-	"github.com/trick77/ovh-availability-check/internal/ovh"
-	"github.com/trick77/ovh-availability-check/internal/predict"
-	"github.com/trick77/ovh-availability-check/internal/watch"
+	"github.com/trick77/ovh-restock/internal/ovh"
+	"github.com/trick77/ovh-restock/internal/predict"
+	"github.com/trick77/ovh-restock/internal/watch"
 )
 
 func TestShort(t *testing.T) {
@@ -66,7 +66,7 @@ func TestPage(t *testing.T) {
 	}
 	body := get("/")
 	for _, want := range []string{"KS-2", "26.99", "every 2m", `class="zero"`, "Show all 2 variants",
-		"failed on channel 1 (ntfy)", "<title>OVH stock monitor · 1 in stock</title>",
+		"failed on channel 1 (ntfy)", "<title>OVH restock · 1 in stock</title>",
 		"8C/16T", `<span class="x `, // cores and the speed against the reference
 		`class="pill slow"`, "now · 1h", // 72H in gra, in stock for an hour
 		`class="h-slow"`, `class="h-out"`, // history: in stock and sold out

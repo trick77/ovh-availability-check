@@ -64,7 +64,8 @@ OVH dedicated server stock watcher. Go, stdlib + `trick77/toolkit` (notify, llmw
 - Commit subjects + PR titles: Go style `area: what` (e.g. `watch: drop sold-out pairs`), gated by ship; release
   notes group by area.
 - Fresh clone: `ship hooks` before the first push (check, conform and init install it too); without the pre-push hook a push skips the gate.
-- No README by user choice; deployment is `compose.yaml` + `.env.example` + `config.example.json`.
+- Name: OVH restock, `ovh-restock` (ovh-availability-check until 0.2.1). README screenshot: live stock + seeded
+  sample history, said so in the README.
 
 ## User choices
 

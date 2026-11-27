@@ -5,7 +5,7 @@ import (
 	"slices"
 	"time"
 
-	"github.com/trick77/ovh-availability-check/internal/watch"
+	"github.com/trick77/ovh-restock/internal/watch"
 )
 
 // zurich is the zone the synthetic histories and the checks run in.

@@ -18,9 +18,9 @@ import (
 
 	"github.com/trick77/ship/kit/httpx"
 
-	"github.com/trick77/ovh-availability-check/internal/ovh"
-	"github.com/trick77/ovh-availability-check/internal/predict"
-	"github.com/trick77/ovh-availability-check/internal/watch"
+	"github.com/trick77/ovh-restock/internal/ovh"
+	"github.com/trick77/ovh-restock/internal/predict"
+	"github.com/trick77/ovh-restock/internal/watch"
 )
 
 //go:embed page.html
@@ -269,7 +269,7 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 	d.Prices, d.MorePrices = priceChanges(vs, w.cfg, state, d.ShowAll)
 	d.Tiles = tiles(d, wanted, scope, preds, state, now)
 
-	d.Title = "OVH stock monitor"
+	d.Title = "OVH restock"
 	if n := len(d.Wanted); n > 0 {
 		d.Title += fmt.Sprintf("%s%d in stock", sep, n)
 	}

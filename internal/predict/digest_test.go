@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/trick77/ovh-availability-check/internal/ovh"
-	"github.com/trick77/ovh-availability-check/internal/watch"
+	"github.com/trick77/ovh-restock/internal/ovh"
+	"github.com/trick77/ovh-restock/internal/watch"
 )
 
 func TestDigestDue(t *testing.T) {

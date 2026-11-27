@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/trick77/ovh-availability-check/internal/watch"
+	"github.com/trick77/ovh-restock/internal/watch"
 )
 
 // The weekly digest: Sunday 18:00 local, over the 7 days before.

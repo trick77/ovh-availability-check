@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/trick77/ovh-availability-check/internal/ovh"
-	"github.com/trick77/ovh-availability-check/internal/watch"
+	"github.com/trick77/ovh-restock/internal/ovh"
+	"github.com/trick77/ovh-restock/internal/watch"
 )
 
 var wishSchema = map[string]any{

@@ -161,14 +161,14 @@ table.v .setup .pd { margin-right: 4px; }
 </head>
 <body>
 <header class="top">
-  <div class="wordmark">OVH stock monitor</div>
+  <div class="wordmark">OVH restock</div>
   <div class="meta">
     <span><i class="dot{{if .PollErr}} bad{{end}}"></i>polled <b title="{{abs .PolledAt}}">{{ago .PolledAt}}</b></span>
     <span>every {{.Interval}}</span>
     <span>catalog <b title="{{abs .CatalogAt}}">{{ago .CatalogAt}}</b></span>
     <span>{{if .Channels}}notify: {{range $i, $c := .Channels}}{{if $i}}, {{end}}{{$c}}{{end}}{{else}}<b class="err">no notification channel</b>{{end}}{{range .ChannelsOff}} · <s class="off" title="switched off with ! in BACKEND_NOTIFY_URLS">{{.}}</s> off{{end}}</span>
   </div>
-  <a class="gh" href="https://github.com/trick77/ovh-availability-check" title="Source on GitHub" aria-label="Source on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+  <a class="gh" href="https://github.com/trick77/ovh-restock" title="Source on GitHub" aria-label="Source on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
 </header>
 <main>
 {{if .PollErr}}<p class="alert">Last poll failed: {{.PollErr}}</p>{{end}}
@@ -262,7 +262,7 @@ table.v .setup .pd { margin-right: 4px; }
 {{else}}
 <div class="h2"><h2><a href="?all=1">Show all {{.AllCount}} variants</a></h2><p>Every configuration listed in these datacenters.</p></div>
 {{end}}
-<div class="foot">{{if .Since}}Tracking since {{abs .Since}}. {{end}}Prices from the FR catalog, net of VAT.{{if .Ref}} CPU figures: PassMark.{{end}} Source on <a href="https://github.com/trick77/ovh-availability-check">GitHub</a>.</div>
+<div class="foot">{{if .Since}}Tracking since {{abs .Since}}. {{end}}Prices from the FR catalog, net of VAT.{{if .Ref}} CPU figures: PassMark.{{end}} Source on <a href="https://github.com/trick77/ovh-restock">GitHub</a>.</div>
 </main>
 </body>
 </html>

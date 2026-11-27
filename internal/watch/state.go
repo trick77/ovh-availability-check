@@ -11,7 +11,7 @@ import (
 	"slices"
 	"time"
 
-	"github.com/trick77/ovh-availability-check/internal/ovh"
+	"github.com/trick77/ovh-restock/internal/ovh"
 )
 
 // Window is how far back the page's history goes; Keep how far back the state keeps it. Patterns are looked for in

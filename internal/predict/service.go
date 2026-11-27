@@ -16,7 +16,7 @@ import (
 
 	"github.com/trick77/toolkit/llmwire"
 
-	"github.com/trick77/ovh-availability-check/internal/watch"
+	"github.com/trick77/ovh-restock/internal/watch"
 )
 
 // askEvery is the least time between two calls about one variant: a flapping stock batches into the next call.
