@@ -71,6 +71,7 @@ type pageData struct {
 	Interval    string
 	ShowAll     bool
 	Datacenters []string
+	DCLabels    []cell // the table headers: short name, full name as tooltip
 	Channels    []string
 	Since       time.Time
 	RefCPU      string
@@ -189,9 +190,12 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 		HistW:    int(watch.Window / time.Minute),
 	}
 	w.mu.Unlock()
+	for _, dc := range d.Datacenters {
+		d.DCLabels = append(d.DCLabels, cell{Text: shortDC(dc), Title: dc})
+	}
 	now := time.Now()
 	d.Since, d.Pushes = state.Since, state.Pushes
-	if c, ok := ovh.CPU(w.cfg.ReferenceCPU); ok {
+	if c, ok := ovh.CPU(w.cfg.ReferenceCPU); ok && c.Mark > 0 {
 		d.Ref, d.RefCPU = &c, shortCPU(w.cfg.ReferenceCPU)
 	}
 
@@ -244,14 +248,19 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 func (d *pageData) row(v watch.Variant, s watch.State, now time.Time) row {
 	r := row{Variant: v, CPUName: shortCPU(v.CPU), Out: len(v.InStock()) == 0}
 	if v.CPU != "" {
-		if c, ok := ovh.CPU(v.CPU); ok {
+		c, ok := ovh.CPU(v.CPU)
+		if ok && c.Cores > 0 {
 			r.Cores = fmt.Sprintf("%dC/%dT", c.Cores, c.Threads)
-			if d.Ref != nil {
-				r.Multi = pct(c.Mark, d.Ref.Mark, "CPU Mark")
-				r.Single = pct(c.Single, d.Ref.Single, "single thread")
-			}
-		} else if d.Ref != nil {
-			r.Multi = cell{Text: "?", Class: "x eq", Title: "no PassMark figure in cpus.json: " + v.CPU}
+		}
+		switch {
+		case d.Ref == nil:
+		case !ok:
+			r.Multi = cell{Text: "?", Class: "x eq", Title: "not in cpus.json: " + v.CPU}
+		case c.Mark == 0:
+			r.Multi = cell{Text: "?", Class: "x eq", Title: "no PassMark figure: " + c.Note}
+		default:
+			r.Multi = pct(c.Mark, d.Ref.Mark, "CPU Mark")
+			r.Single = pct(c.Single, d.Ref.Single, "single thread")
 		}
 	}
 	r.Price, r.Setup = priceCells(s.Prices[v.FQN])
@@ -292,9 +301,13 @@ func priceCells(ps []watch.Price) (rent, setup cell) {
 			rent.Text, rent.Class = "↑"+money(diff), "pd up"
 		}
 	}
+	// Setup: an arrow only, the old fee in the tooltip; the setup line sits under the rent and must stay narrow.
 	if cur.Setup != prev.Setup {
-		setup = cell{Text: "was " + money(prev.Setup), Class: "tag",
+		setup = cell{Text: "↓", Class: "pd down",
 			Title: "setup was " + money(prev.Setup) + " until " + cur.At.Local().Format("02.01.2006")}
+		if cur.Setup > prev.Setup {
+			setup.Text, setup.Class = "↑", "pd up"
+		}
 	}
 	return rent, setup
 }
@@ -340,7 +353,10 @@ func dcCell(a string) cell {
 	case a == "comingSoon":
 		return cell{Text: "soon", Class: "pill soon", Title: a}
 	case a == "72H":
-		return cell{Text: a, Class: "pill slow", Title: "orderable, delivery within 72 h"}
+		return cell{Text: a, Class: "pill slow", Title: "72H: orderable, delivery within 72 h"}
+	case strings.HasPrefix(a, "1H"):
+		// "1H-low"/"1H-high" is stock depth; the full value is in the tooltip, the column stays narrow.
+		return cell{Text: "1H", Class: "pill on", Title: a + ": orderable"}
 	case ovh.InStock(a):
 		return cell{Text: a, Class: "pill on", Title: "orderable"}
 	}
@@ -394,7 +410,7 @@ func history(wanted []watch.Variant, s watch.State, now time.Time) (hv []histVar
 		}
 		slices.Sort(dcs)
 		for _, dc := range dcs {
-			hr := histRow{DC: dc, Rects: base}
+			hr := histRow{DC: shortDC(dc), Rects: base}
 			for _, sp := range s.Spans[watch.Key(v.FQN, dc)] {
 				class, kind := "h-in", "1H"
 				if sp.Slow {
@@ -481,7 +497,7 @@ func changes(wanted, all []watch.Variant, s watch.State, now time.Time) []change
 	}
 	var out []changeRow
 	for _, c := range s.Changes() {
-		r := changeRow{At: c.At, Kind: "out", Text: label(c.FQN), DC: c.DC}
+		r := changeRow{At: c.At, Kind: "out", Text: label(c.FQN), DC: shortDC(c.DC)}
 		if c.In {
 			r.Kind = "in"
 			if c.Slow {
@@ -560,7 +576,7 @@ func tiles(d pageData, wanted []watch.Variant, s watch.State, now time.Time) []t
 	inStock := tile{Label: "Wanted in stock", Value: strconv.Itoa(len(d.Wanted)), Highlight: len(d.Wanted) > 0}
 	var where []string
 	for _, r := range d.Wanted {
-		where = append(where, cmp.Or(r.Name, r.PlanCode)+" in "+strings.Join(r.InStock(), ", "))
+		where = append(where, cmp.Or(r.Name, r.PlanCode)+" in "+shortDCs(r.InStock()))
 	}
 	if len(where) > 3 {
 		where = append(where[:3], fmt.Sprintf("%d more", len(where)-3))
@@ -594,7 +610,7 @@ func tiles(d pageData, wanted []watch.Variant, s watch.State, now time.Time) []t
 			continue
 		}
 		if dcs := v.InStock(); e.In && len(dcs) > 0 && e.Since.After(since) {
-			since, sinceKey = e.Since, cmp.Or(v.Name, v.PlanCode)+" in "+strings.Join(dcs, ", ")
+			since, sinceKey = e.Since, cmp.Or(v.Name, v.PlanCode)+" in "+shortDCs(dcs)
 		}
 		if e.Last.After(last) {
 			last = e.Last
@@ -661,12 +677,35 @@ func rule(w watch.Want) string {
 	return strings.Join(p, ", ")
 }
 
-// shortCPU drops the vendor: "Intel Xeon-D 1540" → "Xeon-D 1540".
+// shortDC drops a 3-AZ region's prefix, so seven DC columns fit beside the table: "eu-west-par-a" → "par-a".
+func shortDC(dc string) string {
+	if p := strings.Split(dc, "-"); len(p) >= 4 {
+		return strings.Join(p[len(p)-2:], "-")
+	}
+	return dc
+}
+
+func shortDCs(dcs []string) string {
+	out := make([]string, len(dcs))
+	for i, dc := range dcs {
+		out[i] = shortDC(dc)
+	}
+	return strings.Join(out, ", ")
+}
+
+// shortCPU drops the vendor and spells a socket count one way: "Intel Xeon-D 1540" → "Xeon-D 1540",
+// "2x AMD Epyc 9354" and "Dual AMD EPYC 9965" → "2× Epyc 9354", "2× EPYC 9965".
 func shortCPU(s string) string {
+	count := ""
+	for _, p := range []string{"2x ", "Dual "} {
+		if rest, ok := strings.CutPrefix(s, p); ok {
+			count, s = "2× ", rest
+		}
+	}
 	for _, p := range []string{"Intel ", "AMD ", "INTEL "} {
 		s = strings.TrimPrefix(s, p)
 	}
-	return s
+	return count + s
 }
 
 // short drops a duration's zero tails: "2m0s" → "2m", "1h0m0s" → "1h", "10m0s" → "10m".

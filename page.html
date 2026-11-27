@@ -36,7 +36,7 @@ a:hover { text-decoration: underline; text-decoration-color: var(--faint); }
 .err { color: var(--danger-ink); }
 .alert { margin: 16px 0 0; border: 1px solid rgba(193,70,56,.4); background: rgba(193,70,56,.1); border-radius: 10px; padding: 10px 16px; font-size: 13.5px; color: var(--danger-ink); }
 
-main { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
+main { max-width: 1440px; margin: 0 auto; padding: 8px 24px 60px; }
 .h2 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 30px 0 12px; }
 .h2 h2 { margin: 0; font: 500 21px/1.2 var(--serif); }
 .h2 p { margin: 0; color: var(--muted); font-size: 13px; }
@@ -84,7 +84,16 @@ table.t tr:hover td { background: rgba(255,255,255,.018); }
 .pill.on { border-color: rgba(90,160,106,.45); } .pill.on::before { background: var(--online); }
 .pill.slow { border-color: rgba(214,161,90,.45); } .pill.slow::before { background: var(--ochre); }
 .pill.soon { color: var(--ochre); border-style: dashed; }
-.na { color: var(--faint); font-size: 13px; padding-left: 10px; }
+.na { color: var(--faint); font-size: 13px; }
+table.t th.dcc, table.t td.dcc { text-align: center; padding-left: 4px; padding-right: 4px; }
+table.v th, table.v td { padding-left: 8px; padding-right: 8px; }
+table.v td.cpu, table.v td.disks { white-space: normal; min-width: 9em; }
+table.v .pill { padding: 1px 7px; gap: 5px; }
+table.v .setup { display: block; font-size: 11.5px; color: var(--muted); }
+table.v .setup .pd { margin-right: 4px; }
+.gh { display: inline-flex; color: var(--muted); margin-left: 14px; }
+.gh:hover { color: var(--ink); }
+.gh svg { width: 18px; height: 18px; fill: currentColor; }
 .zero { color: var(--ochre); }
 .last.now { color: var(--online); }
 
@@ -143,6 +152,7 @@ table.t tr:hover td { background: rgba(255,255,255,.018); }
     <span>catalog <b title="{{abs .CatalogAt}}">{{ago .CatalogAt}}</b></span>
     <span>{{if .Channels}}push: {{range $i, $c := .Channels}}{{if $i}}, {{end}}{{$c}}{{end}}{{else}}<b class="err">no push channel</b>{{end}}</span>
   </div>
+  <a class="gh" href="https://github.com/trick77/ovh-availability-check" title="Source on GitHub" aria-label="Source on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
 </header>
 <main>
 {{if .PollErr}}<p class="alert">Last poll failed: {{.PollErr}}</p>{{end}}
@@ -216,21 +226,20 @@ table.t tr:hover td { background: rgba(255,255,255,.018); }
 {{else}}
 <div class="h2"><h2><a href="?all=1">Show all {{.AllCount}} variants</a></h2><p>Every configuration listed in these datacenters.</p></div>
 {{end}}
-<div class="foot">{{if .Since}}Tracking since {{abs .Since}}. {{end}}Prices from the FR catalog, net of VAT.{{if .Ref}} CPU figures: PassMark.{{end}}</div>
+<div class="foot">{{if .Since}}Tracking since {{abs .Since}}. {{end}}Prices from the FR catalog, net of VAT.{{if .Ref}} CPU figures: PassMark.{{end}} Source on <a href="https://github.com/trick77/ovh-availability-check">GitHub</a>.</div>
 </main>
 </body>
 </html>
-{{define "rows"}}<table class="t">
-<tr><th>Server</th><th>CPU</th>{{if .Page.Ref}}<th class="num" title="CPU Mark against {{.Page.RefCPU}}">Multi</th><th class="num" title="Single thread rating against {{.Page.RefCPU}}">Single</th>{{end}}<th class="num">RAM</th><th>Disks</th><th class="num">€/mo</th><th class="num">Setup</th><th>Last in stock</th>{{range .Page.Datacenters}}<th>{{.}}</th>{{end}}</tr>
+{{define "rows"}}<table class="t v">
+<tr><th>Server</th><th>CPU</th>{{if .Page.Ref}}<th class="num" title="CPU Mark against {{.Page.RefCPU}}">Multi</th><th class="num" title="Single thread rating against {{.Page.RefCPU}}">Single</th>{{end}}<th class="num">RAM</th><th>Disks</th><th class="num" title="monthly, setup below">€/mo</th><th title="Last seen in stock">Last seen</th>{{range .Page.DCLabels}}<th class="dcc" title="{{.Title}}">{{.Text}}</th>{{end}}</tr>
 {{range .Rows}}<tr{{if .Out}} class="out"{{end}}>
   <td><a class="name" href="{{.OrderURL}}" title="{{.FQN}}">{{or .Name .PlanCode}}</a></td>
-  <td>{{.CPUName}}{{if .Cores}}<span class="ct">{{.Cores}}</span>{{end}}</td>
+  <td class="cpu">{{.CPUName}}{{if .Cores}}<span class="ct">{{.Cores}}</span>{{end}}</td>
   {{if $.Page.Ref}}<td class="num"><span class="{{.Multi.Class}}" title="{{.Multi.Title}}">{{.Multi.Text}}</span></td><td class="num"><span class="{{.Single.Class}}" title="{{.Single.Title}}">{{.Single.Text}}</span></td>{{end}}
   <td class="num">{{.RAM}} GB</td>
-  <td>{{range $i, $d := .Disks}}{{if $i}} + {{end}}{{$d}}{{end}}</td>
-  <td class="num">{{if .Price.Text}}<span class="{{.Price.Class}}" title="{{.Price.Title}}">{{.Price.Text}}</span>{{end}}{{if .Priced}}{{printf "%.2f" .Rent}}{{else}}?{{end}}</td>
-  <td class="num">{{if .Setup.Text}}<span class="{{.Setup.Class}}" title="{{.Setup.Title}}">{{.Setup.Text}}</span>{{end}}{{if .Priced}}{{printf "%.2f" .Variant.Setup}}{{end}}</td>
+  <td class="disks">{{range $i, $d := .Disks}}{{if $i}} + {{end}}{{$d}}{{end}}</td>
+  <td class="num">{{if .Price.Text}}<span class="{{.Price.Class}}" title="{{.Price.Title}}">{{.Price.Text}}</span>{{end}}{{if .Priced}}{{printf "%.2f" .Rent}}{{else}}?{{end}}{{if .Priced}}<span class="setup">{{if .Setup.Text}}<span class="{{.Setup.Class}}" title="{{.Setup.Title}}">{{.Setup.Text}}</span>{{end}}{{if .Variant.Setup}}+{{printf "%.2f" .Variant.Setup}}{{else}}no setup{{end}}</span>{{end}}</td>
   <td{{if .Last.Class}} class="{{.Last.Class}}"{{end}}{{if .Last.Title}} title="{{.Last.Title}}"{{end}}>{{.Last.Text}}</td>
-  {{range .DCs}}<td>{{if .Text}}<span class="{{.Class}}"{{if .Title}} title="{{.Title}}"{{end}}>{{.Text}}</span>{{end}}</td>{{end}}
+  {{range .DCs}}<td class="dcc">{{if .Text}}<span class="{{.Class}}"{{if .Title}} title="{{.Title}}"{{end}}>{{.Text}}</span>{{end}}</td>{{end}}
 </tr>
 {{end}}</table>{{end}}

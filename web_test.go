@@ -105,6 +105,17 @@ func TestCompact(t *testing.T) {
 			t.Errorf("compact(%s) = %q, want %q", d, got, want)
 		}
 	}
+	for in, want := range map[string]string{"Intel Xeon-D 1540": "Xeon-D 1540", "2x AMD Epyc 9354": "2× Epyc 9354",
+		"Dual Intel Xeon Gold 6132": "2× Xeon Gold 6132"} {
+		if got := shortCPU(in); got != want {
+			t.Errorf("shortCPU(%s) = %q", in, got)
+		}
+	}
+	for dc, want := range map[string]string{"eu-west-par-a": "par-a", "gra": "gra", "us-east-vin": "us-east-vin"} {
+		if got := shortDC(dc); got != want {
+			t.Errorf("shortDC(%s) = %q", dc, got)
+		}
+	}
 	if got := thousands(15234); got != "15'234" {
 		t.Errorf("thousands: %q", got)
 	}
