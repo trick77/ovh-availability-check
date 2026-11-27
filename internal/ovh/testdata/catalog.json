@@ -1,0 +1,1537 @@
+{
+  "plans": [
+    {
+      "planCode": "24sk202",
+      "invoiceName": "KS-2 | Intel Xeon-D 1540",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 1899000000
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 1899000000
+        }
+      ],
+      "addonFamilies": [
+        {
+          "name": "memory",
+          "mandatory": true,
+          "default": "ram-32g-ecc-2133-24sk20",
+          "addons": [
+            "ram-64g-ecc-2133-24sk20",
+            "ram-32g-ecc-2133-24sk20"
+          ]
+        },
+        {
+          "name": "storage",
+          "mandatory": true,
+          "default": "softraid-4x2000sa-24sk20",
+          "addons": [
+            "softraid-4x2000sa-24sk20",
+            "softraid-2x450nvme-24sk20"
+          ]
+        },
+        {
+          "name": "bandwidth",
+          "mandatory": true,
+          "default": "bandwidth-500-25sk",
+          "addons": [
+            "bandwidth-500-25sk"
+          ]
+        }
+      ]
+    },
+    {
+      "planCode": "24rise01-v2",
+      "invoiceName": "RISE-1 | Intel Xeon-E 2386G",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 5699000000
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 5699000000
+        }
+      ],
+      "addonFamilies": [
+        {
+          "name": "bandwidth",
+          "mandatory": true,
+          "default": "bandwidth-1000-unguaranteed-rise-gen2",
+          "addons": [
+            "bandwidth-1000-unguaranteed-rise-gen2"
+          ]
+        },
+        {
+          "name": "storage",
+          "mandatory": true,
+          "default": "softraid-2x512nvme-24rise01-v2",
+          "addons": [
+            "hybridsoftraid-2x6000sa-2x512nvme-24rise01-v2",
+            "softraid-2x512nvme-24rise01-v2",
+            "softraid-2x960nvme-24rise01-v2",
+            "softraid-2x1920nvme-24rise01-v2",
+            "softraid-2x3840nvme-24rise01-v2",
+            "softraid-2x4000sa-24rise01-v2",
+            "softraid-2x6000sa-24rise01-v2",
+            "softraid-3x1920nvme-24rise01-v2",
+            "softraid-3x3840nvme-24rise01-v2",
+            "softraid-4x960nvme-24rise01-v2",
+            "softraid-4x3840nvme-24rise01-v2"
+          ]
+        },
+        {
+          "name": "memory",
+          "mandatory": true,
+          "default": "ram-32g-ecc-3200-24rise01-v2",
+          "addons": [
+            "ram-32g-ecc-3200-24rise01-v2",
+            "ram-64g-ecc-3200-24rise01-v2",
+            "ram-128g-ecc-2933-24rise01-v2"
+          ]
+        },
+        {
+          "name": "vrack",
+          "mandatory": true,
+          "default": "vrack-bandwidth-1000-24rise01-v2",
+          "addons": [
+            "vrack-bandwidth-1000-24rise01-v2"
+          ]
+        }
+      ]
+    },
+    {
+      "planCode": "26scaleamd01-v4",
+      "invoiceName": "SCALE-a1 | AMD EPYC 9135",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 59999000000
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 59999000000
+        }
+      ],
+      "addonFamilies": [
+        {
+          "name": "vrack",
+          "mandatory": true,
+          "default": "vrack-bandwidth-50000-scale-gen3",
+          "addons": [
+            "vrack-bandwidth-50000-scale-gen3"
+          ]
+        },
+        {
+          "name": "bandwidth",
+          "mandatory": true,
+          "default": "bandwidth-5000-scale-gen3",
+          "addons": [
+            "bandwidth-5000-scale-gen3",
+            "bandwidth-10000-scale-gen3",
+            "bandwidth-15000-scale-gen3",
+            "bandwidth-20000-scale-gen3",
+            "bandwidth-25000-scale-gen3"
+          ]
+        },
+        {
+          "name": "storage",
+          "mandatory": true,
+          "default": "noraid-0-26scaleamd01-v4",
+          "addons": [
+            "noraid-0-26scaleamd01-v4",
+            "softraid-2x1920nvme-pcie-gen5-26scaleamd01-v4",
+            "softraid-2x3840nvme-pcie-gen5-26scaleamd01-v4",
+            "softraid-2x7680nvme-pcie-gen5-26scaleamd01-v4",
+            "softraid-4x1920nvme-pcie-gen5-26scaleamd01-v4",
+            "softraid-4x3840nvme-pcie-gen5-26scaleamd01-v4",
+            "softraid-4x7680nvme-pcie-gen5-26scaleamd01-v4",
+            "softraid-4x15360nvme-pcie-gen5-26scaleamd01-v4",
+            "softraid-6x1920nvme-pcie-gen5-26scaleamd01-v4",
+            "softraid-6x3840nvme-pcie-gen5-26scaleamd01-v4",
+            "softraid-6x7680nvme-pcie-gen5-26scaleamd01-v4",
+            "softraid-6x15360nvme-pcie-gen5-26scaleamd01-v4"
+          ]
+        },
+        {
+          "name": "memory",
+          "mandatory": true,
+          "default": "ram-128g-ecc-4800-26scaleamd01-v4",
+          "addons": [
+            "ram-128g-ecc-4800-26scaleamd01-v4",
+            "ram-192g-ecc-4800-26scaleamd01-v4",
+            "ram-256g-ecc-4800-26scaleamd01-v4",
+            "ram-384g-ecc-4800-26scaleamd01-v4",
+            "ram-512g-ecc-4800-26scaleamd01-v4",
+            "ram-768g-ecc-4800-26scaleamd01-v4",
+            "ram-1024g-ecc-4800-26scaleamd01-v4",
+            "ram-1536g-ecc-4800-26scaleamd01-v4",
+            "ram-3072g-ecc-3600-26scaleamd01-v4"
+          ]
+        },
+        {
+          "name": "system-storage",
+          "mandatory": true,
+          "default": "softraid-2x1920nvme-pcie-gen5-system-26scaleamd01-v4",
+          "addons": [
+            "softraid-2x1920nvme-pcie-gen5-system-26scaleamd01-v4"
+          ]
+        }
+      ]
+    }
+  ],
+  "addons": [
+    {
+      "planCode": "bandwidth-1000-unguaranteed-rise-gen2",
+      "invoiceName": "1Gbps unmetered public bandwidth",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 0
+        }
+      ]
+    },
+    {
+      "planCode": "bandwidth-10000-scale-gen3",
+      "invoiceName": "10Gbps guaranteed unmetered public bandwidth",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 50000000000
+        }
+      ]
+    },
+    {
+      "planCode": "bandwidth-15000-scale-gen3",
+      "invoiceName": "15Gbps guaranteed unmetered public bandwidth",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 75000000000
+        }
+      ]
+    },
+    {
+      "planCode": "bandwidth-20000-scale-gen3",
+      "invoiceName": "20Gbps guaranteed unmetered public bandwidth",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 100000000000
+        }
+      ]
+    },
+    {
+      "planCode": "bandwidth-25000-scale-gen3",
+      "invoiceName": "25Gbps guaranteed unmetered public bandwidth",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 125000000000
+        }
+      ]
+    },
+    {
+      "planCode": "bandwidth-500-25sk",
+      "invoiceName": "500Mbps unmetered public bandwidth",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 0
+        }
+      ]
+    },
+    {
+      "planCode": "bandwidth-5000-scale-gen3",
+      "invoiceName": "5Gbps guaranteed unmetered public bandwidth",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 0
+        }
+      ]
+    },
+    {
+      "planCode": "hybridsoftraid-2x6000sa-2x512nvme-24rise01-v2",
+      "invoiceName": "2x SSD NVMe 512GB Enterprise Class + 2x HDD SATA 6TB Enterprise Class Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 2000000000
+        }
+      ]
+    },
+    {
+      "planCode": "noraid-0-26scaleamd01-v4",
+      "invoiceName": "No storage drive",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 0
+        }
+      ]
+    },
+    {
+      "planCode": "ram-1024g-ecc-4800-26scaleamd01-v4",
+      "invoiceName": "1TB DDR5 ECC 4800MHz",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 310400000000
+        }
+      ]
+    },
+    {
+      "planCode": "ram-128g-ecc-2933-24rise01-v2",
+      "invoiceName": "128GB DDR4 ECC 2933MHz",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 3200000000
+        }
+      ]
+    },
+    {
+      "planCode": "ram-128g-ecc-4800-26scaleamd01-v4",
+      "invoiceName": "128GB DDR5 ECC 4800MHz",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 0
+        }
+      ]
+    },
+    {
+      "planCode": "ram-1536g-ecc-4800-26scaleamd01-v4",
+      "invoiceName": "1.5TB DDR5 ECC 4800MHz",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 488400000000
+        }
+      ]
+    },
+    {
+      "planCode": "ram-192g-ecc-4800-26scaleamd01-v4",
+      "invoiceName": "192GB DDR5 ECC 4800MHz",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 22800000000
+        }
+      ]
+    },
+    {
+      "planCode": "ram-256g-ecc-4800-26scaleamd01-v4",
+      "invoiceName": "256GB DDR5 ECC 4800MHz",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 28000000000
+        }
+      ]
+    },
+    {
+      "planCode": "ram-3072g-ecc-3600-26scaleamd01-v4",
+      "invoiceName": "3TB DDR5 ECC 3600MHz",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 1022400000000
+        }
+      ]
+    },
+    {
+      "planCode": "ram-32g-ecc-2133-24sk20",
+      "invoiceName": "32GB DDR4 ECC 2133MHz",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 0
+        }
+      ]
+    },
+    {
+      "planCode": "ram-32g-ecc-3200-24rise01-v2",
+      "invoiceName": "32GB DDR4 ECC 3200MHz",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 0
+        }
+      ]
+    },
+    {
+      "planCode": "ram-384g-ecc-4800-26scaleamd01-v4",
+      "invoiceName": "384GB DDR5 ECC 4800MHz",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 64800000000
+        }
+      ]
+    },
+    {
+      "planCode": "ram-512g-ecc-4800-26scaleamd01-v4",
+      "invoiceName": "512GB DDR5 ECC 4800MHz",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 90400000000
+        }
+      ]
+    },
+    {
+      "planCode": "ram-64g-ecc-2133-24sk20",
+      "invoiceName": "64GB DDR4 ECC 2133MHz",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 800000000
+        }
+      ]
+    },
+    {
+      "planCode": "ram-64g-ecc-3200-24rise01-v2",
+      "invoiceName": "64GB DDR4 ECC 3200MHz",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 800000000
+        }
+      ]
+    },
+    {
+      "planCode": "ram-768g-ecc-4800-26scaleamd01-v4",
+      "invoiceName": "768GB DDR5 ECC 4800MHz",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 158400000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-2x1920nvme-24rise01-v2",
+      "invoiceName": "2x SSD NVMe 1.92TB Datacenter Class Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 4000000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-2x1920nvme-pcie-gen5-26scaleamd01-v4",
+      "invoiceName": "2x SSD NVMe 1.92TB Datacenter Class Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 13200000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-2x1920nvme-pcie-gen5-system-26scaleamd01-v4",
+      "invoiceName": "2x SSD NVMe 1.92TB Datacenter Class PCIe 5.0 Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 0
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-2x3840nvme-24rise01-v2",
+      "invoiceName": "2x SSD NVMe 3.84TB Datacenter Class Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 8000000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-2x3840nvme-pcie-gen5-26scaleamd01-v4",
+      "invoiceName": "2x SSD NVMe 3.84TB Enterprise Class PCIe 5.0 Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 22200000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-2x4000sa-24rise01-v2",
+      "invoiceName": "2x 4TB HDD Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 0
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-2x450nvme-24sk20",
+      "invoiceName": "2x 450Gb SSD NVMe Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 0
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-2x512nvme-24rise01-v2",
+      "invoiceName": "2x SSD NVMe 512GB Datacenter Class Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 0
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-2x6000sa-24rise01-v2",
+      "invoiceName": "2x HDD SATA 6TB Enterprise Class Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 1200000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-2x7680nvme-pcie-gen5-26scaleamd01-v4",
+      "invoiceName": "2x SSD NVMe 7.68TB Enterprise Class PCIe 5.0 Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 39600000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-2x960nvme-24rise01-v2",
+      "invoiceName": "2x SSD NVMe 960GB Enterprise Class Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 2000000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-3x1920nvme-24rise01-v2",
+      "invoiceName": "3x SSD NVMe 1.92TB Datacenter Class Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 6000000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-3x3840nvme-24rise01-v2",
+      "invoiceName": "3x SSD NVMe 3.84TB Datacenter Class Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 12000000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-4x15360nvme-pcie-gen5-26scaleamd01-v4",
+      "invoiceName": "4x SSD NVMe 15.36TB Enterprise Class Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 148400000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-4x1920nvme-pcie-gen5-26scaleamd01-v4",
+      "invoiceName": "4x SSD NVMe 1.92TB Enterprise Class PCIe 5.0 Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 26400000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-4x2000sa-24sk20",
+      "invoiceName": "4x 2TB HDD Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 0
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-4x3840nvme-24rise01-v2",
+      "invoiceName": "4x SSD NVMe 3.84TB Datacenter Class Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 16000000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-4x3840nvme-pcie-gen5-26scaleamd01-v4",
+      "invoiceName": "4x SSD NVMe 3.84TB Enterprise Class PCIe 5.0 Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 44400000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-4x7680nvme-pcie-gen5-26scaleamd01-v4",
+      "invoiceName": "4x SSD NVMe 7.68TB Enterprise Class PCIe 5.0 Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 79200000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-4x960nvme-24rise01-v2",
+      "invoiceName": "4x SSD NVMe 960GB Datacenter Class Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 4000000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-6x15360nvme-pcie-gen5-26scaleamd01-v4",
+      "invoiceName": "6x SSD NVMe 15.36TB Enterprise Class Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 222600000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-6x1920nvme-pcie-gen5-26scaleamd01-v4",
+      "invoiceName": "6x SSD NVMe 1.92TB Enterprise Class PCIe 5.0 Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 39600000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-6x3840nvme-pcie-gen5-26scaleamd01-v4",
+      "invoiceName": "6x SSD NVMe 3.84TB Enterprise Class PCIe 5.0 Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 66600000000
+        }
+      ]
+    },
+    {
+      "planCode": "softraid-6x7680nvme-pcie-gen5-26scaleamd01-v4",
+      "invoiceName": "6x SSD NVMe 7.68TB Enterprise Class PCIe 5.0 Soft RAID",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 118800000000
+        }
+      ]
+    },
+    {
+      "planCode": "vrack-bandwidth-1000-24rise01-v2",
+      "invoiceName": "1Gbps unmetered and guaranteed private bandwidth",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 0
+        }
+      ]
+    },
+    {
+      "planCode": "vrack-bandwidth-50000-scale-gen3",
+      "invoiceName": "50Gbps guaranteed unmetered private bandwidth",
+      "pricings": [
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "installation"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 0,
+          "mode": "default",
+          "capacities": [
+            "upgrade"
+          ],
+          "price": 0
+        },
+        {
+          "interval": 1,
+          "mode": "default",
+          "capacities": [
+            "renew"
+          ],
+          "price": 0
+        }
+      ]
+    }
+  ]
+}

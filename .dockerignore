@@ -1,0 +1,11 @@
+# ship:begin (owned by ship init; repo-specific lines go below the end marker)
+# The module is the repo root: git and editor state and coverage stay out of the context.
+.git
+.github
+.claude
+coverage
+# ship:end
+
+data
+conf
+.env

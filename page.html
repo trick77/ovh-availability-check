@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="{{.Refresh}}">
+<title>OVH availability</title>
+<link rel="icon" href="data:,">
+<style>
+:root {
+  --bg: #f7f7f5; --fg: #1d1d1b; --muted: #75756f; --line: #e2e2dc; --card: #fff;
+  --ok: #1f7a3f; --ok-bg: #e3f3e8; --warn: #9a5b00; --warn-bg: #fbefd9; --bad: #a42828; --link: #2456a6;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161615; --fg: #e8e8e3; --muted: #9a9a92; --line: #2e2e2b; --card: #1e1e1c;
+    --ok: #6fcf8e; --ok-bg: #173323; --warn: #e5ad55; --warn-bg: #3a2c12; --bad: #ef7d7d; --link: #8fb4f0;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg);
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 1200px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { font-size: 20px; margin: 0 0 4px; }
+h2 { font-size: 15px; margin: 28px 0 8px; }
+.meta { color: var(--muted); font-size: 13px; }
+.meta span + span::before { content: " · "; }
+.err { color: var(--bad); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-weight: 600; color: var(--muted); font-size: 12px; }
+tr:last-child td { border-bottom: 0; }
+td.wrap { white-space: normal; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.out td { color: var(--muted); }
+.dc { display: inline-block; min-width: 46px; padding: 1px 6px; border-radius: 4px; font-size: 12px; text-align: center; }
+.dc.on { background: var(--ok-bg); color: var(--ok); font-weight: 600; }
+.zero { background: var(--warn-bg); color: var(--warn); padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+.empty { padding: 14px 10px; color: var(--muted); }
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.toggle { font-weight: 400; font-size: 13px; margin-left: 8px; }
+pre { margin: 0; font: 12px/1.4 ui-monospace, monospace; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<main>
+<h1>OVH availability</h1>
+<div class="meta">
+  <span>polled {{ago .PolledAt}}</span><span>every {{.Interval}}</span><span>catalog {{ago .CatalogAt}}</span>
+  <span>{{join .Datacenters ", "}}</span>
+  <span>{{if .Channels}}push: {{join .Channels ", "}}{{else}}<b class="err">no push channel</b>{{end}}</span>
+</div>
+{{if .PollErr}}<p class="err">Last poll failed: {{.PollErr}}</p>{{end}}
+{{if .CatErr}}<p class="err">Catalog fetch failed: {{.CatErr}}</p>{{end}}
+
+<h2>Wishes</h2>
+<div class="card"><table>
+<tr><th>Wish</th><th>Rule</th><th class="num">Variants</th><th class="num">In stock</th></tr>
+{{range .Wants}}<tr>
+  <td>{{.Label}}</td><td class="wrap">{{.Rule}}</td>
+  <td class="num">{{if eq .All 0}}<span class="zero" title="No watched variant meets this wish, in stock or not">0</span>{{else}}{{.All}}{{end}}</td>
+  <td class="num">{{.InStock}}</td>
+</tr>{{end}}
+</table></div>
+
+<h2>Wanted and in stock</h2>
+<div class="card">
+{{if .Wanted}}{{template "rows" (dict2 .Wanted $.Datacenters)}}{{else}}<div class="empty">Nothing wanted is in stock right now.</div>{{end}}
+</div>
+
+{{if .Pushes}}
+<h2>Recent pushes</h2>
+<div class="card"><table>
+{{range .Pushes}}<tr>
+  <td>{{ago .At}}</td>
+  <td class="wrap"><b>{{.Title}}</b>{{if .Err}} <span class="err">{{.Err}}</span>{{end}}<pre>{{.Body}}</pre></td>
+</tr>{{end}}
+</table></div>
+{{end}}
+
+{{if .ShowAll}}
+<h2>All variants in these datacenters ({{len .All}})  <a class="toggle" href="./">hide</a></h2>
+<div class="card">{{template "rows" (dict2 .All $.Datacenters)}}</div>
+{{else}}
+<h2><a href="?all=1">Show all {{len .All}} variants in these datacenters</a></h2>
+{{end}}
+</main>
+</body>
+</html>
+{{define "rows"}}<table>
+<tr><th>Server</th><th>CPU</th><th class="num">RAM</th><th>Disks</th><th class="num">€/mo</th><th class="num">Setup</th>{{range .DCs}}<th>{{.}}</th>{{end}}</tr>
+{{range $v := .Variants}}<tr{{if not $v.InStock}} class="out"{{end}}>
+  <td><a href="{{$v.OrderURL}}" title="{{$v.FQN}}">{{or $v.Name $v.PlanCode}}</a></td>
+  <td>{{$v.CPU}}</td>
+  <td class="num">{{$v.RAM}} GB</td>
+  <td>{{range $i, $d := $v.Disks}}{{if $i}} + {{end}}{{$d}}{{end}}</td>
+  <td class="num">{{if $v.Priced}}{{printf "%.2f" $v.Rent}}{{else}}?{{end}}</td>
+  <td class="num">{{if $v.Priced}}{{printf "%.2f" $v.Setup}}{{end}}</td>
+  {{range $.DCs}}{{$a := index $v.Stock .}}<td>{{if $a}}<span class="dc{{if instock $a}} on{{end}}">{{$a}}</span>{{end}}</td>{{end}}
+</tr>{{end}}
+</table>{{end}}

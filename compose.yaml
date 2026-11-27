@@ -1,0 +1,51 @@
+# Production: the released image behind an existing Traefik (entrypoint websecure, external network `traefik`).
+#
+#   docker compose pull && docker compose up -d --remove-orphans
+#
+# No port is published: Traefik reaches the container on the shared `traefik` network. The host comes from .env only:
+# without PUBLIC_FQDN every compose command refuses to run.
+services:
+  ovh-availability-check:
+    image: ghcr.io/trick77/ovh-availability-check:latest
+    restart: unless-stopped
+    # distroless nonroot's own uid, never 1000 (the host's first user). Host ./data must belong to it, ./conf be
+    # readable by it: sudo chown -R 65532:65532 data conf
+    user: "65532:65532"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    # BACKEND_* reach the container as they are; BACKEND_NOTIFY_URLS holds the SMTP password.
+    env_file: .env
+    healthcheck:
+      # Exec form: distroless has no shell.
+      test: ["CMD", "/ovh-availability-check", "-healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    # ./data: state.json, what was pushed. ./conf: config.json, the wishes, read-only inside.
+    volumes:
+      - ./data:/data
+      - ./conf:/conf:ro
+    expose:
+      - "8080"
+    networks:
+      - traefik
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: traefik
+      traefik.http.services.ovh-availability-check.loadbalancer.server.port: "8080"
+      traefik.http.routers.ovh-availability-check.rule: Host(`${PUBLIC_FQDN:?set PUBLIC_FQDN in .env, the hostname Traefik routes the page on}`)
+      traefik.http.routers.ovh-availability-check.entrypoints: websecure
+      # No certresolver: the server's Traefik picks the certificate and redirects `web` to `websecure` for every host.
+      traefik.http.routers.ovh-availability-check.tls: "true"
+      # The all-variants page is ~3 MB of HTML.
+      traefik.http.routers.ovh-availability-check.middlewares: ovh-availability-check-compress
+      traefik.http.middlewares.ovh-availability-check-compress.compress: "true"
+      com.centurylinklabs.watchtower.enable: "false"
+      diun.enable: "false"
+
+networks:
+  traefik:
+    external: true

@@ -1,0 +1,4 @@
+# The gate (ship check, and ship pre-push in the hook) and the release, see github.com/trick77/ship.
+visibility: public
+images:
+  - {}

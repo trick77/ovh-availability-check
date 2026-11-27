@@ -1,0 +1,7203 @@
+[
+  {
+    "fqn": "24rise01-v2.ram-128g-ecc-2933.hybridsoftraid-2x6000sa-2x512nvme",
+    "memory": "ram-128g-ecc-2933",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "hybridsoftraid-2x6000sa-2x512nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-128g-ecc-2933.softraid-2x1920nvme",
+    "memory": "ram-128g-ecc-2933",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x1920nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-128g-ecc-2933.softraid-2x3840nvme",
+    "memory": "ram-128g-ecc-2933",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x3840nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-128g-ecc-2933.softraid-2x4000sa",
+    "memory": "ram-128g-ecc-2933",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x4000sa",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-128g-ecc-2933.softraid-2x512nvme",
+    "memory": "ram-128g-ecc-2933",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x512nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-128g-ecc-2933.softraid-2x6000sa",
+    "memory": "ram-128g-ecc-2933",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x6000sa",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-128g-ecc-2933.softraid-2x960nvme",
+    "memory": "ram-128g-ecc-2933",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x960nvme",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-128g-ecc-2933.softraid-3x1920nvme",
+    "memory": "ram-128g-ecc-2933",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-3x1920nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-128g-ecc-2933.softraid-3x3840nvme",
+    "memory": "ram-128g-ecc-2933",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-3x3840nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-128g-ecc-2933.softraid-4x3840nvme",
+    "memory": "ram-128g-ecc-2933",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-4x3840nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-128g-ecc-2933.softraid-4x960nvme",
+    "memory": "ram-128g-ecc-2933",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-4x960nvme",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-32g-ecc-3200.hybridsoftraid-2x6000sa-2x512nvme",
+    "memory": "ram-32g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "hybridsoftraid-2x6000sa-2x512nvme",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-32g-ecc-3200.softraid-2x1920nvme",
+    "memory": "ram-32g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x1920nvme",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-32g-ecc-3200.softraid-2x3840nvme",
+    "memory": "ram-32g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x3840nvme",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-32g-ecc-3200.softraid-2x4000sa",
+    "memory": "ram-32g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x4000sa",
+    "datacenters": [
+      {
+        "availability": "1H-high",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-32g-ecc-3200.softraid-2x512nvme",
+    "memory": "ram-32g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x512nvme",
+    "datacenters": [
+      {
+        "availability": "1H-high",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-32g-ecc-3200.softraid-2x6000sa",
+    "memory": "ram-32g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x6000sa",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-32g-ecc-3200.softraid-2x960nvme",
+    "memory": "ram-32g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x960nvme",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-32g-ecc-3200.softraid-3x1920nvme",
+    "memory": "ram-32g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-3x1920nvme",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-32g-ecc-3200.softraid-3x3840nvme",
+    "memory": "ram-32g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-3x3840nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-32g-ecc-3200.softraid-4x3840nvme",
+    "memory": "ram-32g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-4x3840nvme",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-32g-ecc-3200.softraid-4x960nvme",
+    "memory": "ram-32g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-4x960nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-64g-ecc-3200.hybridsoftraid-2x6000sa-2x512nvme",
+    "memory": "ram-64g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "hybridsoftraid-2x6000sa-2x512nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-64g-ecc-3200.softraid-2x1920nvme",
+    "memory": "ram-64g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x1920nvme",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-64g-ecc-3200.softraid-2x3840nvme",
+    "memory": "ram-64g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x3840nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-64g-ecc-3200.softraid-2x4000sa",
+    "memory": "ram-64g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x4000sa",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-64g-ecc-3200.softraid-2x512nvme",
+    "memory": "ram-64g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x512nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-64g-ecc-3200.softraid-2x6000sa",
+    "memory": "ram-64g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x6000sa",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unknown",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-64g-ecc-3200.softraid-2x960nvme",
+    "memory": "ram-64g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-2x960nvme",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-64g-ecc-3200.softraid-3x1920nvme",
+    "memory": "ram-64g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-3x1920nvme",
+    "datacenters": [
+      {
+        "availability": "1H-low",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-64g-ecc-3200.softraid-3x3840nvme",
+    "memory": "ram-64g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-3x3840nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-64g-ecc-3200.softraid-4x3840nvme",
+    "memory": "ram-64g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-4x3840nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24rise01-v2.ram-64g-ecc-3200.softraid-4x960nvme",
+    "memory": "ram-64g-ecc-3200",
+    "planCode": "24rise01-v2",
+    "server": "24rise01",
+    "storage": "softraid-4x960nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24sk202.ram-32g-ecc-2133.softraid-2x450nvme",
+    "memory": "ram-32g-ecc-2133",
+    "planCode": "24sk202",
+    "server": "24sk20",
+    "storage": "softraid-2x450nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24sk202.ram-32g-ecc-2133.softraid-4x2000sa",
+    "memory": "ram-32g-ecc-2133",
+    "planCode": "24sk202",
+    "server": "24sk20",
+    "storage": "softraid-4x2000sa",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24sk202.ram-64g-ecc-2133.softraid-2x450nvme",
+    "memory": "ram-64g-ecc-2133",
+    "planCode": "24sk202",
+    "server": "24sk20",
+    "storage": "softraid-2x450nvme",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "24sk202.ram-64g-ecc-2133.softraid-4x2000sa",
+    "memory": "ram-64g-ecc-2133",
+    "planCode": "24sk202",
+    "server": "24sk20",
+    "storage": "softraid-4x2000sa",
+    "datacenters": [
+      {
+        "availability": "unavailable",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1024g-ecc-4800.noraid-0.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1024g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "noraid-0",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1024g-ecc-4800.softraid-2x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1024g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1024g-ecc-4800.softraid-2x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1024g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1024g-ecc-4800.softraid-2x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1024g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1024g-ecc-4800.softraid-4x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1024g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1024g-ecc-4800.softraid-4x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1024g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1024g-ecc-4800.softraid-4x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1024g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1024g-ecc-4800.softraid-4x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1024g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1024g-ecc-4800.softraid-6x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1024g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1024g-ecc-4800.softraid-6x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1024g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1024g-ecc-4800.softraid-6x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1024g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1024g-ecc-4800.softraid-6x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1024g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-128g-ecc-4800.noraid-0.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-128g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "noraid-0",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "1H-high",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "1H-low",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "1H-low",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "1H-low",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "1H-low",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-128g-ecc-4800.softraid-2x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-128g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "1H-low",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-128g-ecc-4800.softraid-2x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-128g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-128g-ecc-4800.softraid-2x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-128g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-128g-ecc-4800.softraid-4x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-128g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-128g-ecc-4800.softraid-4x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-128g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-128g-ecc-4800.softraid-4x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-128g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-128g-ecc-4800.softraid-4x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-128g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-128g-ecc-4800.softraid-6x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-128g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-128g-ecc-4800.softraid-6x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-128g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-128g-ecc-4800.softraid-6x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-128g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-128g-ecc-4800.softraid-6x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-128g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1536g-ecc-4800.noraid-0.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1536g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "noraid-0",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1536g-ecc-4800.softraid-2x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1536g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1536g-ecc-4800.softraid-2x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1536g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1536g-ecc-4800.softraid-2x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1536g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1536g-ecc-4800.softraid-4x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1536g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1536g-ecc-4800.softraid-4x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1536g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1536g-ecc-4800.softraid-4x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1536g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1536g-ecc-4800.softraid-4x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1536g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1536g-ecc-4800.softraid-6x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1536g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1536g-ecc-4800.softraid-6x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1536g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1536g-ecc-4800.softraid-6x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1536g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-1536g-ecc-4800.softraid-6x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-1536g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-192g-ecc-4800.noraid-0.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-192g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "noraid-0",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-192g-ecc-4800.softraid-2x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-192g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-192g-ecc-4800.softraid-2x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-192g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-192g-ecc-4800.softraid-2x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-192g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-192g-ecc-4800.softraid-4x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-192g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-192g-ecc-4800.softraid-4x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-192g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-192g-ecc-4800.softraid-4x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-192g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-192g-ecc-4800.softraid-4x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-192g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-192g-ecc-4800.softraid-6x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-192g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-192g-ecc-4800.softraid-6x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-192g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-192g-ecc-4800.softraid-6x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-192g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-192g-ecc-4800.softraid-6x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-192g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-256g-ecc-4800.noraid-0.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-256g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "noraid-0",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "1H-low",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-256g-ecc-4800.softraid-2x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-256g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-256g-ecc-4800.softraid-2x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-256g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-256g-ecc-4800.softraid-2x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-256g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-256g-ecc-4800.softraid-4x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-256g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-256g-ecc-4800.softraid-4x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-256g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-256g-ecc-4800.softraid-4x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-256g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-256g-ecc-4800.softraid-4x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-256g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-256g-ecc-4800.softraid-6x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-256g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-256g-ecc-4800.softraid-6x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-256g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-256g-ecc-4800.softraid-6x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-256g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-256g-ecc-4800.softraid-6x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-256g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-3072g-ecc-3600.noraid-0.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-3072g-ecc-3600",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "noraid-0",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-3072g-ecc-3600.softraid-2x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-3072g-ecc-3600",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-3072g-ecc-3600.softraid-2x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-3072g-ecc-3600",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-3072g-ecc-3600.softraid-2x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-3072g-ecc-3600",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-3072g-ecc-3600.softraid-4x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-3072g-ecc-3600",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-3072g-ecc-3600.softraid-4x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-3072g-ecc-3600",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-3072g-ecc-3600.softraid-4x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-3072g-ecc-3600",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-3072g-ecc-3600.softraid-4x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-3072g-ecc-3600",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-3072g-ecc-3600.softraid-6x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-3072g-ecc-3600",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-3072g-ecc-3600.softraid-6x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-3072g-ecc-3600",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-3072g-ecc-3600.softraid-6x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-3072g-ecc-3600",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-3072g-ecc-3600.softraid-6x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-3072g-ecc-3600",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-384g-ecc-4800.noraid-0.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-384g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "noraid-0",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-384g-ecc-4800.softraid-2x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-384g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-384g-ecc-4800.softraid-2x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-384g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-384g-ecc-4800.softraid-2x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-384g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-384g-ecc-4800.softraid-4x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-384g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-384g-ecc-4800.softraid-4x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-384g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-384g-ecc-4800.softraid-4x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-384g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-384g-ecc-4800.softraid-4x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-384g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-384g-ecc-4800.softraid-6x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-384g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-384g-ecc-4800.softraid-6x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-384g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-384g-ecc-4800.softraid-6x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-384g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-384g-ecc-4800.softraid-6x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-384g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-512g-ecc-4800.noraid-0.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-512g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "noraid-0",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-512g-ecc-4800.softraid-2x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-512g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-512g-ecc-4800.softraid-2x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-512g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-512g-ecc-4800.softraid-2x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-512g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-512g-ecc-4800.softraid-4x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-512g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-512g-ecc-4800.softraid-4x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-512g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-512g-ecc-4800.softraid-4x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-512g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-512g-ecc-4800.softraid-4x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-512g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-512g-ecc-4800.softraid-6x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-512g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-512g-ecc-4800.softraid-6x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-512g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-512g-ecc-4800.softraid-6x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-512g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-512g-ecc-4800.softraid-6x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-512g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-768g-ecc-4800.noraid-0.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-768g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "noraid-0",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-768g-ecc-4800.softraid-2x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-768g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-768g-ecc-4800.softraid-2x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-768g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-768g-ecc-4800.softraid-2x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-768g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-2x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-768g-ecc-4800.softraid-4x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-768g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-768g-ecc-4800.softraid-4x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-768g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-768g-ecc-4800.softraid-4x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-768g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-768g-ecc-4800.softraid-4x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-768g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-4x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-768g-ecc-4800.softraid-6x15360nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-768g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x15360nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-768g-ecc-4800.softraid-6x1920nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-768g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x1920nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-768g-ecc-4800.softraid-6x3840nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-768g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x3840nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  },
+  {
+    "fqn": "26scaleamd01-v4.ram-768g-ecc-4800.softraid-6x7680nvme-pcie-gen5.softraid-2x1920nvme-pcie-gen5-system",
+    "memory": "ram-768g-ecc-4800",
+    "planCode": "26scaleamd01-v4",
+    "server": "26scaleamd01",
+    "storage": "softraid-6x7680nvme-pcie-gen5",
+    "systemStorage": "softraid-2x1920nvme-pcie-gen5-system",
+    "datacenters": [
+      {
+        "availability": "72H",
+        "datacenter": "bhs"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "ca-east-tor-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-a"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-b"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "eu-west-par-c"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "fra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "gra"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "lon"
+      },
+      {
+        "availability": "unavailable",
+        "datacenter": "rbx"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "sbg"
+      },
+      {
+        "availability": "72H",
+        "datacenter": "waw"
+      }
+    ]
+  }
+]
