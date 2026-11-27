@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/trick77/ovh-availability-check/internal/watch"
+	"github.com/trick77/ovh-restock/internal/watch"
 )
 
 // fakeOVH serves the fixtures, KS-2 32 GB NVMe put in stock in gra.

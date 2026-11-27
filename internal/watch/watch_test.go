@@ -8,7 +8,7 @@ import (
 	"testing"
 	"unicode/utf8"
 
-	"github.com/trick77/ovh-availability-check/internal/ovh"
+	"github.com/trick77/ovh-restock/internal/ovh"
 )
 
 func writeConfig(t *testing.T, body string) string {

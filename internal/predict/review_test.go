@@ -9,8 +9,8 @@ import (
 
 	"github.com/trick77/toolkit/llmwire/llmwiretest"
 
-	"github.com/trick77/ovh-availability-check/internal/ovh"
-	"github.com/trick77/ovh-availability-check/internal/watch"
+	"github.com/trick77/ovh-restock/internal/ovh"
+	"github.com/trick77/ovh-restock/internal/watch"
 )
 
 func TestDuplicateEvidence(t *testing.T) {

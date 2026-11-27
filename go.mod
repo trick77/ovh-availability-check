@@ -1,4 +1,4 @@
-module github.com/trick77/ovh-availability-check
+module github.com/trick77/ovh-restock
 
 go 1.27.2
 

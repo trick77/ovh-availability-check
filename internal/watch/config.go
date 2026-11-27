@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/trick77/ovh-availability-check/internal/ovh"
+	"github.com/trick77/ovh-restock/internal/ovh"
 )
 
 // Config is conf/config.json.

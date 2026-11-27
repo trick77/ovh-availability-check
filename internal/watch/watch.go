@@ -8,7 +8,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/trick77/ovh-availability-check/internal/ovh"
+	"github.com/trick77/ovh-restock/internal/ovh"
 )
 
 // Variant is one server configuration (an fqn) with its stock in the watched datacenters.

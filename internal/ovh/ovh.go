@@ -41,7 +41,7 @@ func (c *Client) get(ctx context.Context, path string, v any) error {
 	if err != nil {
 		return err
 	}
-	req.Header.Set("User-Agent", "ovh-availability-check")
+	req.Header.Set("User-Agent", "ovh-restock")
 	req.Header.Set("Accept", "application/json")
 	resp, err := c.HTTP.Do(req)
 	if err != nil {

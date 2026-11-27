@@ -164,7 +164,7 @@ func TestName(t *testing.T) {
 
 func TestAvailabilitiesEmptyIsError(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !strings.HasPrefix(r.Header.Get("User-Agent"), "ovh-availability-check") {
+		if !strings.HasPrefix(r.Header.Get("User-Agent"), "ovh-restock") {
 			t.Errorf("user agent %q", r.Header.Get("User-Agent"))
 		}
 		w.Write([]byte("[]"))

@@ -14,7 +14,7 @@ import (
 
 	"github.com/trick77/toolkit/llmwire"
 
-	"github.com/trick77/ovh-availability-check/internal/watch"
+	"github.com/trick77/ovh-restock/internal/watch"
 )
 
 // The eval runs the pattern prompt against real models on synthetic histories and scores it in code: no LLM

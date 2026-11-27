@@ -11,7 +11,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/trick77/ovh-availability-check/internal/watch"
+	"github.com/trick77/ovh-restock/internal/watch"
 )
 
 // The gate: below it no call is made (user: rarely or never stocked → nothing to find).
