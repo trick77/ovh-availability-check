@@ -238,28 +238,32 @@ func (s State) Next(cur map[string]Pair, fresh []Pair, sent bool) State {
 // maxLines caps a push: the first run after a wide wish can find dozens.
 const maxLines = 15
 
-// Message is one push for every fresh pair: a line per variant, its datacenters behind it.
+// Message is one push for every fresh pair: per variant a line with its datacenters behind it, then its order link.
 func Message(vs []Variant, fresh []Pair) (title, body string) {
 	dcs := map[string][]string{}
 	for _, p := range fresh {
 		dcs[p.FQN] = append(dcs[p.FQN], p.DC)
 	}
-	var lines []string
+	var entries []string
 	for _, v := range vs { // vs is cheapest first
 		d, ok := dcs[v.FQN]
 		if !ok {
 			continue
 		}
 		slices.Sort(d)
-		lines = append(lines, v.Summary()+" · "+strings.Join(d, ", "))
+		e := v.Summary() + " · " + strings.Join(d, ", ")
+		if v.OrderURL != "" {
+			e += "\n" + v.OrderURL
+		}
+		entries = append(entries, e)
 	}
-	n := len(lines)
+	n := len(entries)
 	if n > maxLines {
-		lines = append(lines[:maxLines], fmt.Sprintf("… and %d more", n-maxLines))
+		entries = append(entries[:maxLines], fmt.Sprintf("… and %d more", n-maxLines))
 	}
 	title = "OVH: 1 server in stock"
 	if n != 1 {
 		title = fmt.Sprintf("OVH: %d servers in stock", n)
 	}
-	return title, strings.Join(lines, "\n")
+	return title, strings.Join(entries, "\n\n")
 }

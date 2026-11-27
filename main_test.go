@@ -105,7 +105,7 @@ func TestServePushesOnce(t *testing.T) {
 		t.Fatalf("serve: %v", err)
 	}
 	if !strings.Contains(h.bodies[0], "KS-2 · Intel Xeon-D 1540 · 32 GB · 2×450GB NVME · 18.99 €/mo") ||
-		!strings.HasSuffix(h.bodies[0], "· gra") {
+		!strings.HasSuffix(h.bodies[0], "· gra\nhttps://eco.ovhcloud.com/fr/kimsufi/ks-2/") {
 		t.Errorf("body %q", h.bodies[0])
 	}
 	s, err := watch.LoadState(filepath.Join(data, "state.json"))

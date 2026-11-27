@@ -46,7 +46,8 @@ func TestLoadConfig(t *testing.T) {
 var ks2 = Variant{
 	FQN: "24sk202.ram-64g-ecc-2133.softraid-2x450nvme", PlanCode: "24sk202", Name: "KS-2", CPU: "Intel Xeon-D 1540",
 	RAM: 64, Disks: []ovh.Disk{{Count: 2, SizeGB: 450, Kind: "nvme"}}, Rent: 26.99, Setup: 18.99, Priced: true,
-	Stock: map[string]string{"gra": "72H", "rbx": "unavailable", "sbg": "1H-low"},
+	Stock:    map[string]string{"gra": "72H", "rbx": "unavailable", "sbg": "1H-low"},
+	OrderURL: "https://eco.ovhcloud.com/fr/kimsufi/ks-2/",
 }
 
 func TestMatches(t *testing.T) {
@@ -168,7 +169,8 @@ func TestMessage(t *testing.T) {
 	if title != "OVH: 1 server in stock" {
 		t.Errorf("title %q", title)
 	}
-	wantBody := "KS-2 · Intel Xeon-D 1540 · 64 GB · 2×450GB NVME · 26.99 €/mo (+18.99 setup) · gra, sbg"
+	wantBody := "KS-2 · Intel Xeon-D 1540 · 64 GB · 2×450GB NVME · 26.99 €/mo (+18.99 setup) · gra, sbg\n" +
+		"https://eco.ovhcloud.com/fr/kimsufi/ks-2/"
 	if body != wantBody {
 		t.Errorf("body\n%s\nwant\n%s", body, wantBody)
 	}
