@@ -102,6 +102,7 @@ type pricing struct {
 type product struct {
 	PlanCode      string    `json:"planCode"`
 	InvoiceName   string    `json:"invoiceName"`
+	Product       string    `json:"product"`
 	Pricings      []pricing `json:"pricings"`
 	AddonFamilies []struct {
 		Name      string   `json:"name"`
@@ -116,16 +117,22 @@ type Catalog struct {
 	plans  map[string]product
 	addons map[string]product
 	source map[string]string // planCode → catalog name
+	cpus   map[string]string // catalog/product → its description, the CPU ("2x AMD Epyc 9354")
 }
 
 type rawCatalog struct {
-	Plans  []product `json:"plans"`
-	Addons []product `json:"addons"`
+	Plans    []product `json:"plans"`
+	Addons   []product `json:"addons"`
+	Products []struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+	} `json:"products"`
 }
 
 // Catalog fetches and merges Catalogs.
 func (c *Client) Catalog(ctx context.Context) (*Catalog, error) {
-	cat := &Catalog{plans: map[string]product{}, addons: map[string]product{}, source: map[string]string{}}
+	cat := &Catalog{plans: map[string]product{}, addons: map[string]product{}, source: map[string]string{},
+		cpus: map[string]string{}}
 	for _, name := range Catalogs {
 		var raw rawCatalog
 		if err := c.get(ctx, "/order/catalog/public/"+name+"?ovhSubsidiary="+Subsidiary, &raw); err != nil {
@@ -143,6 +150,12 @@ func (cat *Catalog) add(name string, raw rawCatalog) {
 	}
 	for _, a := range raw.Addons {
 		cat.addons[a.PlanCode] = a
+	}
+	if cat.cpus == nil {
+		cat.cpus = map[string]string{}
+	}
+	for _, p := range raw.Products {
+		cat.cpus[name+"/"+p.Name] = p.Description
 	}
 }
 
@@ -247,7 +260,9 @@ func sameSize(addons []string, spec string) string {
 	return found[0]
 }
 
-// Name is the plan's commercial name and CPU, from its invoice name ("KS-2 | Intel Xeon-D 1540").
+// Name is the plan's commercial name and CPU, from its invoice name ("KS-2 | Intel Xeon-D 1540"). Some invoice
+// names carry no CPU (KS-LE, Scale, HGR: "KS-LE-1"); their product's description has it ("Intel Xeon E3-1245v2",
+// "2x AMD Epyc 9354", "1x Intel Xeon Gold 6554S").
 func (cat *Catalog) Name(planCode string) (name, cpu string) {
 	if cat == nil {
 		return "", ""
@@ -257,7 +272,24 @@ func (cat *Catalog) Name(planCode string) (name, cpu string) {
 		return "", ""
 	}
 	name, cpu, _ = strings.Cut(p.InvoiceName, "|")
-	return strings.TrimSpace(name), strings.TrimSpace(cpu)
+	cpu = strings.TrimSpace(cpu)
+	if d := strings.TrimPrefix(strings.TrimSpace(cat.cpus[cat.source[planCode]+"/"+p.Product]), "1x "); cpu == "" &&
+		looksLikeCPU(d) {
+		cpu = d
+	}
+	return strings.TrimSpace(name), cpu
+}
+
+// looksLikeCPU keeps a product description that is marketing text out of the CPU column and the cpu wishes.
+func looksLikeCPU(s string) bool {
+	s = strings.ToLower(s)
+	for _, f := range []string{"xeon", "epyc", "ryzen", "core i", "atom", "opteron"} {
+		if strings.Contains(s, f) {
+			return true
+		}
+	}
+	_, ok := CPU(s)
+	return ok
 }
 
 // OrderURL is where the plan is ordered. Only Kimsufi has a page per server (eco.ovhcloud.com/fr/kimsufi/ks-2/,
