@@ -35,6 +35,9 @@ type Want struct {
 	DiskMin  float64 `json:"disk_min_tb,omitempty"` // raw TB, of Disk's kind when Disk is set
 	CPU      string  `json:"cpu,omitempty"`         // case-insensitive substring of the CPU name
 	PriceMax float64 `json:"price_max_eur,omitempty"`
+	// CPUMinPct is the least multithread speed against reference_cpu, in percent: -10 is at most 10 % slower,
+	// 20 at least 20 % faster. A pointer: 0 ("as fast") is a real value.
+	CPUMinPct *int `json:"cpu_min_pct,omitempty"`
 }
 
 // Label names the wish in the UI and the log.
@@ -104,17 +107,31 @@ func (c *Config) check() error {
 		}
 	}
 	for i, w := range c.Want {
-		if w == (Want{Name: w.Name}) {
-			return fmt.Errorf("%s: no criterion, it would match every server", w.Label(i))
+		if err := w.Check(c.ReferenceCPU != ""); err != nil {
+			return fmt.Errorf("%s: %w", w.Label(i), err)
 		}
-		switch strings.ToLower(w.Disk) {
-		case "", "nvme", "ssd", "hdd":
-		default:
-			return fmt.Errorf("%s: disk %q is not nvme, ssd or hdd", w.Label(i), w.Disk)
-		}
-		if w.RAMMin > 0 && w.RAMMax > 0 && w.RAMMin > w.RAMMax {
-			return fmt.Errorf("%s: ram_min_gb above ram_max_gb", w.Label(i))
-		}
+	}
+	return nil
+}
+
+// Check checks one wish; rated tells whether a reference_cpu is set (cpu_min_pct needs one).
+func (w Want) Check(rated bool) error {
+	if w == (Want{Name: w.Name}) {
+		return errors.New("no criterion, it would match every server")
+	}
+	switch strings.ToLower(w.Disk) {
+	case "", "nvme", "ssd", "hdd":
+	default:
+		return fmt.Errorf("disk %q is not nvme, ssd or hdd", w.Disk)
+	}
+	if w.RAMMin > 0 && w.RAMMax > 0 && w.RAMMin > w.RAMMax {
+		return errors.New("ram_min_gb above ram_max_gb")
+	}
+	if w.CPUMinPct != nil && !rated {
+		return errors.New("cpu_min_pct needs reference_cpu")
+	}
+	if w.RAMMin < 0 || w.RAMMax < 0 || w.DiskMin < 0 || w.PriceMax < 0 {
+		return errors.New("negative limit")
 	}
 	return nil
 }

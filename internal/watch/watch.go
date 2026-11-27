@@ -3,6 +3,7 @@ package watch
 import (
 	"cmp"
 	"fmt"
+	"math"
 	"slices"
 	"strings"
 	"unicode/utf8"
@@ -21,6 +22,10 @@ type Variant struct {
 	OrderURL      string
 	// Stock is the availability value per watched datacenter the variant is listed in.
 	Stock map[string]string
+	// Speed is the CPU's multithread figure against the reference CPU in percent (-39 is 39 % slower); Rated is
+	// false without a reference or a PassMark figure.
+	Speed int
+	Rated bool
 }
 
 // InStock are the watched datacenters the variant can be ordered in, sorted.
@@ -66,8 +71,10 @@ func (v Variant) PriceText() string {
 }
 
 // Build joins stock and catalog into the variants listed in any of dcs, cheapest first, unpriced last. cat may be
-// nil (catalog not fetched yet): every variant is then unpriced and unnamed.
-func Build(av []ovh.Availability, cat *ovh.Catalog, dcs []string) []Variant {
+// nil (catalog not fetched yet): every variant is then unpriced and unnamed. ref is the reference CPU, "" for none.
+func Build(av []ovh.Availability, cat *ovh.Catalog, dcs []string, ref string) []Variant {
+	r, refOK := ovh.CPU(ref)
+	refOK = refOK && r.Mark > 0
 	var out []Variant
 	for _, a := range av {
 		stock := map[string]string{}
@@ -84,6 +91,9 @@ func Build(av []ovh.Availability, cat *ovh.Catalog, dcs []string) []Variant {
 		v.Name, v.CPU = cat.Name(a.PlanCode)
 		v.Rent, v.Setup, v.Priced = cat.Price(a)
 		v.OrderURL = cat.OrderURL(a.PlanCode, v.Name)
+		if c, ok := ovh.CPU(v.CPU); ok && refOK && c.Mark > 0 {
+			v.Speed, v.Rated = int(math.Round((float64(c.Mark)/float64(r.Mark)-1)*100)), true
+		}
 		out = append(out, v)
 	}
 	slices.SortFunc(out, func(a, b Variant) int {
@@ -98,17 +108,32 @@ func Build(av []ovh.Availability, cat *ovh.Catalog, dcs []string) []Variant {
 	return out
 }
 
-// Matches tells whether v meets w, stock aside.
-func (w Want) Matches(v Variant) bool {
+// miss is one criterion of a wish a variant fails. near: it fails narrowly, see nearPrice and friends.
+type miss struct {
+	near bool
+	text string
+}
+
+// The margins of "just above" a wish: a variant that misses one criterion by no more than this is tracked and
+// analysed like a wanted one (user: wanted + just above), never pushed.
+const (
+	nearPrice = 1.10 // rent up to 10 % over price_max_eur
+	nearDisk  = 0.90 // raw disk down to 90 % of disk_min_tb
+	// RAM: one size step, and sizes double (16, 32, 64 …).
+)
+
+// misses are the criteria of w that v fails, stock aside.
+func (w Want) misses(v Variant) []miss {
+	var out []miss
 	if w.RAMMin > 0 && v.RAM < w.RAMMin {
-		return false
+		out = append(out, miss{v.RAM > 0 && v.RAM*2 >= w.RAMMin, fmt.Sprintf("%d GB, wants ≥ %d", v.RAM, w.RAMMin)})
 	}
 	if w.RAMMax > 0 && (v.RAM == 0 || v.RAM > w.RAMMax) {
-		return false
+		out = append(out, miss{v.RAM > 0 && v.RAM <= w.RAMMax*2, fmt.Sprintf("%d GB, wants ≤ %d", v.RAM, w.RAMMax)})
 	}
 	kind := strings.ToLower(w.Disk)
 	if kind != "" && !slices.ContainsFunc(v.Disks, func(d ovh.Disk) bool { return d.Kind == kind }) {
-		return false
+		out = append(out, miss{false, "no " + strings.ToUpper(kind)})
 	}
 	if w.DiskMin > 0 {
 		var gb int
@@ -117,18 +142,56 @@ func (w Want) Matches(v Variant) bool {
 				gb += d.Count * d.SizeGB
 			}
 		}
-		if float64(gb) < w.DiskMin*1000 {
-			return false
+		if want := w.DiskMin * 1000; float64(gb) < want {
+			out = append(out, miss{float64(gb) >= want*nearDisk,
+				fmt.Sprintf("disk %.1f TB, wants ≥ %g", float64(gb)/1000, w.DiskMin)})
 		}
 	}
 	if w.CPU != "" && !strings.Contains(strings.ToLower(v.CPU), strings.ToLower(w.CPU)) {
-		return false
+		out = append(out, miss{false, "CPU"})
+	}
+	// Unrated (no reference, no PassMark figure) never matches, like an unknown price.
+	if w.CPUMinPct != nil && (!v.Rated || v.Speed < *w.CPUMinPct) {
+		out = append(out, miss{false, "CPU too slow"})
 	}
 	// A wish with a price limit never takes a variant whose price is unknown.
 	if w.PriceMax > 0 && (!v.Priced || v.Rent > w.PriceMax) {
-		return false
+		out = append(out, miss{v.Priced && v.Rent <= w.PriceMax*nearPrice,
+			fmt.Sprintf("+%.2f € over %g", v.Rent-w.PriceMax, w.PriceMax)})
 	}
-	return true
+	return out
+}
+
+// Matches tells whether v meets w, stock aside.
+func (w Want) Matches(v Variant) bool { return len(w.misses(v)) == 0 }
+
+// Near tells whether v is just above w: it fails exactly one criterion, narrowly. why says which ("+1.99 € over
+// 30"). A CPU or disk-kind mismatch is never near.
+func (w Want) Near(v Variant) (why string, ok bool) {
+	m := w.misses(v)
+	if len(m) != 1 || !m[0].near {
+		return "", false
+	}
+	return m[0].text, true
+}
+
+// NearMiss is the first wish v is just above, when no wish takes it.
+func (c Config) NearMiss(v Variant) (why string, ok bool) {
+	if c.Wanted(v) {
+		return "", false
+	}
+	for _, w := range c.Want {
+		if why, ok := w.Near(v); ok {
+			return why, true
+		}
+	}
+	return "", false
+}
+
+// InScope tells whether v is wanted or just above a wish: what the history keeps and the prediction looks at.
+func (c Config) InScope(v Variant) bool {
+	_, near := c.NearMiss(v)
+	return near || c.Wanted(v)
 }
 
 // Wanted tells whether any wish of c takes v.

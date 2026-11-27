@@ -1,6 +1,7 @@
 # AGENTS.md
 
-OVH dedicated server stock watcher. Go, stdlib + `trick77/toolkit/notify`. No JS, page is `html/template`.
+OVH dedicated server stock watcher. Go, stdlib + `trick77/toolkit` (notify, llmwire). No JS, page is
+`html/template`.
 
 ## OVH API facts (measured 2026-11)
 
@@ -34,9 +35,23 @@ OVH dedicated server stock watcher. Go, stdlib + `trick77/toolkit/notify`. No JS
   logs "out"; a span that starts unseen (first poll, gap, restart, turned wanted while in stock) logs no "in".
 - A pair that stops being wanted while in stock (price rise, config edit) keeps its span until it sells out, or
   the log would show a fake "out".
-- Spans only for wanted pairs (size), `Seen` for all. Prices stored only on change; a line chart was rejected
-  (user: prices change too rarely), the page shows the delta to the previous price instead.
+- Spans only for in-scope pairs (user): wanted or *just above* a wish (one rule missed narrowly: price ≤ +10 %, RAM
+  one step, disk ≤ 10 %; CPU/disk kind never). Kept 90 days (a weekly rhythm needs > 4 repeats). Prices stored only
+  on change; a line chart was rejected (user: they change too rarely), the page shows the delta instead.
 - Page style = ../trakk's Warm Editorial dark tokens + fonts, dark only (user choice).
+
+## LLM (internal/predict, why)
+
+- User's hard rule: no pattern → say so, never invent one. The model only proposes; code gates and judges:
+  - no call below ≥ 14 d observed, ≥ 4 arrivals, < 80 % of the time in stock (rare and always-there aren't sent);
+  - a slot must catch ≥ half the observed weeks/days, an interval sit within 20 % of the measured median gap with
+    regular gaps; evidence must cite real arrivals. Else "none".
+- Asked only on a change (user): a departure newer than the last call saw (failed calls too), ≤ 1 call/variant/6 h.
+  Next window and hit rate are rolled by code; a window polls didn't watch counts neither way.
+- GLM 5.3 flash in prod (z.ai). Evals run on MiMo flash only (user); never another model, never a paid run without
+  the user's explicit yes per run.
+- "Almost" (new, just above a wish) is arithmetic, no LLM: the model would only restate the numbers.
+- Digest figures are checked against the data; one unknown number → the plain list is sent instead.
 
 ## Push logic (why)
 

@@ -82,6 +82,7 @@ func dirs(t *testing.T, config string) (data, conf string) {
 		t.Fatal(err)
 	}
 	t.Setenv("BACKEND_DATA_DIR", data)
+	t.Setenv("BACKEND_LLM_MODEL", "") // no model in these tests, whatever the shell has
 	t.Setenv("BACKEND_CONF_DIR", conf)
 	return data, conf
 }
@@ -94,7 +95,7 @@ func TestServePushesOnce(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	done := make(chan error, 1)
-	go func() { done <- serve(ctx, "127.0.0.1:0", false) }()
+	go func() { done <- serve(ctx, "127.0.0.1:0", false, false) }()
 	select {
 	case <-h.got:
 	case <-time.After(10 * time.Second):
@@ -115,7 +116,7 @@ func TestServePushesOnce(t *testing.T) {
 
 	// A restart with the same stock pushes nothing.
 	ctx, cancel = context.WithCancel(context.Background())
-	go func() { done <- serve(ctx, "127.0.0.1:0", false) }()
+	go func() { done <- serve(ctx, "127.0.0.1:0", false, false) }()
 	select {
 	case <-h.got:
 		t.Error("pushed again after a restart")
@@ -128,18 +129,18 @@ func TestServePushesOnce(t *testing.T) {
 func TestServeNotifyTest(t *testing.T) {
 	h, url := newHook(t)
 	t.Setenv("BACKEND_NOTIFY_URLS", url)
-	if err := serve(context.Background(), "127.0.0.1:0", true); err != nil {
+	if err := serve(context.Background(), "127.0.0.1:0", true, false); err != nil {
 		t.Fatal(err)
 	}
 	if len(h.bodies) != 1 || !strings.Contains(h.bodies[0], "Test push") {
 		t.Errorf("bodies %q", h.bodies)
 	}
 	t.Setenv("BACKEND_NOTIFY_URLS", "")
-	if err := serve(context.Background(), "127.0.0.1:0", true); err == nil {
+	if err := serve(context.Background(), "127.0.0.1:0", true, false); err == nil {
 		t.Error("no channel accepted")
 	}
 	t.Setenv("BACKEND_NOTIFY_URLS", "nope://x")
-	if err := serve(context.Background(), "127.0.0.1:0", true); err == nil {
+	if err := serve(context.Background(), "127.0.0.1:0", true, false); err == nil {
 		t.Error("bad URL accepted")
 	}
 }
@@ -147,7 +148,7 @@ func TestServeNotifyTest(t *testing.T) {
 func TestServeRefusesBadConfig(t *testing.T) {
 	t.Setenv("BACKEND_NOTIFY_URLS", "")
 	dirs(t, `{"datacenters":["gra"],"want":[{"ram_max":64}]}`)
-	if err := serve(context.Background(), "127.0.0.1:0", false); err == nil {
+	if err := serve(context.Background(), "127.0.0.1:0", false, false); err == nil {
 		t.Error("bad config accepted")
 	}
 }
@@ -165,7 +166,7 @@ func TestPollFailureKeepsState(t *testing.T) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-	if err := serve(ctx, "127.0.0.1:0", false); err != nil {
+	if err := serve(ctx, "127.0.0.1:0", false, false); err != nil {
 		t.Fatal(err)
 	}
 	s, _ := watch.LoadState(filepath.Join(data, "state.json"))

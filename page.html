@@ -16,7 +16,7 @@
   --bg: #1f1f1e; --panel: #1b1b1a; --border: #323230; --border-soft: #2a2a28;
   --ink: #faf9f5; --ink-dim: #e4e1d8; --wordmark: #f4f0e8; --muted: #9c9a92; --faint: #6f6d66;
   --online: #5aa06a; --danger: #c14638; --danger-ink: #ec7e7e; --ochre: #d6a15a; --bad-1: #773b31;
-  --cell-empty: #262624; --axis: #6a685f; --s1: #3987e5;
+  --cell-empty: #262624; --axis: #6a685f; --s1: #3987e5; --s3: #9085e9;
   --sans: "Anthropic Sans", system-ui, "Segoe UI", sans-serif;
   --serif: "Anthropic Serif", Georgia, serif;
   --mono: "Anthropic Mono", ui-monospace, Menlo, monospace;
@@ -108,6 +108,21 @@ table.v .setup .pd { margin-right: 4px; }
 .hrow .dc, .axis .dc { font-family: var(--mono); font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hrow svg { width: 100%; height: 14px; display: block; border-radius: 3px; background: var(--cell-empty); }
 .h-out { fill: var(--bad-1); } .h-in { fill: var(--online); } .h-slow { fill: var(--ochre); }
+.h-future { fill: #1b1b1a; }
+.h-next { fill: rgba(144,133,233,.35); stroke: var(--s3); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.legend i.lp { background: rgba(144,133,233,.35); outline: 1px solid var(--s3); }
+.tile.pred { background: linear-gradient(180deg, rgba(144,133,233,.12), transparent 75%); box-shadow: inset 0 2px 0 var(--s3); }
+.pat { display: flex; flex-wrap: wrap; gap: 2px 14px; align-items: baseline; margin: 2px 0 8px; font-size: 13px; color: var(--ink-dim); }
+.pat .lbl { font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--s3); }
+.pat .next { color: var(--s3); font-weight: 500; }
+.pat .hits { color: var(--muted); font-size: 12.5px; }
+.pat.none { color: var(--muted); } .pat.none .lbl { color: var(--faint); }
+.near { font-size: 11px; color: var(--ochre); border: 1px dashed rgba(214,161,90,.5); border-radius: 99px; padding: 0 7px; margin-left: 8px; font-weight: 400; white-space: nowrap; }
+.hv h3 span.near { color: var(--ochre); font-size: 11px; }
+.new { font-size: 11px; color: var(--s1); border: 1px solid rgba(57,135,229,.5); border-radius: 99px; padding: 0 7px; margin-left: 8px; }
+.seg { display: inline-flex; gap: 2px; border: 1px solid var(--border); border-radius: 8px; padding: 2px; }
+.seg a, .seg b { padding: 1px 10px; border-radius: 6px; font-weight: 400; }
+.seg b { background: #2c2c2a; color: var(--ink); }
 .axis { display: grid; grid-template-columns: 110px 1fr; gap: 12px; margin-top: 4px; }
 .axis div:last-child { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--axis); }
 .quiet { margin-top: 16px; font-size: 13px; color: var(--muted); }
@@ -150,7 +165,7 @@ table.v .setup .pd { margin-right: 4px; }
     <span><i class="dot{{if .PollErr}} bad{{end}}"></i>polled <b title="{{abs .PolledAt}}">{{ago .PolledAt}}</b></span>
     <span>every {{.Interval}}</span>
     <span>catalog <b title="{{abs .CatalogAt}}">{{ago .CatalogAt}}</b></span>
-    <span>{{if .Channels}}push: {{range $i, $c := .Channels}}{{if $i}}, {{end}}{{$c}}{{end}}{{else}}<b class="err">no push channel</b>{{end}}</span>
+    <span>{{if .Channels}}notify: {{range $i, $c := .Channels}}{{if $i}}, {{end}}{{$c}}{{end}}{{else}}<b class="err">no notification channel</b>{{end}}</span>
   </div>
   <a class="gh" href="https://github.com/trick77/ovh-availability-check" title="Source on GitHub" aria-label="Source on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
 </header>
@@ -160,7 +175,7 @@ table.v .setup .pd { margin-right: 4px; }
 
 <div class="h2"><h2>Now</h2><p>{{range $i, $d := .Datacenters}}{{if $i}} · {{end}}{{$d}}{{end}}</p></div>
 <section class="panel tiles">
-{{range .Tiles}}  <div class="tile{{if .Highlight}} hl{{end}}"><div class="k">{{.Label}}</div><div class="v"{{if .Title}} title="{{.Title}}"{{end}}>{{.Value}}{{if .Unit}}<small>{{.Unit}}</small>{{end}}</div><div class="s{{if .SubClass}} {{.SubClass}}{{end}}">{{.Sub}}</div></div>
+{{range .Tiles}}  <div class="tile{{if .Highlight}} hl{{end}}{{if .Predicted}} pred{{end}}"><div class="k">{{.Label}}</div><div class="v"{{if .Title}} title="{{.Title}}"{{end}}>{{.Value}}{{if .Unit}}<small>{{.Unit}}</small>{{end}}</div><div class="s{{if .SubClass}} {{.SubClass}}{{end}}">{{.Sub}}{{range .Parts}}<span{{if .Class}} class="{{.Class}}"{{end}}{{if .Title}} title="{{.Title}}"{{end}}>{{.Text}}</span>{{end}}</div></div>
 {{end}}</section>
 
 <div class="h2"><h2>Wanted and in stock</h2><p>Ordered by price.{{if .Ref}} CPU speed against the reference CPU {{.RefCPU}} ({{.Ref.Cores}}C/{{.Ref.Threads}}T).{{end}}</p></div>
@@ -168,32 +183,52 @@ table.v .setup .pd { margin-right: 4px; }
 {{if .Wanted}}{{template "rows" (rowsOf .Wanted $)}}{{else}}<div class="empty">Nothing wanted is in stock right now.</div>{{end}}
 </section>
 
-<div class="h2"><h2>Wishes</h2><p>What config.json asks for.</p></div>
+<div class="h2"><h2>Wishes</h2><p>What config.json asks for, and what just misses it.</p></div>
 <section class="panel scroll">
 <table class="t">
-<tr><th>Wish</th><th>Rule</th><th class="num">Variants</th><th class="num">In stock</th><th>Last in stock</th></tr>
+<tr><th>Wish</th><th>Rule</th><th class="num">Variants</th><th class="num" title="Misses one rule narrowly: price ≤ +10 %, RAM one step, disk ≤ 10 % short. Tracked like wanted ones, never pushed.">Just above</th><th class="num">In stock</th><th>Last in stock</th></tr>
 {{range .Wants}}<tr>
   <td class="name">{{.Label}}</td><td class="rule sub">{{.Rule}}</td>
   <td class="num">{{if eq .All 0}}<span class="zero" title="No watched variant meets this wish, in stock or not">0</span>{{else}}{{.All}}{{end}}</td>
+  <td class="num">{{.Near}}</td>
   <td class="num">{{.InStock}}</td>
   <td{{if .Last.Class}} class="{{.Last.Class}}"{{end}}{{if .Last.Title}} title="{{.Last.Title}}"{{end}}>{{.Last.Text}}</td>
 </tr>
 {{end}}</table>
 </section>
 
-<div class="h2"><h2>History</h2><p>Last 30 days, wanted variants.</p></div>
+{{if .Almost}}
+<div class="h2"><h2>Almost</h2><p>New this week, just above a wish.</p></div>
+<section class="panel scroll">
+<table class="t">
+<tr><th>Server</th><th>CPU</th><th class="num">RAM</th><th>Disks</th><th class="num">€/mo</th><th>Misses</th><th>Listed</th></tr>
+{{range .Almost}}<tr>
+  <td><a class="name" href="{{.OrderURL}}" title="{{.FQN}}">{{or .Name .PlanCode}}</a><span class="new">new</span></td>
+  <td>{{.CPUName}}{{if .Cores}}<span class="ct">{{.Cores}}</span>{{end}}</td>
+  <td class="num">{{.RAM}} GB</td>
+  <td>{{range $i, $d := .Disks}}{{if $i}} + {{end}}{{$d}}{{end}}</td>
+  <td class="num">{{if .Priced}}{{printf "%.2f" .Rent}}{{else}}?{{end}}</td>
+  <td><span class="near">{{.Why}}</span></td>
+  <td class="sub" title="{{abs .Listed}}">{{ago .Listed}}</td>
+</tr>
+{{end}}</table>
+</section>
+{{end}}
+
+<div class="h2"><h2>History</h2><p>Last {{.Days}} days, wanted and just above. Patterns from 90 days.</p><span class="more seg">{{if eq .Days 30}}<b>30 days</b><a href="?days=7">7 days</a>{{else}}<a href="./">30 days</a><b>7 days</b>{{end}}</span></div>
 <section class="panel hist">
-  <div class="legend"><span><i style="background:var(--online)"></i>Orderable 1H</span><span><i style="background:var(--ochre)"></i>Orderable 72H</span><span><i style="background:var(--bad-1)"></i>Sold out</span><span><i style="background:var(--cell-empty);outline:1px solid var(--border)"></i>No data</span></div>
-{{range .History}}  <div class="hv"><h3>{{.Name}}<span>{{.Desc}}</span>{{if .Was.Text}}<span class="was">{{.Was.Text}}</span>{{end}}</h3>
-{{range .Rows}}    <div class="hrow"><span class="dc">{{.DC}}</span><svg viewBox="0 0 {{$.HistW}} 1" preserveAspectRatio="none" role="img" aria-label="{{.DC}} stock history">{{range .Rects}}<rect x="{{.X}}" y="0" width="{{.W}}" height="1" class="{{.Class}}">{{if .Title}}<title>{{.Title}}</title>{{end}}</rect>{{end}}</svg></div>
+  <div class="legend"><span><i style="background:var(--online)"></i>Orderable 1H</span><span><i style="background:var(--ochre)"></i>Orderable 72H</span><span><i style="background:var(--bad-1)"></i>Sold out</span><span><i style="background:var(--cell-empty);outline:1px solid var(--border)"></i>No data</span><span><i class="lp"></i>Predicted window</span></div>
+{{range .History}}  <div class="hv"><h3>{{.Name}}{{if .Near}}<span class="near">just above: {{.Near}}</span>{{end}}<span>{{.Desc}}</span>{{if .Was.Text}}<span class="was">{{.Was.Text}}</span>{{end}}</h3>
+{{if .Pattern.Text}}  <div class="pat{{if .Pattern.None}} none{{end}}" title="{{.Pattern.Title}}"><span class="lbl">Pattern</span><span>{{.Pattern.Text}}</span>{{if .Pattern.Next}}<span class="next">{{.Pattern.Next}}</span>{{end}}{{if .Pattern.Hits}}<span class="hits">{{.Pattern.Hits}}</span>{{end}}</div>
+{{end}}{{range .Rows}}    <div class="hrow"><span class="dc">{{.DC}}</span><svg viewBox="0 0 {{$.HistW}} 1" preserveAspectRatio="none" role="img" aria-label="{{.DC}} stock history"><rect x="{{$.HistNow}}" y="0" width="{{sub $.HistW $.HistNow}}" height="1" class="h-future"/>{{range .Rects}}<rect x="{{.X}}" y="0" width="{{.W}}" height="1" class="{{.Class}}">{{if .Title}}<title>{{.Title}}</title>{{end}}</rect>{{end}}</svg></div>
 {{end}}  </div>
-{{else}}  <div class="quiet">No wanted variant was in stock in the last 30 days{{if .Since}} (tracking since {{abs .Since}}){{end}}.</div>
+{{else}}  <div class="quiet">No wanted variant was in stock in the last {{.Days}} days{{if .Since}} (tracking since {{abs .Since}}){{end}}.</div>
 {{end}}{{if .History}}  <div class="axis"><div></div><div>{{range .Axis}}<span>{{.}}</span>{{end}}</div></div>{{end}}
-{{if and .History .Quiet}}  <div class="quiet">{{len .Quiet}} more wanted servers without stock in 30 days: {{range $i, $q := .Quiet}}{{if lt $i 12}}{{if $i}}, {{end}}{{$q}}{{end}}{{end}}{{if gt (len .Quiet) 12}} …{{end}}</div>{{end}}
+{{if and .History .Quiet}}  <div class="quiet">{{len .Quiet}} more servers without stock in {{.Days}} days: {{range $i, $q := .Quiet}}{{if lt $i 12}}{{if $i}}, {{end}}{{$q}}{{end}}{{end}}{{if gt (len .Quiet) 12}} …{{end}}</div>{{end}}
 </section>
 
 {{if .Changes}}
-<div class="h2"><h2>Stock changes</h2><p>Wanted variants, newest first.</p></div>
+<div class="h2"><h2>Stock changes</h2><p>Wanted and just above, newest first.</p></div>
 <section class="panel">
 <ul class="log">
 {{range .Changes}}  <li><span class="when" title="{{abs .At}}">{{ago .At}}</span><span class="ev {{.Kind}}">{{.Kind}}</span><span>{{.Text}}{{if .DC}} <span class="dcm">{{.DC}}</span>{{end}}{{if .Extra}} <span class="sub">{{.Extra}}</span>{{end}}</span></li>
@@ -214,7 +249,7 @@ table.v .setup .pd { margin-right: 4px; }
 {{end}}
 
 {{if .Pushes}}
-<div class="h2"><h2>Recent pushes</h2></div>
+<div class="h2"><h2>Notifications</h2></div>
 <section class="panel">
 {{range .Pushes}}  <div class="push"><div class="t"><b>{{.Title}}</b><span title="{{abs .At}}">{{ago .At}}</span>{{if .Err}}<span class="err">{{.Err}}</span>{{end}}</div><pre>{{.Body}}</pre></div>
 {{end}}</section>
