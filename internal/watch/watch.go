@@ -2,12 +2,7 @@ package watch
 
 import (
 	"cmp"
-	"encoding/json"
-	"errors"
 	"fmt"
-	"io/fs"
-	"os"
-	"path/filepath"
 	"slices"
 	"strings"
 
@@ -145,7 +140,7 @@ type Pair struct {
 	FQN, DC string
 }
 
-func (p Pair) key() string { return p.FQN + "@" + p.DC }
+func (p Pair) key() string { return Key(p.FQN, p.DC) }
 
 // Current are the pairs in stock that some wish takes.
 func Current(c Config, vs []Variant) map[string]Pair {
@@ -160,79 +155,6 @@ func Current(c Config, vs []Variant) map[string]Pair {
 		}
 	}
 	return out
-}
-
-// State is data/state.json: the pairs already pushed. It holds what was notified, not the last snapshot, so a wish
-// added later still fires for stock that is already there.
-type State struct {
-	Notified []string `json:"notified"`
-}
-
-// LoadState reads path; a missing file is an empty state.
-func LoadState(path string) (State, error) {
-	b, err := os.ReadFile(path) //nolint:gosec // G304: the operator's BACKEND_DATA_DIR
-	if errors.Is(err, fs.ErrNotExist) {
-		return State{}, nil
-	}
-	if err != nil {
-		return State{}, err
-	}
-	var s State
-	if err := json.Unmarshal(b, &s); err != nil {
-		return State{}, fmt.Errorf("%s: %w", path, err)
-	}
-	return s, nil
-}
-
-// Save writes s atomically: a crash mid-write must not leave a broken file that re-pushes everything.
-func (s State) Save(path string) error {
-	b, err := json.MarshalIndent(s, "", "  ")
-	if err != nil {
-		return err
-	}
-	tmp, err := os.CreateTemp(filepath.Dir(path), ".state-*")
-	if err != nil {
-		return err
-	}
-	defer func() { _ = os.Remove(tmp.Name()) }() // gone after the rename: only a failed write leaves it
-	if _, err := tmp.Write(b); err != nil {
-		_ = tmp.Close()
-		return err
-	}
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-	return os.Rename(tmp.Name(), path)
-}
-
-// New are the pairs of cur not pushed yet, sorted.
-func (s State) New(cur map[string]Pair) []Pair {
-	var out []Pair
-	for k, p := range cur {
-		if !slices.Contains(s.Notified, k) {
-			out = append(out, p)
-		}
-	}
-	slices.SortFunc(out, func(a, b Pair) int { return cmp.Compare(a.key(), b.key()) })
-	return out
-}
-
-// Next is the state after a poll: what was pushed and is still in stock, plus fresh when its push went out. A pair
-// out of stock drops out, so it fires again when it returns; sold out itself sends nothing.
-func (s State) Next(cur map[string]Pair, fresh []Pair, sent bool) State {
-	var out []string
-	for _, k := range s.Notified {
-		if _, ok := cur[k]; ok {
-			out = append(out, k)
-		}
-	}
-	if sent {
-		for _, p := range fresh {
-			out = append(out, p.key())
-		}
-	}
-	slices.Sort(out)
-	return State{Notified: slices.Compact(out)}
 }
 
 // maxLines caps a push: the first run after a wide wish can find dozens.

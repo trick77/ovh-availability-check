@@ -36,6 +36,7 @@ func TestLoadConfig(t *testing.T) {
 		"bad disk":      `{"datacenters":["gra"],"want":[{"disk":"floppy"}]}`,
 		"short poll":    `{"datacenters":["gra"],"interval":"10s","want":[{"ram_max_gb":64}]}`,
 		"ram min > max": `{"datacenters":["gra"],"want":[{"ram_min_gb":128,"ram_max_gb":64}]}`,
+		"unknown cpu":   `{"datacenters":["gra"],"want":[{"ram_max_gb":64}],"reference_cpu":"Pentium 4"}`,
 	} {
 		if _, err := LoadConfig(writeConfig(t, body)); err == nil {
 			t.Errorf("%s: accepted", name)

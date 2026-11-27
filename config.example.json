@@ -1,6 +1,7 @@
 {
   "datacenters": ["rbx", "sbg", "gra", "eu-west-par-a", "eu-west-par-b", "eu-west-par-c", "waw"],
   "interval": "2m",
+  "reference_cpu": "Intel Xeon E3-1230 v6",
   "want": [
     { "name": "small nvme", "ram_max_gb": 64, "disk": "nvme", "price_max_eur": 30 },
     { "name": "storage box", "disk": "hdd", "disk_min_tb": 8, "price_max_eur": 40 }

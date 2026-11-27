@@ -109,8 +109,8 @@ func TestServePushesOnce(t *testing.T) {
 		t.Errorf("body %q", h.bodies[0])
 	}
 	s, err := watch.LoadState(filepath.Join(data, "state.json"))
-	if err != nil || len(s.Notified) != 1 {
-		t.Fatalf("state %v %v", s, err)
+	if err != nil || len(s.Notified) != 1 || len(s.Pushes) != 1 || len(s.Spans) != 1 {
+		t.Fatalf("state %+v %v", s, err)
 	}
 
 	// A restart with the same stock pushes nothing.
