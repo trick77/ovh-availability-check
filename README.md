@@ -1,5 +1,7 @@
 # OVH restock
 
+*Completely over-engineered, but cool: an LLM predicts when your 15 € server will be back.*
+
 Get a push the minute an OVHcloud dedicated server you want comes back into stock.
 
 Kimsufi, So you Start, Rise and the bare-metal ranges sell out fast and restock without notice. OVH restock polls
