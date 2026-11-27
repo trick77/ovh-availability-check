@@ -58,6 +58,7 @@ OVH dedicated server stock watcher. Go, stdlib + `trick77/toolkit` (notify, llmw
 - State holds pushed (fqn, dc) pairs, not the last snapshot: a wish added later must fire for stock already there.
 - No decision before the first catalog: price/CPU wishes would fail, drop their pairs, and re-push once it loads.
 - Sold out sends nothing (user choice).
+- Start test push like ../trakk (user), channels without `!`. Per channel quiet 10 min (restart loop); failed never.
 
 ## Repo
 
