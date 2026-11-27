@@ -85,9 +85,10 @@ type pageData struct {
 	All         []row
 	AllCount    int
 	History     []histVariant
-	HistW       int // the history's x axis, in minutes
-	HistNow     int // where now is on it
-	Days        int // 30 or 7 (?days=7)
+	HistW       int    // the history's x axis, in minutes
+	HistNow     int    // where now is on it
+	HistNowPct  string // the same, as a CSS left offset
+	Days        int    // 30 or 7 (?days=, remembered in a cookie)
 	Quiet       []string
 	Almost      []almostRow
 	Axis        []string
@@ -139,6 +140,7 @@ type histVariant struct {
 	Was        cell
 	Pattern    patternLine
 	Rows       []histRow
+	NoForecast bool // no predicted window: the bar's future is hatched, without text (user)
 }
 
 type patternLine struct {
@@ -212,9 +214,7 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 		Days:     30,
 	}
 	w.mu.Unlock()
-	if r.URL.Query().Get("days") == "7" {
-		d.Days = 7
-	}
+	d.Days = histDays(rw, r)
 	preds := w.predict.All()
 	for _, dc := range d.Datacenters {
 		d.DCLabels = append(d.DCLabels, cell{Text: shortDC(dc), Title: dc})
@@ -264,6 +264,9 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 	window := time.Duration(d.Days) * 24 * time.Hour
 	d.History, d.Quiet, d.Axis, d.HistW = history(scope, w.cfg, preds, state, now, window)
 	d.HistNow = int(window / time.Minute)
+	if d.HistW > 0 {
+		d.HistNowPct = fmt.Sprintf("%.3f%%", float64(d.HistNow)*100/float64(d.HistW))
+	}
 	d.Almost = d.almost(scope, w.cfg, state, now)
 	d.Changes = changes(scope, vs, state, now)
 	d.Prices, d.MorePrices = priceChanges(vs, w.cfg, state, d.ShowAll)
@@ -277,6 +280,24 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 	if err := page.Execute(rw, &d); err != nil {
 		slog.Warn("page", "err", err)
 	}
+}
+
+// histDays is the history's range, 30 or 7 days: ?days= picks it and a cookie keeps it for the next visit.
+// No Path on the cookie: behind a proxy the page may sit under a sub-path, the browser defaults to the request's.
+func histDays(rw http.ResponseWriter, r *http.Request) int {
+	v := r.URL.Query().Get("days")
+	if v == "7" || v == "30" {
+		// Secure only over https (direct or via the proxy): a plain-http LAN visit would drop the cookie.
+		secure := r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https"
+		http.SetCookie(rw, &http.Cookie{Name: "days", Value: v, MaxAge: 365 * 24 * 3600, HttpOnly: true, //nolint:gosec // G124: Secure per request, set above
+			Secure: secure, SameSite: http.SameSiteLaxMode})
+	} else if c, err := r.Cookie("days"); err == nil {
+		v = c.Value
+	}
+	if v == "7" {
+		return 7
+	}
+	return 30
 }
 
 func (d *pageData) row(v watch.Variant, s watch.State, now time.Time) row {
@@ -427,6 +448,8 @@ func history(scope []watch.Variant, c watch.Config, preds map[string]predict.Pre
 					Title: "predicted " + abs(p.Next.From) + " – " + p.Next.To.Local().Format("15:04")})
 			}
 		}
+		// From the prediction, not the drawn window: a next window past the bar's end (7-day view) is still one.
+		h.NoForecast = !hasP || !p.Pattern
 		if ps := s.Prices[v.FQN]; len(ps) >= 2 && math.Abs(ps[len(ps)-1].Rent-ps[len(ps)-2].Rent) >= 0.005 {
 			h.Was = cell{Text: "was " + money(ps[len(ps)-2].Rent) + " until " + ps[len(ps)-1].At.Local().Format("02.01."),
 				Class: "was"}

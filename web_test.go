@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
@@ -97,6 +98,31 @@ func TestPage(t *testing.T) {
 	if seven := get("/?days=7"); !strings.Contains(seven, "Last 7 days") || !strings.Contains(seven, "<b>7 days</b>") {
 		t.Error("?days=7 not the 7-day view")
 	}
+	// The range sticks: ?days= sets a cookie, a plain visit reads it, ?days=30 switches back.
+	cookieGet := func(path, days string) (string, []*http.Cookie) {
+		req := httptest.NewRequest("GET", path, nil)
+		if days != "" {
+			req.AddCookie(&http.Cookie{Name: "days", Value: days})
+		}
+		rec := httptest.NewRecorder()
+		w.routes().ServeHTTP(rec, req)
+		return rec.Body.String(), rec.Result().Cookies()
+	}
+	if _, cs := cookieGet("/?days=7", ""); len(cs) != 1 || cs[0].Name != "days" || cs[0].Value != "7" {
+		t.Errorf("?days=7 sets cookies %v", cs)
+	}
+	if b, cs := cookieGet("/", "7"); !strings.Contains(b, "Last 7 days") || len(cs) != 0 {
+		t.Error("cookie days=7 not the 7-day view, or set again")
+	}
+	if b, cs := cookieGet("/?days=30", "7"); !strings.Contains(b, "Last 30 days") || len(cs) != 1 || cs[0].Value != "30" {
+		t.Error("?days=30 does not win over the cookie")
+	}
+	if b, _ := cookieGet("/", "x"); !strings.Contains(b, "Last 30 days") {
+		t.Error("a bad cookie is not the 30-day view")
+	}
+	if !strings.Contains(body, `class="nofc"`) {
+		t.Error("no pattern, yet the future is not hatched")
+	}
 
 	// A known pattern: the line under the name, the next window in the bar and the tile.
 	dir := t.TempDir()
@@ -115,6 +141,28 @@ func TestPage(t *testing.T) {
 		if !strings.Contains(body, want) {
 			t.Errorf("prediction: / lacks %q", want)
 		}
+	}
+	// The pattern's history block: from its pattern line to the next block. No hatch, also in the 7-day view
+	// where the next window lies past the bar's end.
+	ks2Block := func(body string) string {
+		_, b, _ := strings.Cut(body, `<span class="lbl">Pattern</span><span>back Tue and Thu around 06:00`)
+		b, _, _ = strings.Cut(b, `<div class="hv">`)
+		return b
+	}
+	if b := ks2Block(body); !strings.Contains(b, `class="hrow"`) || strings.Contains(b, `class="nofc"`) {
+		t.Error("a variant with a predicted window is hatched")
+	}
+	next = predict.Window{From: now.Add(72 * time.Hour), To: now.Add(73 * time.Hour)}
+	b, _ = json.Marshal(map[string]predict.Prediction{ks2.FQN: {Pattern: true, Kind: predict.Weekly,
+		Summary: "back Tue and Thu around 06:00", Next: next, Hits: 2, Tries: 3, Asked: now, Model: "m"}})
+	if err := os.WriteFile(filepath.Join(dir, "p.json"), b, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if w.predict, err = predict.New(predict.Options{Path: filepath.Join(dir, "p.json")}); err != nil {
+		t.Fatal(err)
+	}
+	if b := ks2Block(get("/?days=7")); !strings.Contains(b, `class="hrow"`) || strings.Contains(b, `class="nofc"`) {
+		t.Error("7 days: a pattern whose next window is past the bar is hatched")
 	}
 	w.predict = nil
 
