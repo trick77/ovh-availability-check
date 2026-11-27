@@ -170,6 +170,9 @@ func TestPage(t *testing.T) {
 	if !strings.Contains(all, "KS-GONE") || !strings.Contains(all, `class="out"`) {
 		t.Error("?all=1 lacks the sold-out variant")
 	}
+	if !strings.Contains(all, `href="?days=7&all=1"`) {
+		t.Error("?all=1: the range link drops all=1")
+	}
 	if !strings.Contains(all, `title="unavailable">✕</span>`) {
 		t.Error("?all=1 lacks the unavailable mark")
 	}
