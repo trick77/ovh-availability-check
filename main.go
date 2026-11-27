@@ -5,6 +5,8 @@ package main
 import (
 	"cmp"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -176,6 +178,10 @@ func serve(ctx context.Context, addr string, notifyTest, digestNow bool) error {
 	w := &watcher{cfg: cfg, client: client, channels: channels, off: off, state: state, statePath: statePath, predict: svc,
 		digestNow: digestNow}
 	var wg sync.WaitGroup
+	if channels != nil {
+		// Beside the poll: a channel that hangs holds no restock push back.
+		wg.Go(func() { hello(ctx, urls, dataDir, time.Now()) })
+	}
 	if svc.Configured() {
 		wg.Go(func() { svc.Run(ctx) })
 	}
@@ -324,6 +330,72 @@ func notifyURLs(s string) (on, off []string, err error) {
 		on = append(on, u)
 	}
 	return on, off, nil
+}
+
+// helloQuiet: a channel that took a start's test push this recently gets none from the next start (a restart loop,
+// an update right after a deploy). A failed one never quiets the next start: that start is the one checking the fix.
+const helloQuiet = 10 * time.Minute
+
+// helloMark in the data dir: when each channel last took a start's test push, by a hash of its URL (the URL holds
+// secrets). A channel added or changed since has no entry and is tested at once.
+const helloMark = "hello.json"
+
+func urlKey(u string) string {
+	h := sha256.Sum256([]byte(u))
+	return hex.EncodeToString(h[:8])
+}
+
+// hello sends the start's test push to the channels not switched off with "!" (urls) that took none within
+// helloQuiet: a dead channel shows now, not at the first restock. Not kept in the push list: the page shows
+// restocks. A shutdown cuts the send; what was cut counts as not taken.
+func hello(ctx context.Context, urls []string, dataDir string, now time.Time) {
+	path := filepath.Join(dataDir, helloMark)
+	took := map[string]time.Time{}
+	if b, err := os.ReadFile(path); err == nil { //nolint:gosec // G304: the operator's BACKEND_DATA_DIR
+		if err := json.Unmarshal(b, &took); err != nil {
+			slog.Warn("start's test push: mark unreadable, every channel is tested", "err", err)
+			took = map[string]time.Time{}
+		}
+	}
+	var due, labels []string
+	for i, u := range urls {
+		label := fmt.Sprintf("channel %d (%s)", i+1, notify.Scheme(u))
+		if since := now.Sub(took[urlKey(u)]); since >= 0 && since < helloQuiet {
+			slog.Info("start's test push skipped: the channel took one recently", "channel", label, "ago", since.Round(time.Second))
+			continue
+		}
+		due, labels = append(due, u), append(labels, label)
+	}
+	// Entries of channels no longer configured go.
+	keep := map[string]time.Time{}
+	for _, u := range urls {
+		if t, ok := took[urlKey(u)]; ok {
+			keep[urlKey(u)] = t
+		}
+	}
+	if len(due) == 0 {
+		return
+	}
+	channels, err := notify.NewChannels(due)
+	if err != nil { // serve parsed every URL already
+		slog.Warn("start's test push", "err", err)
+		return
+	}
+	ds, _ := channels.DeliverMessage(ctx, notify.Message{Title: "OVH restock test push",
+		Body: "OVH restock " + version.String() + " started. Test push, sent at every start: this channel works.", Severity: notify.Low})
+	for i, d := range ds {
+		if d.Err != nil {
+			slog.Warn("start's test push not delivered", "channel", labels[i], "err", d.Err) // scrubbed by notify
+			delete(keep, urlKey(due[i]))
+			continue
+		}
+		keep[urlKey(due[i])] = now
+		slog.Info("start's test push sent", "channel", labels[i])
+	}
+	b, _ := json.Marshal(keep)
+	if err := os.WriteFile(path, b, 0o600); err != nil { //nolint:gosec // G703: the operator's BACKEND_DATA_DIR
+		slog.Warn("start's test push: mark not written", "err", err)
+	}
 }
 
 func latest(a, b time.Time) time.Time {

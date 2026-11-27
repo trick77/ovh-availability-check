@@ -18,7 +18,7 @@ The screenshot shows live stock with a sample history.
   your datacenters is checked, prices include the RAM and disk options and the mandatory add-ons.
 - **Pushed once.** A server is pushed when it comes into stock, not again while it stays; when it sells out and
   returns, it is pushed again. SMTP, ntfy, Pushover, Telegram and more (shoutrrr URLs); a leading `!` switches one
-  off.
+  off. Every start sends a test push to the channels that are on, except one that took one in the last 10 minutes.
 - **How fast is it.** Cores, threads and the multi- and single-thread speed against a CPU of your choice, from
   PassMark figures. `cpu_min_pct` keeps out what is too slow.
 - **History.** 30 or 7 days per server and datacenter, stock changes, price changes, and the servers just above a

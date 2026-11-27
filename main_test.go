@@ -75,6 +75,27 @@ func newHook(t *testing.T) (*hook, string) {
 	return h, "generic+" + srv.URL + "/hook"
 }
 
+// waitFor waits for a body holding s and returns it; the start's test push and the restock push come in either order.
+func (h *hook) waitFor(t *testing.T, s string) string {
+	t.Helper()
+	deadline := time.After(10 * time.Second)
+	for {
+		h.mu.Lock()
+		for _, b := range h.bodies {
+			if strings.Contains(b, s) {
+				h.mu.Unlock()
+				return b
+			}
+		}
+		h.mu.Unlock()
+		select {
+		case <-h.got:
+		case <-deadline:
+			t.Fatalf("no push holding %q", s)
+		}
+	}
+}
+
 func dirs(t *testing.T, config string) (data, conf string) {
 	t.Helper()
 	data, conf = t.TempDir(), t.TempDir()
@@ -96,34 +117,33 @@ func TestServePushesOnce(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	done := make(chan error, 1)
 	go func() { done <- serve(ctx, "127.0.0.1:0", false, false) }()
-	select {
-	case <-h.got:
-	case <-time.After(10 * time.Second):
-		t.Fatal("no push")
-	}
+	body := h.waitFor(t, "KS-2")
+	h.waitFor(t, "Test push, sent at every start")
 	cancel()
 	if err := <-done; err != nil {
 		t.Fatalf("serve: %v", err)
 	}
-	if !strings.Contains(h.bodies[0], "KS-2 · Intel Xeon-D 1540 · 32 GB · 2×450GB NVME · 18.99 €/mo") ||
-		!strings.HasSuffix(h.bodies[0], "· gra\nhttps://eco.ovhcloud.com/fr/kimsufi/ks-2/") {
-		t.Errorf("body %q", h.bodies[0])
+	if len(h.bodies) != 2 {
+		t.Errorf("bodies %q", h.bodies)
+	}
+	if !strings.Contains(body, "KS-2 · Intel Xeon-D 1540 · 32 GB · 2×450GB NVME · 18.99 €/mo") ||
+		!strings.HasSuffix(body, "· gra\nhttps://eco.ovhcloud.com/fr/kimsufi/ks-2/") {
+		t.Errorf("body %q", body)
 	}
 	s, err := watch.LoadState(filepath.Join(data, "state.json"))
 	if err != nil || len(s.Notified) != 1 || len(s.Pushes) != 1 || len(s.Spans) != 1 {
 		t.Fatalf("state %+v %v", s, err)
 	}
 
-	// A restart with the same stock pushes nothing.
+	// A restart with the same stock pushes nothing, and minutes after the last test push it sends none either.
 	ctx, cancel = context.WithCancel(context.Background())
 	go func() { done <- serve(ctx, "127.0.0.1:0", false, false) }()
-	select {
-	case <-h.got:
-		t.Error("pushed again after a restart")
-	case <-time.After(time.Second):
-	}
+	time.Sleep(time.Second)
 	cancel()
 	<-done
+	if len(h.bodies) != 2 {
+		t.Errorf("pushed again after a restart: %q", h.bodies[2:])
+	}
 }
 
 func TestServeNotifyTest(t *testing.T) {
@@ -166,6 +186,50 @@ func TestNotifyURLsOff(t *testing.T) {
 	}
 	if len(h.bodies) != 0 {
 		t.Error("switched-off channel got a push")
+	}
+}
+
+func TestHello(t *testing.T) {
+	h, url := newHook(t)
+	off, offURL := newHook(t)
+	dead := "generic+http://127.0.0.1:1/hook"
+	on, _, err := notifyURLs(url + " " + dead + " !" + offURL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	data := t.TempDir()
+	now := time.Now()
+	hello(t.Context(), on, data, now)
+	if len(h.bodies) != 1 || !strings.Contains(h.bodies[0], "sent at every start") || len(off.bodies) != 0 {
+		t.Fatalf("bodies %q, switched off %q", h.bodies, off.bodies)
+	}
+	b, err := os.ReadFile(filepath.Join(data, helloMark))
+	if err != nil || strings.Contains(string(b), "127.0.0.1") {
+		t.Fatalf("mark %s %v", b, err)
+	}
+	var took map[string]time.Time
+	if err := json.Unmarshal(b, &took); err != nil || len(took) != 1 || took[urlKey(url)].IsZero() {
+		t.Errorf("mark %v %v: only the channel that took it", took, err)
+	}
+
+	// Within helloQuiet the working channel is quiet; a channel added since is tested.
+	h2, url2 := newHook(t)
+	hello(t.Context(), append(on, url2), data, now.Add(helloQuiet-time.Second))
+	if len(h.bodies) != 1 || len(h2.bodies) != 1 {
+		t.Errorf("within helloQuiet: %d, new channel %d", len(h.bodies), len(h2.bodies))
+	}
+	hello(t.Context(), on, data, now.Add(helloQuiet))
+	if len(h.bodies) != 2 {
+		t.Error("no test push after helloQuiet")
+	}
+
+	// A shutdown cuts the send: nothing counts as taken.
+	ctx, cancel := context.WithCancel(t.Context())
+	cancel()
+	fresh := t.TempDir()
+	hello(ctx, []string{url}, fresh, now)
+	if b, _ := os.ReadFile(filepath.Join(fresh, helloMark)); strings.Contains(string(b), urlKey(url)) {
+		t.Errorf("cut send marked as taken: %s", b)
 	}
 }
 
