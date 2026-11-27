@@ -5,12 +5,15 @@ package main
 import (
 	"cmp"
 	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -18,9 +21,11 @@ import (
 	"github.com/trick77/ship/kit/httpx"
 	"github.com/trick77/ship/kit/run"
 	"github.com/trick77/ship/kit/version"
+	"github.com/trick77/toolkit/llmwire"
 	"github.com/trick77/toolkit/notify"
 
 	"github.com/trick77/ovh-availability-check/internal/ovh"
+	"github.com/trick77/ovh-availability-check/internal/predict"
 	"github.com/trick77/ovh-availability-check/internal/watch"
 
 	// The page's times are in TZ; distroless has no zoneinfo.
@@ -33,13 +38,20 @@ const catalogAge = 6 * time.Hour
 func main() {
 	notifyTest := flag.Bool("notify-test", false, "send a test push to every BACKEND_NOTIFY_URLS channel and exit")
 	healthcheck := flag.Bool("healthcheck", false, "probe the running server's /healthz and exit (container healthcheck)")
+	wish := flag.String("wish", "", "turn a wish in plain words into a want block for config.json (needs BACKEND_LLM_MODEL) and exit")
+	digestNow := flag.Bool("digest-now", false, "send the weekly digest on the first poll instead of Sunday 18:00")
 	flag.Parse()
 	addr := cmp.Or(os.Getenv("BACKEND_ADDR"), ":8080")
 	if *healthcheck {
 		os.Exit(httpx.Healthcheck(httpx.LocalURL(addr, "/healthz")))
 	}
 	ctx, stop := run.Context(context.Background())
-	err := serve(ctx, addr, *notifyTest)
+	var err error
+	if *wish != "" {
+		err = wishCmd(ctx, *wish)
+	} else {
+		err = serve(ctx, addr, *notifyTest, *digestNow)
+	}
 	stop()
 	if err != nil {
 		slog.Error("exit", "err", err)
@@ -50,7 +62,64 @@ func main() {
 // apiBase is the OVH API; the tests point it at a fake.
 var apiBase = ovh.API
 
-func serve(ctx context.Context, addr string, notifyTest bool) error {
+// llmFromEnv is the optional model: BACKEND_LLM_MODEL plus llmwire's LLMWIRE_<PROVIDER>_API_KEY. llmCfg is what
+// the tests swap for a fake.
+var llmCfg = llmwire.Config{}
+
+func llmFromEnv(dataDir string) (*predict.Service, error) {
+	model := os.Getenv("BACKEND_LLM_MODEL")
+	client, err := predict.FromEnv(model, llmCfg)
+	if err != nil {
+		return nil, fmt.Errorf("BACKEND_LLM_MODEL %s: %w", model, err)
+	}
+	daily := 100
+	if s := os.Getenv("BACKEND_LLM_DAILY_CALLS"); s != "" {
+		if daily, err = strconv.Atoi(s); err != nil || daily < 0 {
+			return nil, fmt.Errorf("BACKEND_LLM_DAILY_CALLS %q", s)
+		}
+	}
+	if client == nil {
+		slog.Info("no LLM: predictions, digest and -wish are off", "model", model)
+	}
+	path := ""
+	if dataDir != "" {
+		path = filepath.Join(dataDir, "predictions.json")
+	}
+	return predict.New(predict.Options{Client: client, Model: model, DailyCalls: daily, Path: path, Loc: time.Local})
+}
+
+// wishCmd prints the want block for a wish in plain words.
+func wishCmd(ctx context.Context, text string) error {
+	confDir := cmp.Or(os.Getenv("BACKEND_CONF_DIR"), "conf")
+	ref := ""
+	// The reference CPU, for cpu_min_pct. No config is fine; a broken one is named, not silently dropped.
+	cfg, err := watch.LoadConfig(filepath.Join(confDir, "config.json"))
+	switch {
+	case err == nil:
+		ref = cfg.ReferenceCPU
+	case !errors.Is(err, fs.ErrNotExist):
+		return err
+	}
+	svc, err := llmFromEnv("") // no predictions file: -wish keeps nothing
+	if err != nil {
+		return err
+	}
+	if !svc.Configured() {
+		return errors.New("-wish needs BACKEND_LLM_MODEL and its LLMWIRE_<PROVIDER>_API_KEY")
+	}
+	want, unclear, err := svc.Wish(ctx, text, ref)
+	if err != nil {
+		return err
+	}
+	b, _ := json.MarshalIndent(want, "", "  ")
+	fmt.Println(string(b))
+	for _, u := range unclear {
+		fmt.Fprintln(os.Stderr, "not a criterion here:", u)
+	}
+	return nil
+}
+
+func serve(ctx context.Context, addr string, notifyTest, digestNow bool) error {
 	dataDir := cmp.Or(os.Getenv("BACKEND_DATA_DIR"), "data")
 	confDir := cmp.Or(os.Getenv("BACKEND_CONF_DIR"), "conf")
 
@@ -88,13 +157,22 @@ func serve(ctx context.Context, addr string, notifyTest bool) error {
 		slog.Warn("BACKEND_NOTIFY_URLS is empty: nothing is pushed, and nothing counts as pushed")
 	}
 
+	svc, err := llmFromEnv(dataDir)
+	if err != nil {
+		return err
+	}
+
 	ctx, stop := context.WithCancel(ctx)
 	defer stop()
 
 	client := ovh.NewClient()
 	client.Base = apiBase
-	w := &watcher{cfg: cfg, client: client, channels: channels, state: state, statePath: statePath}
+	w := &watcher{cfg: cfg, client: client, channels: channels, state: state, statePath: statePath, predict: svc,
+		digestNow: digestNow}
 	var wg sync.WaitGroup
+	if svc.Configured() {
+		wg.Go(func() { svc.Run(ctx) })
+	}
 	wg.Go(func() {
 		for {
 			w.poll(ctx)
@@ -120,6 +198,8 @@ type watcher struct {
 	catalog     *ovh.Catalog
 	catalogAt   time.Time
 	pricesDirty bool // prices.json lags the state
+	predict     *predict.Service
+	digestNow   bool // -digest-now: send the digest on the first poll with a catalog
 
 	mu       sync.Mutex
 	state    watch.State
@@ -151,7 +231,7 @@ func (w *watcher) poll(ctx context.Context) {
 		w.mu.Unlock()
 		return
 	}
-	vs := watch.Build(av, w.catalog, w.cfg.Datacenters)
+	vs := watch.Build(av, w.catalog, w.cfg.Datacenters, w.cfg.ReferenceCPU)
 
 	w.mu.Lock()
 	w.variants, w.polledAt, w.pollErr = vs, time.Now(), ""
@@ -164,7 +244,8 @@ func (w *watcher) poll(ctx context.Context) {
 		return
 	}
 	now := time.Now()
-	state = state.Observe(vs, w.cfg.Wanted, now, time.Duration(w.cfg.Interval))
+	// In scope: wanted or just above a wish. Their history is what the page draws and the prediction reads.
+	state = state.Observe(vs, w.cfg.InScope, now, time.Duration(w.cfg.Interval))
 	state, moved := state.ObservePrices(vs, now)
 	// A failed write is retried every poll: the next change may be months away.
 	if moved || w.pricesDirty {
@@ -180,28 +261,26 @@ func (w *watcher) poll(ctx context.Context) {
 	sent := false
 	if len(fresh) > 0 && w.channels != nil {
 		title, body := watch.Message(vs, fresh)
-		p := watch.Push{At: now, Title: title, Body: body}
-		err := w.channels.SendMessage(notify.Message{Title: title, Body: body, Severity: notify.High})
-		var se *notify.SendError
-		// Partial: another channel took it. Sending again would repeat it there.
-		sent = err == nil || (errors.As(err, &se) && se.Partial)
-		if err != nil {
-			// The page has no login: it names the failed channels only. The error text may quote the URL (an ntfy
-			// topic is its secret); it goes to the log.
-			p.Err = "failed"
-			if se != nil && len(se.Failed) > 0 {
-				p.Err = "failed on " + strings.Join(se.Failed, ", ")
-				if se.Partial {
-					p.Err = "partly " + p.Err
-				}
-			}
-			slog.Warn("push", "err", err)
-		} else {
-			slog.Info("pushed", "title", title)
-		}
-		state = state.AddPush(p)
+		state, sent = w.send(state, now, title, body, notify.High)
 	}
 	next := state.Next(cur, fresh, sent)
+	// The weekly digest, Sunday 18:00. The state is saved first, this poll's pushed pairs and the digest marked
+	// sent: a crash while the model words it loses this week's digest rather than sending a stock push or the
+	// digest twice. Worded in the poll: one call a week, up to 2 minutes, within the gap slack.
+	if w.predict.Configured() && w.channels != nil &&
+		(w.digestNow || predict.DigestDue(now, latest(next.DigestAt, next.Since), time.Local)) {
+		w.digestNow = false
+		next.DigestAt = now
+		if err := next.Save(w.statePath); err != nil {
+			slog.Error("state", "err", err)
+		}
+		if d := predict.BuildDigest(next, vs, w.cfg, w.predict.All(), now, time.Local); !d.Empty() {
+			dctx, cancel := context.WithTimeout(ctx, 2*time.Minute)
+			title, body := w.predict.Words(dctx, d)
+			cancel()
+			next, _ = w.send(next, now, title, body, notify.Normal)
+		}
+	}
 	// Kept in memory even when the save fails: the page still shows the push, and it isn't sent again before a
 	// restart.
 	w.mu.Lock()
@@ -211,5 +290,44 @@ func (w *watcher) poll(ctx context.Context) {
 		slog.Error("state", "err", err)
 		return
 	}
+	// Predictions: windows rolled forward, and the model asked about variants whose stock changed.
+	var scope []string
+	for _, v := range vs {
+		if w.cfg.InScope(v) {
+			scope = append(scope, v.FQN)
+		}
+	}
+	w.predict.Update(next, scope, now)
 	slog.Info("polled", "variants", len(vs), "wanted_in_stock", len(cur), "new", len(fresh))
+}
+
+func latest(a, b time.Time) time.Time {
+	if a.After(b) {
+		return a
+	}
+	return b
+}
+
+// send pushes one message and keeps it in the state's list; sent is false only when no channel took it.
+func (w *watcher) send(state watch.State, now time.Time, title, body string, sev notify.Severity) (watch.State, bool) {
+	p := watch.Push{At: now, Title: title, Body: body}
+	err := w.channels.SendMessage(notify.Message{Title: title, Body: body, Severity: sev})
+	var se *notify.SendError
+	// Partial: another channel took it. Sending again would repeat it there.
+	sent := err == nil || (errors.As(err, &se) && se.Partial)
+	if err != nil {
+		// The page has no login: it names the failed channels only. The error text may quote the URL (an ntfy
+		// topic is its secret); it goes to the log.
+		p.Err = "failed"
+		if se != nil && len(se.Failed) > 0 {
+			p.Err = "failed on " + strings.Join(se.Failed, ", ")
+			if se.Partial {
+				p.Err = "partly " + p.Err
+			}
+		}
+		slog.Warn("push", "err", err)
+	} else {
+		slog.Info("pushed", "title", title)
+	}
+	return state.AddPush(p), sent
 }

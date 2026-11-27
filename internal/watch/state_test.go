@@ -108,7 +108,7 @@ func TestObserveOnlyWantedSpans(t *testing.T) {
 func TestObservePrune(t *testing.T) {
 	s := State{}.Observe(stocked("1H-low"), all, at(0), every)
 	s = s.Observe(stocked("unavailable"), all, at(1), every)
-	later := t0.Add(Window + time.Hour)
+	later := t0.Add(Keep + time.Hour)
 	s = s.Observe(stocked("unavailable"), all, later, every)
 	if len(s.Spans) != 0 || len(s.Polled) != 1 {
 		t.Errorf("history not cut: %v %v", s.Spans, s.Polled)

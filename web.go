@@ -19,6 +19,7 @@ import (
 	"github.com/trick77/ship/kit/httpx"
 
 	"github.com/trick77/ovh-availability-check/internal/ovh"
+	"github.com/trick77/ovh-availability-check/internal/predict"
 	"github.com/trick77/ovh-availability-check/internal/watch"
 )
 
@@ -47,6 +48,7 @@ var fontFiles, fontVersion = func() (map[string][]byte, string) {
 var page = template.Must(template.New("page").Funcs(template.FuncMap{
 	"ago":    ago,
 	"abs":    abs,
+	"sub":    func(a, b int) int { return a - b },
 	"rowsOf": func(rs []row, p *pageData) rowsArg { return rowsArg{Rows: rs, Page: p} },
 }).Parse(pageHTML))
 
@@ -83,7 +85,10 @@ type pageData struct {
 	AllCount    int
 	History     []histVariant
 	HistW       int // the history's x axis, in minutes
+	HistNow     int // where now is on it
+	Days        int // 30 or 7 (?days=7)
 	Quiet       []string
+	Almost      []almostRow
 	Axis        []string
 	Changes     []changeRow
 	Prices      []priceRow
@@ -98,7 +103,8 @@ type cell struct {
 
 type tile struct {
 	Label, Value, Unit, Sub, SubClass, Title string
-	Highlight                                bool
+	Parts                                    []cell // after Sub, each in its own colour
+	Highlight, Predicted                     bool
 }
 
 // wantRow is one wish: how many watched variants it takes at all, and how many are in stock. Zero at all is the
@@ -107,6 +113,7 @@ type wantRow struct {
 	Label   string
 	Rule    string
 	All     int
+	Near    int // just above it
 	InStock int
 	Last    cell
 }
@@ -127,8 +134,22 @@ type row struct {
 
 type histVariant struct {
 	Name, Desc string
+	Near       string // the rule it misses, when just above a wish
 	Was        cell
+	Pattern    patternLine
 	Rows       []histRow
+}
+
+type patternLine struct {
+	None                    bool
+	Text, Next, Hits, Title string
+}
+
+// almostRow is a server new this week that is just above a wish.
+type almostRow struct {
+	row
+	Why    string
+	Listed time.Time
 }
 
 type histRow struct {
@@ -187,9 +208,13 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 		ShowAll:     r.URL.Query().Get("all") == "1",
 		Datacenters: w.cfg.Datacenters, Channels: w.channels.Labels(),
 		AllCount: len(vs),
-		HistW:    int(watch.Window / time.Minute),
+		Days:     30,
 	}
 	w.mu.Unlock()
+	if r.URL.Query().Get("days") == "7" {
+		d.Days = 7
+	}
+	preds := w.predict.All()
 	for _, dc := range d.Datacenters {
 		d.DCLabels = append(d.DCLabels, cell{Text: shortDC(dc), Title: dc})
 	}
@@ -199,10 +224,13 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 		d.Ref, d.RefCPU = &c, shortCPU(w.cfg.ReferenceCPU)
 	}
 
-	var wanted []watch.Variant
+	var wanted, scope []watch.Variant
 	for _, v := range vs {
 		if w.cfg.Wanted(v) {
 			wanted = append(wanted, v)
+		}
+		if w.cfg.InScope(v) {
+			scope = append(scope, v)
 		}
 	}
 	for _, v := range wanted {
@@ -225,15 +253,20 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 				if len(v.InStock()) > 0 {
 					wr.InStock++
 				}
+			} else if _, near := want.Near(v); near {
+				wr.Near++
 			}
 		}
 		wr.Last = lastCell(matched, state, now)
 		d.Wants = append(d.Wants, wr)
 	}
-	d.History, d.Quiet, d.Axis = history(wanted, state, now)
-	d.Changes = changes(wanted, vs, state, now)
+	window := time.Duration(d.Days) * 24 * time.Hour
+	d.History, d.Quiet, d.Axis, d.HistW = history(scope, w.cfg, preds, state, now, window)
+	d.HistNow = int(window / time.Minute)
+	d.Almost = d.almost(scope, w.cfg, state, now)
+	d.Changes = changes(scope, vs, state, now)
 	d.Prices, d.MorePrices = priceChanges(vs, w.cfg, state, d.ShowAll)
-	d.Tiles = tiles(d, wanted, state, now)
+	d.Tiles = tiles(d, wanted, scope, preds, state, now)
 
 	d.Title = "OVH stock monitor"
 	if n := len(d.Wanted); n > 0 {
@@ -363,22 +396,36 @@ func dcCell(a string) cell {
 	return cell{Text: a, Class: "pill"}
 }
 
-// history is a block per wanted variant with stock in the window, a bar per DC it is listed in.
-func history(wanted []watch.Variant, s watch.State, now time.Time) (hv []histVariant, quiet, axis []string) {
-	start := now.Add(-watch.Window)
+// history is a block per in-scope variant (wanted or just above a wish) with stock in the window or a known
+// pattern, a bar per DC it is listed in; the bar runs a quarter of the window past now, for predicted windows.
+func history(scope []watch.Variant, c watch.Config, preds map[string]predict.Prediction, s watch.State,
+	now time.Time, window time.Duration) (hv []histVariant, quiet, axis []string, width int) {
+	start := now.Add(-window)
+	end := now.Add(window / 4)
 	mins := func(t time.Time) int { return int(t.Sub(start) / time.Minute) }
-	total := mins(now)
+	total, past := mins(end), mins(now)
 	minW := total / 1200 // about a pixel on a wide screen: a single poll must show
 	clip := func(from, to time.Time, class, title string) (rect, bool) {
-		x0, x1 := max(mins(from), 0), min(mins(to), total)
-		if x1 < 0 || x0 > total {
+		x0, x1 := max(mins(from), 0), min(mins(to), past)
+		if x1 < 0 || x0 > past {
 			return rect{}, false
 		}
 		return rect{X: x0, W: max(x1-x0, minW), Class: class, Title: title}, true
 	}
 	var active, idle []histVariant
-	for _, v := range wanted {
+	for _, v := range scope {
 		h := histVariant{Name: cmp.Or(v.Name, v.PlanCode), Desc: desc(v)}
+		h.Near, _ = c.NearMiss(v)
+		p, hasP := preds[v.FQN]
+		h.Pattern = patternCell(p, hasP, now)
+		var future []rect
+		if hasP && p.Pattern && !p.Next.From.IsZero() {
+			x0, x1 := max(mins(p.Next.From), past), min(mins(p.Next.To), total)
+			if x1 > x0 {
+				future = append(future, rect{X: x0, W: max(x1-x0, minW), Class: "h-next",
+					Title: "predicted " + abs(p.Next.From) + " – " + p.Next.To.Local().Format("15:04")})
+			}
+		}
 		if ps := s.Prices[v.FQN]; len(ps) >= 2 && math.Abs(ps[len(ps)-1].Rent-ps[len(ps)-2].Rent) >= 0.005 {
 			h.Was = cell{Text: "was " + money(ps[len(ps)-2].Rent) + " until " + ps[len(ps)-1].At.Local().Format("02.01."),
 				Class: "was"}
@@ -422,9 +469,10 @@ func history(wanted []watch.Variant, s watch.State, now time.Time) (hv []histVar
 					stocked = true
 				}
 			}
+			hr.Rects = append(slices.Clip(hr.Rects), future...)
 			h.Rows = append(h.Rows, hr)
 		}
-		if stocked {
+		if stocked || (hasP && p.Pattern) {
 			active = append(active, h)
 		} else {
 			idle = append(idle, h)
@@ -435,10 +483,43 @@ func history(wanted []watch.Variant, s watch.State, now time.Time) (hv []histVar
 			quiet = append(quiet, h.Name)
 		}
 	}
-	for i := range 5 {
-		axis = append(axis, start.Add(watch.Window*time.Duration(i)/4).Local().Format("02.01."))
+	// Six labels, evenly spread: the window in quarters, then the quarter past now the predictions get.
+	for i := range 6 {
+		axis = append(axis, start.Add(window*time.Duration(i)/4).Local().Format("02.01."))
 	}
-	return active, quiet, axis
+	return active, quiet, axis, total
+}
+
+// patternCell is the line under a history block's name: the pattern, the next window and the hits so far; "none
+// found" after a call without one; nothing below the gate (no call was made).
+func patternCell(p predict.Prediction, ok bool, now time.Time) patternLine {
+	switch {
+	case !ok:
+		return patternLine{}
+	case !p.Pattern:
+		// "so far": the gate lets a call through after 14 days, not 90.
+		return patternLine{None: true, Text: "none found so far", Title: "asked " + abs(p.Asked)}
+	}
+	l := patternLine{Text: p.Summary, Title: "asked " + abs(p.Asked) + " (" + p.Model + ")"}
+	if !p.Next.From.IsZero() {
+		l.Next = "next likely " + when(p.Next, now)
+	}
+	if p.Tries > 0 {
+		l.Hits = fmt.Sprintf("%d of %d windows hit", p.Hits, p.Tries)
+	}
+	return l
+}
+
+// when is a window for people: "Thu 28.11. 05:30–07:00", "now until 07:00", or for a long one "Sat 30.11. – Mon 02.12.".
+func when(w predict.Window, now time.Time) string {
+	from, to := w.From.Local(), w.To.Local()
+	switch {
+	case !from.After(now):
+		return "now until " + to.Format("15:04")
+	case to.Sub(from) > 24*time.Hour:
+		return from.Format("Mon 02.01.") + " – " + to.Format("Mon 02.01.")
+	}
+	return from.Format("Mon 02.01. 15:04") + "–" + to.Format("15:04")
 }
 
 func desc(v watch.Variant) string {
@@ -479,7 +560,8 @@ func config(v watch.Variant) string {
 	return strings.Join(parts, " · ")
 }
 
-func changes(wanted, all []watch.Variant, s watch.State, now time.Time) []changeRow {
+// changes is the stock log: in/out of in-scope pairs from the spans, and the price changes of scope.
+func changes(scope, all []watch.Variant, s watch.State, now time.Time) []changeRow {
 	byFQN := map[string]watch.Variant{}
 	for _, v := range all {
 		byFQN[v.FQN] = v
@@ -508,7 +590,7 @@ func changes(wanted, all []watch.Variant, s watch.State, now time.Time) []change
 		}
 		out = append(out, r)
 	}
-	for _, v := range wanted {
+	for _, v := range scope {
 		ps := s.Prices[v.FQN]
 		for i := 1; i < len(ps); i++ {
 			// A setup-only change is in the price table; here it would read "18.99 € → 18.99 €".
@@ -572,7 +654,8 @@ func moved(cur, prev float64) cell {
 	return cell{Text: money(cur), Class: "x down"}
 }
 
-func tiles(d pageData, wanted []watch.Variant, s watch.State, now time.Time) []tile {
+func tiles(d pageData, wanted, scope []watch.Variant, preds map[string]predict.Prediction, s watch.State,
+	now time.Time) []tile {
 	inStock := tile{Label: "Wanted in stock", Value: strconv.Itoa(len(d.Wanted)), Highlight: len(d.Wanted) > 0}
 	var where []string
 	for _, r := range d.Wanted {
@@ -593,8 +676,9 @@ func tiles(d pageData, wanted []watch.Variant, s watch.State, now time.Time) []t
 		if r.Priced {
 			cheap.Value, cheap.Unit = money(r.Rent), "€/mo"
 			cheap.Sub = cmp.Or(r.Name, r.PlanCode)
+			// Coloured like the table's columns: the figures as cells, not folded into the grey text.
 			if r.Multi.Text != "" && r.Single.Text != "" {
-				cheap.Sub += " · multi " + r.Multi.Text + " · single " + r.Single.Text
+				cheap.Parts = []cell{{Text: " · multi "}, r.Multi, {Text: " · single "}, r.Single}
 			}
 			break
 		}
@@ -635,13 +719,39 @@ func tiles(d pageData, wanted []watch.Variant, s watch.State, now time.Time) []t
 		}
 	}
 
+	// A known pattern's coming window takes the third tile: it says more than when stock was last seen.
+	var next predict.Window
+	var nextName string
+	var nextP predict.Prediction
+	for _, v := range scope {
+		if p, ok := preds[v.FQN]; ok && p.Pattern && !p.Next.From.IsZero() && (next.From.IsZero() || p.Next.From.Before(next.From)) {
+			next, nextName, nextP = p.Next, cmp.Or(v.Name, v.PlanCode), p
+		}
+	}
+	if !next.From.IsZero() {
+		streak = tile{Label: "Next likely", Predicted: true, Title: abs(next.From) + " – " + abs(next.To)}
+		lf, lt := next.From.Local(), next.To.Local()
+		switch {
+		case !lf.After(now):
+			streak.Value, streak.Unit = "now", "until "+lt.Format("Mon 15:04")
+		case lt.Sub(lf) > 24*time.Hour: // an interval's window spans days
+			streak.Value, streak.Unit = lf.Format("Mon"), "– "+lt.Format("Mon")
+		default:
+			streak.Value, streak.Unit = lf.Format("Mon"), lf.Format("15:04")+"–"+lt.Format("15:04")
+		}
+		streak.Sub = nextName
+		if nextP.Tries > 0 {
+			streak.Sub += fmt.Sprintf(" · %d of %d windows hit", nextP.Hits, nextP.Tries)
+		}
+	}
+
 	var n24 int
 	var lens []time.Duration
 	for _, c := range s.Changes() { // not d.Changes: that list is cut for the page
 		if now.Sub(c.At) <= 24*time.Hour {
 			n24++
 		}
-		if !c.In {
+		if !c.In && now.Sub(c.At) <= watch.Window {
 			lens = append(lens, c.For)
 		}
 	}
@@ -651,6 +761,21 @@ func tiles(d pageData, wanted []watch.Variant, s watch.State, now time.Time) []t
 		moves.Sub = "in stock " + compact(lens[len(lens)/2]) + " (30 d median)"
 	}
 	return []tile{inStock, cheap, streak, moves}
+}
+
+// almost are the servers new in the last 7 days that are just above a wish: priced for the first time this week,
+// after the first day of tracking (the first catalog prices everything).
+func (d *pageData) almost(scope []watch.Variant, c watch.Config, s watch.State, now time.Time) []almostRow {
+	var out []almostRow
+	for _, v := range scope {
+		why, near := c.NearMiss(v)
+		ps := s.Prices[v.FQN]
+		if !near || len(ps) == 0 || now.Sub(ps[0].At) > 7*24*time.Hour || ps[0].At.Sub(s.Since) < 24*time.Hour {
+			continue
+		}
+		out = append(out, almostRow{row: d.row(v, s, now), Why: why, Listed: ps[0].At})
+	}
+	return out
 }
 
 // rule spells a wish out: "RAM ≤ 64 GB, NVME, ≤ 30 €/mo".

@@ -14,13 +14,17 @@ import (
 	"github.com/trick77/ovh-availability-check/internal/ovh"
 )
 
-// Window is how far back the history goes.
-const Window = 30 * 24 * time.Hour
+// Window is how far back the page's history goes; Keep how far back the state keeps it. Patterns are looked for in
+// Keep: four weeks are only four repeats of a weekly rhythm.
+const (
+	Window = 30 * 24 * time.Hour
+	Keep   = 90 * 24 * time.Hour
+)
 
 const (
 	seenKeep  = 180 * 24 * time.Hour // "last in stock" outlives the history
 	priceKeep = 365 * 24 * time.Hour
-	maxSpans  = 2000 // per pair: one flapping every poll for 30 days stays below 1 MB
+	maxSpans  = 2000 // per pair: one flapping every poll for weeks stays below 1 MB
 	maxPushes = 20
 )
 
@@ -39,13 +43,15 @@ type State struct {
 	Seen map[string]Seen `json:"seen,omitempty"`
 	// Polled are the stretches polls covered; outside them the history has no data.
 	Polled []Span `json:"polled,omitempty"`
-	// Spans are the in-stock stretches of wanted pairs, by Key, oldest first.
+	// Spans are the in-stock stretches of in-scope pairs (wanted or just above a wish), by Key, oldest first.
 	Spans map[string][]Span `json:"spans,omitempty"`
 	// Prices are each variant's price points by fqn, one per change, oldest first. They live in prices.json, written
 	// only when a price moves: every variant's, ~0.5 MB.
 	Prices map[string][]Price `json:"-"`
 	// Pushes are the pushes sent or tried, newest first.
 	Pushes []Push `json:"pushes,omitempty"`
+	// DigestAt is when the last weekly digest went out: a restart must not send it twice.
+	DigestAt time.Time `json:"digest_at,omitzero"`
 
 	// lastIn are the pairs in stock at the last poll, wanted or not: a pair that turns wanted while in stock came in
 	// unseen. Memory only (~5700 pairs); nil after a restart, when every new span is quiet.
@@ -207,7 +213,7 @@ func (s State) Observe(vs []Variant, wanted func(Variant) bool, now time.Time, e
 	} else {
 		polled = append(polled, Span{From: now, To: now})
 	}
-	s.Polled = cutSpans(polled, now.Add(-Window))
+	s.Polled = cutSpans(polled, now.Add(-Keep))
 
 	seen := make(map[string]Seen, len(s.Seen))
 	for k, e := range s.Seen {
@@ -267,7 +273,7 @@ func (s State) Observe(vs []Variant, wanted func(Variant) bool, now time.Time, e
 		}
 	}
 	for k, sp := range spans {
-		sp = cutSpans(sp, now.Add(-Window))
+		sp = cutSpans(sp, now.Add(-Keep))
 		if len(sp) == 0 {
 			delete(spans, k)
 			continue

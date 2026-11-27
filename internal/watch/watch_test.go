@@ -86,6 +86,91 @@ func TestMatches(t *testing.T) {
 	}
 }
 
+func TestNear(t *testing.T) {
+	pct := func(n int) *int { return &n }
+	slow := ks2
+	slow.Speed, slow.Rated = -39, true
+	for _, tc := range []struct {
+		name string
+		w    Want
+		v    Variant
+		near bool
+		why  string
+	}{
+		{"price just over", Want{PriceMax: 25}, ks2, true, "+1.99 € over 25"},
+		{"price far over", Want{PriceMax: 20}, ks2, false, ""},
+		{"ram one step under", Want{RAMMin: 128}, ks2, true, "64 GB, wants ≥ 128"},
+		{"ram two steps under", Want{RAMMin: 256}, ks2, false, ""},
+		{"ram one step over", Want{RAMMax: 32}, ks2, true, "64 GB, wants ≤ 32"},
+		{"disk 10 % short", Want{DiskMin: 0.95}, ks2, true, "disk 0.9 TB, wants ≥ 0.95"},
+		{"disk far short", Want{DiskMin: 2}, ks2, false, ""},
+		{"disk kind never near", Want{Disk: "hdd"}, ks2, false, ""},
+		{"cpu never near", Want{CPU: "epyc"}, ks2, false, ""},
+		{"two misses", Want{PriceMax: 25, RAMMin: 128}, ks2, false, ""},
+		{"matches is not near", Want{PriceMax: 30}, ks2, false, ""},
+		{"too slow never near", Want{CPUMinPct: pct(-10)}, slow, false, ""},
+	} {
+		why, near := tc.w.Near(tc.v)
+		if near != tc.near || why != tc.why {
+			t.Errorf("%s: %v %q", tc.name, near, why)
+		}
+	}
+}
+
+func TestCPUMinPct(t *testing.T) {
+	pct := func(n int) *int { return &n }
+	v := ks2
+	v.Speed, v.Rated = -39, true // KS-1's Xeon-D 1520 against the E3-1230 v6
+	if (Want{CPUMinPct: pct(-10)}).Matches(v) {
+		t.Error("39 % slower passed -10")
+	}
+	v.Speed = -5
+	if !(Want{CPUMinPct: pct(-10)}).Matches(v) {
+		t.Error("5 % slower failed -10")
+	}
+	v.Rated = false
+	if (Want{CPUMinPct: pct(-50)}).Matches(v) {
+		t.Error("unrated passed")
+	}
+	if _, err := LoadConfig(writeConfig(t, `{"datacenters":["gra"],"want":[{"cpu_min_pct":-10}]}`)); err == nil {
+		t.Error("cpu_min_pct without reference_cpu accepted")
+	}
+	if _, err := LoadConfig(writeConfig(t,
+		`{"datacenters":["gra"],"reference_cpu":"Intel Xeon E3-1230 v6","want":[{"cpu_min_pct":0}]}`)); err != nil {
+		t.Errorf("cpu_min_pct 0 refused: %v", err)
+	}
+}
+
+func TestBuildRates(t *testing.T) {
+	av := []ovh.Availability{{FQN: "a", PlanCode: "a", Memory: "ram-32g-x", Storage: "softraid-2x450nvme",
+		Datacenters: []struct {
+			Datacenter   string `json:"datacenter"`
+			Availability string `json:"availability"`
+		}{{"gra", "1H-low"}}}}
+	// No catalog: no CPU, unrated even with a reference.
+	if vs := Build(av, nil, []string{"gra"}, "Intel Xeon E3-1230 v6"); vs[0].Rated {
+		t.Errorf("rated without a CPU: %+v", vs[0])
+	}
+}
+
+func TestInScope(t *testing.T) {
+	c := Config{Want: []Want{{PriceMax: 25}}}
+	if !c.InScope(ks2) {
+		t.Error("just above not in scope")
+	}
+	if why, ok := c.NearMiss(ks2); !ok || why != "+1.99 € over 25" {
+		t.Errorf("near miss %q", why)
+	}
+	c.Want[0].PriceMax = 30
+	if _, ok := c.NearMiss(ks2); ok {
+		t.Error("wanted reported as near")
+	}
+	c.Want[0].PriceMax = 10
+	if c.InScope(ks2) {
+		t.Error("far over in scope")
+	}
+}
+
 func TestBuild(t *testing.T) {
 	av := []ovh.Availability{
 		{FQN: "a.ram-32g-x.softraid-2x450nvme", PlanCode: "a", Memory: "ram-32g-x", Storage: "softraid-2x450nvme"},
@@ -99,7 +184,7 @@ func TestBuild(t *testing.T) {
 		Datacenter   string `json:"datacenter"`
 		Availability string `json:"availability"`
 	}{"syd", "72H"})
-	vs := Build(av, nil, []string{"gra"})
+	vs := Build(av, nil, []string{"gra"}, "")
 	if len(vs) != 1 || vs[0].RAM != 32 || vs[0].Priced || vs[0].Stock["gra"] != "72H" {
 		t.Fatalf("got %+v", vs)
 	}
