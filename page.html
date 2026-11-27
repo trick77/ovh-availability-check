@@ -3,101 +3,234 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="refresh" content="{{.Refresh}}">
-<title>OVH availability</title>
+<meta http-equiv="refresh" content="60">
+<title>{{.Title}}</title>
 <link rel="icon" href="data:,">
 <style>
+@font-face { font-family: "Anthropic Sans"; src: url("fonts/SansWebVariable-TextRegular.woff2?v={{.FontVersion}}") format("woff2"); font-weight: 300 800; font-display: swap; }
+@font-face { font-family: "Anthropic Serif"; src: url("fonts/SerifWebVariable-TextRegular.woff2?v={{.FontVersion}}") format("woff2"); font-weight: 300 800; font-display: swap; }
+@font-face { font-family: "Anthropic Mono"; src: url("fonts/MonoVariableVariable-Regular.woff2?v={{.FontVersion}}") format("woff2"); font-display: swap; }
+/* Warm Editorial, dark: ../trakk's token set, measured there; not re-picked by eye. */
 :root {
-  --bg: #f7f7f5; --fg: #1d1d1b; --muted: #75756f; --line: #e2e2dc; --card: #fff;
-  --ok: #1f7a3f; --ok-bg: #e3f3e8; --warn: #9a5b00; --warn-bg: #fbefd9; --bad: #a42828; --link: #2456a6;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #161615; --fg: #e8e8e3; --muted: #9a9a92; --line: #2e2e2b; --card: #1e1e1c;
-    --ok: #6fcf8e; --ok-bg: #173323; --warn: #e5ad55; --warn-bg: #3a2c12; --bad: #ef7d7d; --link: #8fb4f0;
-  }
+  color-scheme: dark;
+  --bg: #1f1f1e; --panel: #1b1b1a; --border: #323230; --border-soft: #2a2a28;
+  --ink: #faf9f5; --ink-dim: #e4e1d8; --wordmark: #f4f0e8; --muted: #9c9a92; --faint: #6f6d66;
+  --online: #5aa06a; --danger: #c14638; --danger-ink: #ec7e7e; --ochre: #d6a15a; --bad-1: #773b31;
+  --cell-empty: #262624; --axis: #6a685f; --s1: #3987e5;
+  --sans: "Anthropic Sans", system-ui, "Segoe UI", sans-serif;
+  --serif: "Anthropic Serif", Georgia, serif;
+  --mono: "Anthropic Mono", ui-monospace, Menlo, monospace;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--fg);
-  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
-main { max-width: 1200px; margin: 0 auto; padding: 24px 16px 48px; }
-h1 { font-size: 20px; margin: 0 0 4px; }
-h2 { font-size: 15px; margin: 28px 0 8px; }
-.meta { color: var(--muted); font-size: 13px; }
-.meta span + span::before { content: " · "; }
-.err { color: var(--bad); }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; }
-th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
-th { font-weight: 600; color: var(--muted); font-size: 12px; }
-tr:last-child td { border-bottom: 0; }
-td.wrap { white-space: normal; }
-td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-tr.out td { color: var(--muted); }
-.dc { display: inline-block; min-width: 46px; padding: 1px 6px; border-radius: 4px; font-size: 12px; text-align: center; }
-.dc.on { background: var(--ok-bg); color: var(--ok); font-weight: 600; }
-.zero { background: var(--warn-bg); color: var(--warn); padding: 1px 6px; border-radius: 4px; font-size: 12px; }
-.empty { padding: 14px 10px; color: var(--muted); }
-a { color: var(--link); text-decoration: none; }
-a:hover { text-decoration: underline; }
-.toggle { font-weight: 400; font-size: 13px; margin-left: 8px; }
-pre { margin: 0; font: 12px/1.4 ui-monospace, monospace; white-space: pre-wrap; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; text-decoration-color: var(--faint); }
+
+.top { display: flex; align-items: center; gap: 8px 20px; padding: 14px 24px; border-bottom: 1px solid var(--border-soft); flex-wrap: wrap; }
+.wordmark { font: 500 25px/1 var(--serif); color: var(--wordmark); }
+.top .meta { margin-left: auto; color: var(--muted); font-size: 13.5px; display: flex; flex-wrap: wrap; gap: 4px 0; align-items: center; }
+.top .meta > span + span::before { content: "·"; margin: 0 .55em; color: var(--faint); }
+.top .meta b { color: var(--ink-dim); font-weight: 500; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--online); margin-right: 7px; }
+.dot.bad { background: var(--danger); }
+.err { color: var(--danger-ink); }
+.alert { margin: 16px 0 0; border: 1px solid rgba(193,70,56,.4); background: rgba(193,70,56,.1); border-radius: 10px; padding: 10px 16px; font-size: 13.5px; color: var(--danger-ink); }
+
+main { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
+.h2 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 30px 0 12px; }
+.h2 h2 { margin: 0; font: 500 21px/1.2 var(--serif); }
+.h2 p { margin: 0; color: var(--muted); font-size: 13px; }
+.h2 .more { margin-left: auto; font-size: 13px; color: var(--muted); }
+
+.panel { min-width: 0; border: 1px solid var(--border); border-radius: 12px;
+  background: linear-gradient(180deg, #20201e 0, var(--panel) 110px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 24px 60px -30px rgba(0,0,0,.7); }
+.scroll { overflow-x: auto; }
+.empty { padding: 14px 22px; color: var(--muted); font-size: 14px; }
+
+.tiles { display: grid; grid-template-columns: repeat(4, 1fr); }
+.tile { padding: 18px 22px 16px; border-left: 1px solid var(--border); min-width: 0; }
+.tile:first-child { border-left: 0; }
+.tile .k { font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tile .v { font: 500 34px/1.15 var(--serif); margin-top: 4px; }
+.tile .v small { font-size: 17px; color: var(--muted); margin-left: 3px; }
+.tile .s { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.tile .s.ok { color: var(--online); }
+.tile.hl { background: linear-gradient(180deg, rgba(90,160,106,.16), transparent 75%); box-shadow: inset 0 2px 0 var(--online); border-top-left-radius: 12px; }
+
+table.t { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.t th { text-align: left; font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--faint);
+  padding: 12px 12px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+table.t td { padding: 9px 12px; border-bottom: 1px solid var(--border-soft); white-space: nowrap; vertical-align: middle; }
+table.t tr:last-child td { border-bottom: 0; }
+table.t .num { text-align: right; font-variant-numeric: tabular-nums; }
+table.t td.rule { white-space: normal; min-width: 14em; }
+table.t tr.out td { color: var(--muted); }
+table.t tr:hover td { background: rgba(255,255,255,.018); }
+.name { font-weight: 500; color: var(--ink); }
+.sub { color: var(--muted); font-size: 12.5px; }
+.ct { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-left: 6px; }
+.x { font-variant-numeric: tabular-nums; font-weight: 500; }
+.x.up { color: var(--online); } .x.down { color: var(--danger-ink); } .x.eq { color: var(--muted); }
+.pd { font-size: 11.5px; margin-right: 8px; font-weight: 500; }
+.pd.down { color: var(--online); } .pd.up { color: var(--danger-ink); }
+.tag { font-size: 11px; color: var(--ochre); border: 1px solid rgba(214,161,90,.4); border-radius: 99px; padding: 0 7px; margin-right: 8px; }
+.old { color: var(--faint); text-decoration: line-through; margin-right: 4px; }
+
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 1px 9px; border-radius: 99px;
+  border: 1px solid var(--border); color: var(--ink-dim); white-space: nowrap; }
+.pill.on, .pill.slow { padding-left: 8px; }
+.pill.on::before, .pill.slow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; }
+.pill.on { border-color: rgba(90,160,106,.45); } .pill.on::before { background: var(--online); }
+.pill.slow { border-color: rgba(214,161,90,.45); } .pill.slow::before { background: var(--ochre); }
+.pill.soon { color: var(--ochre); border-style: dashed; }
+.na { color: var(--faint); font-size: 13px; padding-left: 10px; }
+.zero { color: var(--ochre); }
+.last.now { color: var(--online); }
+
+.hist { padding: 16px 22px 18px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.hv { margin-top: 18px; }
+.hv h3 { margin: 0 0 6px; font-size: 14.5px; font-weight: 500; }
+.hv h3 span { color: var(--muted); font-weight: 400; font-size: 13px; margin-left: 8px; }
+.hv h3 .was { color: var(--ochre); font-size: 12px; }
+.hrow { display: grid; grid-template-columns: 110px 1fr; align-items: center; gap: 12px; height: 22px; }
+.hrow .dc, .axis .dc { font-family: var(--mono); font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hrow svg { width: 100%; height: 14px; display: block; border-radius: 3px; background: var(--cell-empty); }
+.h-out { fill: var(--bad-1); } .h-in { fill: var(--online); } .h-slow { fill: var(--ochre); }
+.axis { display: grid; grid-template-columns: 110px 1fr; gap: 12px; margin-top: 4px; }
+.axis div:last-child { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--axis); }
+.quiet { margin-top: 16px; font-size: 13px; color: var(--muted); }
+
+.log { list-style: none; margin: 0; padding: 6px 0; font-size: 14px; }
+.log li { display: grid; grid-template-columns: 104px 48px 1fr; gap: 12px; padding: 7px 22px; border-bottom: 1px solid var(--border-soft); align-items: baseline; }
+.log li:last-child { border-bottom: 0; }
+.log .when { color: var(--muted); font-variant-numeric: tabular-nums; }
+.log .ev { font-size: 12px; font-weight: 500; }
+.log .ev.in { color: var(--online); } .log .ev.out { color: var(--danger-ink); } .log .ev.price { color: var(--s1); }
+.log .dcm { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+.push { padding: 12px 22px; border-bottom: 1px solid var(--border-soft); }
+.push:last-child { border-bottom: 0; }
+.push .t { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+.push .t b { font-weight: 500; }
+.push .t span { color: var(--muted); font-size: 13px; }
+.push pre { margin: 6px 0 0; font: 12px/1.55 var(--mono); color: var(--ink-dim); white-space: pre-wrap; }
+
+.foot { margin-top: 30px; font-size: 12.5px; color: var(--faint); }
+
+@media (max-width: 760px) {
+  .top { padding: 12px 16px; } main { padding: 4px 16px 48px; }
+  .top .meta { margin-left: 0; }
+  .tiles { grid-template-columns: 1fr 1fr; }
+  .tile { padding: 14px 16px; }
+  .tile:nth-child(3) { border-left: 0; } .tile:nth-child(n+3) { border-top: 1px solid var(--border); }
+  .tile .v { font-size: 28px; }
+  .hist { padding: 14px 16px; }
+  .hrow, .axis { grid-template-columns: 64px 1fr; gap: 8px; }
+  .log li { grid-template-columns: 84px 40px 1fr; gap: 8px; padding: 7px 14px; }
+  .push { padding: 12px 16px; }
+}
 </style>
 </head>
 <body>
+<header class="top">
+  <div class="wordmark">OVH stock monitor</div>
+  <div class="meta">
+    <span><i class="dot{{if .PollErr}} bad{{end}}"></i>polled <b title="{{abs .PolledAt}}">{{ago .PolledAt}}</b></span>
+    <span>every {{.Interval}}</span>
+    <span>catalog <b title="{{abs .CatalogAt}}">{{ago .CatalogAt}}</b></span>
+    <span>{{if .Channels}}push: {{range $i, $c := .Channels}}{{if $i}}, {{end}}{{$c}}{{end}}{{else}}<b class="err">no push channel</b>{{end}}</span>
+  </div>
+</header>
 <main>
-<h1>OVH availability</h1>
-<div class="meta">
-  <span>polled {{ago .PolledAt}}</span><span>every {{.Interval}}</span><span>catalog {{ago .CatalogAt}}</span>
-  <span>{{join .Datacenters ", "}}</span>
-  <span>{{if .Channels}}push: {{join .Channels ", "}}{{else}}<b class="err">no push channel</b>{{end}}</span>
-</div>
-{{if .PollErr}}<p class="err">Last poll failed: {{.PollErr}}</p>{{end}}
-{{if .CatErr}}<p class="err">Catalog fetch failed: {{.CatErr}}</p>{{end}}
+{{if .PollErr}}<p class="alert">Last poll failed: {{.PollErr}}</p>{{end}}
+{{if .CatErr}}<p class="alert">Catalog fetch failed: {{.CatErr}}</p>{{end}}
 
-<h2>Wishes</h2>
-<div class="card"><table>
-<tr><th>Wish</th><th>Rule</th><th class="num">Variants</th><th class="num">In stock</th></tr>
+<div class="h2"><h2>Now</h2><p>{{range $i, $d := .Datacenters}}{{if $i}} · {{end}}{{$d}}{{end}}</p></div>
+<section class="panel tiles">
+{{range .Tiles}}  <div class="tile{{if .Highlight}} hl{{end}}"><div class="k">{{.Label}}</div><div class="v"{{if .Title}} title="{{.Title}}"{{end}}>{{.Value}}{{if .Unit}}<small>{{.Unit}}</small>{{end}}</div><div class="s{{if .SubClass}} {{.SubClass}}{{end}}">{{.Sub}}</div></div>
+{{end}}</section>
+
+<div class="h2"><h2>Wanted and in stock</h2><p>Ordered by price.{{if .Ref}} CPU speed against the reference CPU {{.RefCPU}} ({{.Ref.Cores}}C/{{.Ref.Threads}}T).{{end}}</p></div>
+<section class="panel scroll">
+{{if .Wanted}}{{template "rows" (rowsOf .Wanted $)}}{{else}}<div class="empty">Nothing wanted is in stock right now.</div>{{end}}
+</section>
+
+<div class="h2"><h2>Wishes</h2><p>What config.json asks for.</p></div>
+<section class="panel scroll">
+<table class="t">
+<tr><th>Wish</th><th>Rule</th><th class="num">Variants</th><th class="num">In stock</th><th>Last in stock</th></tr>
 {{range .Wants}}<tr>
-  <td>{{.Label}}</td><td class="wrap">{{.Rule}}</td>
+  <td class="name">{{.Label}}</td><td class="rule sub">{{.Rule}}</td>
   <td class="num">{{if eq .All 0}}<span class="zero" title="No watched variant meets this wish, in stock or not">0</span>{{else}}{{.All}}{{end}}</td>
   <td class="num">{{.InStock}}</td>
-</tr>{{end}}
-</table></div>
+  <td{{if .Last.Class}} class="{{.Last.Class}}"{{end}}{{if .Last.Title}} title="{{.Last.Title}}"{{end}}>{{.Last.Text}}</td>
+</tr>
+{{end}}</table>
+</section>
 
-<h2>Wanted and in stock</h2>
-<div class="card">
-{{if .Wanted}}{{template "rows" (dict2 .Wanted $.Datacenters)}}{{else}}<div class="empty">Nothing wanted is in stock right now.</div>{{end}}
-</div>
+<div class="h2"><h2>History</h2><p>Last 30 days, wanted variants.</p></div>
+<section class="panel hist">
+  <div class="legend"><span><i style="background:var(--online)"></i>Orderable 1H</span><span><i style="background:var(--ochre)"></i>Orderable 72H</span><span><i style="background:var(--bad-1)"></i>Sold out</span><span><i style="background:var(--cell-empty);outline:1px solid var(--border)"></i>No data</span></div>
+{{range .History}}  <div class="hv"><h3>{{.Name}}<span>{{.Desc}}</span>{{if .Was.Text}}<span class="was">{{.Was.Text}}</span>{{end}}</h3>
+{{range .Rows}}    <div class="hrow"><span class="dc">{{.DC}}</span><svg viewBox="0 0 {{$.HistW}} 1" preserveAspectRatio="none" role="img" aria-label="{{.DC}} stock history">{{range .Rects}}<rect x="{{.X}}" y="0" width="{{.W}}" height="1" class="{{.Class}}">{{if .Title}}<title>{{.Title}}</title>{{end}}</rect>{{end}}</svg></div>
+{{end}}  </div>
+{{else}}  <div class="quiet">No wanted variant was in stock in the last 30 days{{if .Since}} (tracking since {{abs .Since}}){{end}}.</div>
+{{end}}{{if .History}}  <div class="axis"><div></div><div>{{range .Axis}}<span>{{.}}</span>{{end}}</div></div>{{end}}
+{{if and .History .Quiet}}  <div class="quiet">{{len .Quiet}} more wanted servers without stock in 30 days: {{range $i, $q := .Quiet}}{{if lt $i 12}}{{if $i}}, {{end}}{{$q}}{{end}}{{end}}{{if gt (len .Quiet) 12}} …{{end}}</div>{{end}}
+</section>
+
+{{if .Changes}}
+<div class="h2"><h2>Stock changes</h2><p>Wanted variants, newest first.</p></div>
+<section class="panel">
+<ul class="log">
+{{range .Changes}}  <li><span class="when" title="{{abs .At}}">{{ago .At}}</span><span class="ev {{.Kind}}">{{.Kind}}</span><span>{{.Text}}{{if .DC}} <span class="dcm">{{.DC}}</span>{{end}}{{if .Extra}} <span class="sub">{{.Extra}}</span>{{end}}</span></li>
+{{end}}</ul>
+</section>
+{{end}}
+
+{{if .Prices}}
+<div class="h2"><h2>Price changes</h2><p>Catalog prices, net of VAT. Wanted variants first.</p>{{if .MorePrices}}<a class="more" href="?all=1">all variants</a>{{end}}</div>
+<section class="panel scroll">
+<table class="t">
+<tr><th>Date</th><th>Server</th><th>Config</th><th class="num">€/mo</th><th class="num">Setup</th></tr>
+{{range .Prices}}<tr><td title="{{abs .At}}">{{.At.Local.Format "02.01.2006"}}</td><td class="name">{{.Name}}</td><td class="sub">{{.Config}}</td>
+  <td class="num">{{if .OldRent}}<span class="old">{{.OldRent}}</span>→ {{end}}<span class="{{.Rent.Class}}">{{.Rent.Text}}</span></td>
+  <td class="num">{{if .OldSetup}}<span class="old">{{.OldSetup}}</span>→ {{end}}<span class="{{.Setup.Class}}">{{.Setup.Text}}</span></td></tr>
+{{end}}</table>
+</section>
+{{end}}
 
 {{if .Pushes}}
-<h2>Recent pushes</h2>
-<div class="card"><table>
-{{range .Pushes}}<tr>
-  <td>{{ago .At}}</td>
-  <td class="wrap"><b>{{.Title}}</b>{{if .Err}} <span class="err">{{.Err}}</span>{{end}}<pre>{{.Body}}</pre></td>
-</tr>{{end}}
-</table></div>
+<div class="h2"><h2>Recent pushes</h2></div>
+<section class="panel">
+{{range .Pushes}}  <div class="push"><div class="t"><b>{{.Title}}</b><span title="{{abs .At}}">{{ago .At}}</span>{{if .Err}}<span class="err">{{.Err}}</span>{{end}}</div><pre>{{.Body}}</pre></div>
+{{end}}</section>
 {{end}}
 
 {{if .ShowAll}}
-<h2>All variants in these datacenters ({{len .All}})  <a class="toggle" href="./">hide</a></h2>
-<div class="card">{{template "rows" (dict2 .All $.Datacenters)}}</div>
+<div class="h2"><h2>All {{.AllCount}} variants</h2><p>Every configuration listed in these datacenters.</p><a class="more" href="./">hide</a></div>
+<section class="panel scroll">{{template "rows" (rowsOf .All $)}}</section>
 {{else}}
-<h2><a href="?all=1">Show all {{len .All}} variants in these datacenters</a></h2>
+<div class="h2"><h2><a href="?all=1">Show all {{.AllCount}} variants</a></h2><p>Every configuration listed in these datacenters.</p></div>
 {{end}}
+<div class="foot">{{if .Since}}Tracking since {{abs .Since}}. {{end}}Prices from the FR catalog, net of VAT.{{if .Ref}} CPU figures: PassMark.{{end}}</div>
 </main>
 </body>
 </html>
-{{define "rows"}}<table>
-<tr><th>Server</th><th>CPU</th><th class="num">RAM</th><th>Disks</th><th class="num">€/mo</th><th class="num">Setup</th>{{range .DCs}}<th>{{.}}</th>{{end}}</tr>
-{{range $v := .Variants}}<tr{{if not $v.InStock}} class="out"{{end}}>
-  <td><a href="{{$v.OrderURL}}" title="{{$v.FQN}}">{{or $v.Name $v.PlanCode}}</a></td>
-  <td>{{$v.CPU}}</td>
-  <td class="num">{{$v.RAM}} GB</td>
-  <td>{{range $i, $d := $v.Disks}}{{if $i}} + {{end}}{{$d}}{{end}}</td>
-  <td class="num">{{if $v.Priced}}{{printf "%.2f" $v.Rent}}{{else}}?{{end}}</td>
-  <td class="num">{{if $v.Priced}}{{printf "%.2f" $v.Setup}}{{end}}</td>
-  {{range $.DCs}}{{$a := index $v.Stock .}}<td>{{if $a}}<span class="dc{{if instock $a}} on{{end}}">{{$a}}</span>{{end}}</td>{{end}}
-</tr>{{end}}
-</table>{{end}}
+{{define "rows"}}<table class="t">
+<tr><th>Server</th><th>CPU</th>{{if .Page.Ref}}<th class="num" title="CPU Mark against {{.Page.RefCPU}}">Multi</th><th class="num" title="Single thread rating against {{.Page.RefCPU}}">Single</th>{{end}}<th class="num">RAM</th><th>Disks</th><th class="num">€/mo</th><th class="num">Setup</th><th>Last in stock</th>{{range .Page.Datacenters}}<th>{{.}}</th>{{end}}</tr>
+{{range .Rows}}<tr{{if .Out}} class="out"{{end}}>
+  <td><a class="name" href="{{.OrderURL}}" title="{{.FQN}}">{{or .Name .PlanCode}}</a></td>
+  <td>{{.CPUName}}{{if .Cores}}<span class="ct">{{.Cores}}</span>{{end}}</td>
+  {{if $.Page.Ref}}<td class="num"><span class="{{.Multi.Class}}" title="{{.Multi.Title}}">{{.Multi.Text}}</span></td><td class="num"><span class="{{.Single.Class}}" title="{{.Single.Title}}">{{.Single.Text}}</span></td>{{end}}
+  <td class="num">{{.RAM}} GB</td>
+  <td>{{range $i, $d := .Disks}}{{if $i}} + {{end}}{{$d}}{{end}}</td>
+  <td class="num">{{if .Price.Text}}<span class="{{.Price.Class}}" title="{{.Price.Title}}">{{.Price.Text}}</span>{{end}}{{if .Priced}}{{printf "%.2f" .Rent}}{{else}}?{{end}}</td>
+  <td class="num">{{if .Setup.Text}}<span class="{{.Setup.Class}}" title="{{.Setup.Title}}">{{.Setup.Text}}</span>{{end}}{{if .Priced}}{{printf "%.2f" .Variant.Setup}}{{end}}</td>
+  <td{{if .Last.Class}} class="{{.Last.Class}}"{{end}}{{if .Last.Title}} title="{{.Last.Title}}"{{end}}>{{.Last.Text}}</td>
+  {{range .DCs}}<td>{{if .Text}}<span class="{{.Class}}"{{if .Title}} title="{{.Title}}"{{end}}>{{.Text}}</span>{{end}}</td>{{end}}
+</tr>
+{{end}}</table>{{end}}

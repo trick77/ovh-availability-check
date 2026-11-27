@@ -22,6 +22,9 @@ import (
 
 	"github.com/trick77/ovh-availability-check/internal/ovh"
 	"github.com/trick77/ovh-availability-check/internal/watch"
+
+	// The page's times are in TZ; distroless has no zoneinfo.
+	_ "time/tzdata"
 )
 
 // catalogAge: the catalogs are 35 MB together and prices rarely move.
@@ -108,22 +111,15 @@ func serve(ctx context.Context, addr string, notifyTest bool) error {
 	return err
 }
 
-// push is one push sent (or failed), for the page.
-type push struct {
-	At    time.Time
-	Title string
-	Body  string
-	Err   string
-}
-
 type watcher struct {
 	cfg       watch.Config
 	client    *ovh.Client
 	channels  *notify.Channels
 	statePath string
 
-	catalog   *ovh.Catalog
-	catalogAt time.Time
+	catalog     *ovh.Catalog
+	catalogAt   time.Time
+	pricesDirty bool // prices.json lags the state
 
 	mu       sync.Mutex
 	state    watch.State
@@ -131,7 +127,6 @@ type watcher struct {
 	polledAt time.Time
 	pollErr  string
 	catErr   string
-	pushes   []push // newest first
 }
 
 func (w *watcher) poll(ctx context.Context) {
@@ -164,16 +159,28 @@ func (w *watcher) poll(ctx context.Context) {
 	w.mu.Unlock()
 
 	// Without a catalog every price and CPU wish fails: deciding now would drop their pairs from the state and push
-	// them again once the catalog is there.
+	// them again once the catalog is there, and the history would log them as wanted only from then on.
 	if w.catalog == nil {
 		return
+	}
+	now := time.Now()
+	state = state.Observe(vs, w.cfg.Wanted, now, time.Duration(w.cfg.Interval))
+	state, moved := state.ObservePrices(vs, now)
+	// A failed write is retried every poll: the next change may be months away.
+	if moved || w.pricesDirty {
+		w.pricesDirty = true
+		if err := state.SavePrices(w.statePath); err != nil {
+			slog.Error("prices", "err", err)
+		} else {
+			w.pricesDirty = false
+		}
 	}
 	cur := watch.Current(w.cfg, vs)
 	fresh := state.New(cur)
 	sent := false
 	if len(fresh) > 0 && w.channels != nil {
 		title, body := watch.Message(vs, fresh)
-		p := push{At: time.Now(), Title: title, Body: body}
+		p := watch.Push{At: now, Title: title, Body: body}
 		err := w.channels.SendMessage(notify.Message{Title: title, Body: body, Severity: notify.High})
 		var se *notify.SendError
 		// Partial: another channel took it. Sending again would repeat it there.
@@ -192,17 +199,17 @@ func (w *watcher) poll(ctx context.Context) {
 		} else {
 			slog.Info("pushed", "title", title)
 		}
-		w.mu.Lock()
-		w.pushes = append([]push{p}, w.pushes...)[:min(len(w.pushes)+1, 20)]
-		w.mu.Unlock()
+		state = state.AddPush(p)
 	}
 	next := state.Next(cur, fresh, sent)
+	// Kept in memory even when the save fails: the page still shows the push, and it isn't sent again before a
+	// restart.
+	w.mu.Lock()
+	w.state = next
+	w.mu.Unlock()
 	if err := next.Save(w.statePath); err != nil {
 		slog.Error("state", "err", err)
 		return
 	}
-	w.mu.Lock()
-	w.state = next
-	w.mu.Unlock()
 	slog.Info("polled", "variants", len(vs), "wanted_in_stock", len(cur), "new", len(fresh))
 }

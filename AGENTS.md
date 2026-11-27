@@ -20,6 +20,23 @@ OVH dedicated server stock watcher. Go, stdlib + `trick77/toolkit/notify`. No JS
 - Only Kimsufi has a per-server order page: `eco.ovhcloud.com/fr/kimsufi/<name lowercased>/`, all 22 KS names 200,
   unknown names 404. So you Start's `/fr/so-you-start/` 404s.
 
+- Catalog has no CPU data (`blobs` = `commercial` only, 2026-11): cores/threads and speed come from
+  `internal/ovh/cpus.json`, PassMark CPU Mark + single thread, looked up by hand. A CPU OVH adds later shows `?`
+  until added there. Invoices spell one chip several ways (`Xeon-E3 1230 v6`, `i7-6700k`, `EPYC TURIN 9455`):
+  `cpuKey` normalizes.
+
+## History (why)
+
+- Starts with the deploy. Nothing before the first catalog: `Wanted` needs CPU/price, spans would start late.
+- A pause over 3 intervals + 5 min ends every streak and span: the page must not claim stock nobody saw. Slack:
+  polls are an interval apart after each ends, a hanging catalog takes 2×90 s. Only a poll that finds a pair gone
+  logs "out"; a span that starts unseen (first poll, gap, restart, turned wanted while in stock) logs no "in".
+- A pair that stops being wanted while in stock (price rise, config edit) keeps its span until it sells out, or
+  the log would show a fake "out".
+- Spans only for wanted pairs (size), `Seen` for all. Prices stored only on change; a line chart was rejected
+  (user: prices change too rarely), the page shows the delta to the previous price instead.
+- Page style = ../trakk's Warm Editorial dark tokens + fonts, dark only (user choice).
+
 ## Push logic (why)
 
 - State holds pushed (fqn, dc) pairs, not the last snapshot: a wish added later must fire for stock already there.

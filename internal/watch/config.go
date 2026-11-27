@@ -9,6 +9,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/trick77/ovh-availability-check/internal/ovh"
 )
 
 // Config is conf/config.json.
@@ -19,6 +21,9 @@ type Config struct {
 	Interval Duration `json:"interval"`
 	// Want: a push fires when any one of them matches.
 	Want []Want `json:"want"`
+	// ReferenceCPU is what the page compares every CPU's speed to, by name ("Intel Xeon E3-1230 v6"). Empty: no
+	// comparison.
+	ReferenceCPU string `json:"reference_cpu,omitempty"`
 }
 
 // Want is one wish. Every field set must hold; unset fields don't filter.
@@ -92,6 +97,11 @@ func (c *Config) check() error {
 	}
 	if len(c.Want) == 0 {
 		return errors.New("no want")
+	}
+	if c.ReferenceCPU != "" {
+		if _, ok := ovh.CPU(c.ReferenceCPU); !ok {
+			return fmt.Errorf("reference_cpu %q is not one of: %s", c.ReferenceCPU, strings.Join(ovh.CPUNames(), ", "))
+		}
 	}
 	for i, w := range c.Want {
 		if w == (Want{Name: w.Name}) {
