@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"slices"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/trick77/ovh-availability-check/internal/ovh"
 )
@@ -157,31 +158,54 @@ func Current(c Config, vs []Variant) map[string]Pair {
 	return out
 }
 
-// maxLines caps a push: the first run after a wide wish can find dozens.
-const maxLines = 15
+// maxBody caps a push's body in characters: the first run after a wide wish can find dozens, and Pushover refuses
+// a message over 1024 characters (shoutrrr doesn't cut it). A refused push is retried every poll.
+const maxBody = 1000
 
-// Message is one push for every fresh pair: a line per variant, its datacenters behind it.
+// Message is one push for every fresh pair: per variant a line with its datacenters behind it, then its order link.
 func Message(vs []Variant, fresh []Pair) (title, body string) {
 	dcs := map[string][]string{}
 	for _, p := range fresh {
 		dcs[p.FQN] = append(dcs[p.FQN], p.DC)
 	}
-	var lines []string
+	var entries []string
 	for _, v := range vs { // vs is cheapest first
 		d, ok := dcs[v.FQN]
 		if !ok {
 			continue
 		}
 		slices.Sort(d)
-		lines = append(lines, v.Summary()+" · "+strings.Join(d, ", "))
+		e := v.Summary() + " · " + strings.Join(d, ", ")
+		if v.OrderURL != "" {
+			e += "\n" + v.OrderURL
+		}
+		entries = append(entries, e)
 	}
-	n := len(lines)
-	if n > maxLines {
-		lines = append(lines[:maxLines], fmt.Sprintf("… and %d more", n-maxLines))
-	}
+	n := len(entries)
 	title = "OVH: 1 server in stock"
 	if n != 1 {
 		title = fmt.Sprintf("OVH: %d servers in stock", n)
 	}
-	return title, strings.Join(lines, "\n")
+	// Whole entries while they fit, room left for the "… and N more" line.
+	const more = len("\n\n… and 9999 more")
+	size, kept := 0, 0
+	for i, e := range entries {
+		add := utf8.RuneCountInString(e)
+		if i > 0 {
+			add += 2
+		}
+		limit := maxBody
+		if i < n-1 {
+			limit -= more
+		}
+		if kept > 0 && size+add > limit {
+			break
+		}
+		size += add
+		kept++
+	}
+	if kept < n {
+		entries = append(entries[:kept], fmt.Sprintf("… and %d more", n-kept))
+	}
+	return title, strings.Join(entries, "\n\n")
 }
