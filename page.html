@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="refresh" content="60">
 <title>{{.Title}}</title>
-<link rel="icon" href="data:,">
+<link rel="icon" type="image/svg+xml" href="icon.svg?v={{.IconVersion}}">
 <style>
 @font-face { font-family: "Anthropic Sans"; src: url("fonts/SansWebVariable-TextRegular.woff2?v={{.FontVersion}}") format("woff2"); font-weight: 300 800; font-display: swap; }
 @font-face { font-family: "Anthropic Serif"; src: url("fonts/SerifWebVariable-TextRegular.woff2?v={{.FontVersion}}") format("woff2"); font-weight: 300 800; font-display: swap; }
@@ -71,6 +71,14 @@ table.t tr:hover td { background: rgba(255,255,255,.018); }
 .name { font-weight: 500; color: var(--ink); }
 .sub { color: var(--muted); font-size: 12.5px; }
 .ct { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-left: 6px; }
+/* Second line of a cell, like the price's setup line: code and cores below, in every server table (user). */
+.l2 { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--muted); white-space: nowrap; margin-top: 1px; }
+.l2 .code, .l2.ct { margin-left: 0; font-size: 11.5px; }
+.l2.ct { display: block; }
+/* The order link is a cart icon everywhere (user). */
+.ord { display: inline-flex; color: var(--muted); vertical-align: middle; }
+.ord:hover { color: var(--ink); text-decoration: none; }
+.ord svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .x { font-variant-numeric: tabular-nums; font-weight: 500; }
 .x.up { color: var(--online); } .x.down { color: var(--danger-ink); } .x.eq { color: var(--muted); }
 .pd { font-size: 11.5px; margin-right: 8px; font-weight: 500; }
@@ -97,7 +105,7 @@ table.t th.dcc, table.t td.dcc { text-align: center; padding-left: 4px; padding-
 table.v th, table.v td { padding-left: 8px; padding-right: 8px; }
 table.v td.cpu, table.v td.disks { white-space: normal; min-width: 9em; }
 table.v .pill { padding: 1px 7px; gap: 5px; }
-table.v .setup { display: block; font-size: 11.5px; color: var(--muted); }
+table.v .setup { display: block; font-size: 11.5px; color: var(--muted); margin-top: 1px; }
 table.v .setup .pd { margin-right: 4px; }
 .gh { display: inline-flex; color: var(--muted); margin-left: 14px; }
 .gh:hover { color: var(--ink); }
@@ -161,8 +169,8 @@ table.v .setup .pd { margin-right: 4px; }
 .upd .it .pr { font-variant-numeric: tabular-nums; text-align: right; }
 .upd .it .pill { font-size: 11.5px; padding: 0 7px; gap: 5px; }
 .upd .it .pill.on, .upd .it .pill.slow { padding-left: 6px; }
-.upd .ord { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
-.upd .ord:hover { color: var(--ink); }
+.lnk { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+.lnk:hover { color: var(--ink); }
 .upd .body { margin: 6px 0 0; font-size: 13px; color: var(--ink-dim); white-space: pre-wrap; }
 
 .foot { margin-top: 30px; font-size: 12.5px; color: var(--faint); }
@@ -181,7 +189,7 @@ table.v .setup .pd { margin-right: 4px; }
   .upd .it { grid-template-columns: 1fr auto; }
   .upd .it .spec { grid-column: 1 / -1; grid-row: 2; }
   .upd .it .pills { grid-column: 1; grid-row: 3; }
-  .upd .it .ord { grid-column: 2; grid-row: 3; text-align: right; }
+  .upd .it .ord { grid-column: 2; grid-row: 3; justify-self: end; }
 }
 </style>
 </head>
@@ -230,13 +238,13 @@ table.v .setup .pd { margin-right: 4px; }
 <table class="t">
 <tr><th>Server</th><th>CPU</th><th class="num">RAM</th><th>Disks</th><th class="num">€/mo</th><th>Misses</th><th>Listed</th></tr>
 {{range .Almost}}<tr>
-  <td><a class="name" href="{{.OrderURL}}" title="{{.FQN}}">{{or .Name .PlanCode}}</a>{{with code .Name .PlanCode}}<span class="code">{{.}}</span>{{end}}<span class="new">new</span></td>
-  <td>{{.CPUName}}{{if .Cores}}<span class="ct">{{.Cores}}</span>{{end}}</td>
+  <td>{{template "server" .}}</td>
+  <td class="cpu">{{template "cpu" .}}</td>
   <td class="num">{{.RAM}} GB</td>
   <td>{{range $i, $d := .Disks}}{{if $i}} + {{end}}{{$d}}{{end}}</td>
   <td class="num">{{if .Priced}}{{printf "%.2f" .Rent}}{{else}}?{{end}}</td>
   <td><span class="near">{{.Why}}</span></td>
-  <td class="sub" title="{{abs .Listed}}">{{ago .Listed}}</td>
+  <td class="sub" title="{{abs .Listed}}">{{ago .Listed}}<span class="new">new</span></td>
 </tr>
 {{end}}</table>
 </section>
@@ -279,8 +287,8 @@ table.v .setup .pd { margin-right: 4px; }
 <div class="h2"><h2>Updates</h2><p>Restocks and weekly digests, pushed or not.</p></div>
 <section class="panel">
 {{range .Updates}}  <div class="upd"><div class="t"><span class="tag">{{.Kind}}</span><b>{{.Head}}</b><span class="when" title="{{abs .At}}">{{ago .At}}</span><span class="{{.Delivery.Class}}"{{if .Delivery.Title}} title="{{.Delivery.Title}}"{{end}}>{{.Delivery.Text}}</span></div>
-{{range .Items}}    <div class="it"><span class="nm"><span class="name">{{.Name}}</span>{{if .Code}}<span class="code">{{.Code}}</span>{{end}}</span><span class="spec">{{.Spec}}</span>{{if .Price}}<span class="pr">{{.Price}}</span>{{end}}<span class="pills">{{range .DCs}}<span class="{{.Class}}" title="{{.Title}}">{{.Text}}</span>{{end}}</span>{{if .OrderURL}}<a class="ord" href="{{.OrderURL}}">order ↗</a>{{end}}</div>
-{{end}}{{if .Body}}    <p class="body">{{range .Body}}{{if .Href}}<a class="ord" href="{{.Href}}" title="{{.Href}}">{{.Text}}</a>{{else}}{{.Text}}{{end}}{{end}}</p>
+{{range .Items}}    <div class="it"><span class="nm"><span class="name">{{.Name}}</span>{{if .Code}}<span class="code">{{.Code}}</span>{{end}}</span><span class="spec">{{.Spec}}</span>{{if .Price}}<span class="pr">{{.Price}}</span>{{end}}<span class="pills">{{range .DCs}}<span class="{{.Class}}" title="{{.Title}}">{{.Text}}</span>{{end}}</span>{{if .OrderURL}}{{template "order" .OrderURL}}{{end}}</div>
+{{end}}{{if .Body}}    <p class="body">{{range .Body}}{{if .Order}}{{template "order" .Href}}{{else if .Href}}<a class="lnk" href="{{.Href}}" title="{{.Href}}">{{.Text}}</a>{{else}}{{.Text}}{{end}}{{end}}</p>
 {{end}}  </div>
 {{end}}</section>
 {{end}}
@@ -295,11 +303,14 @@ table.v .setup .pd { margin-right: 4px; }
 </main>
 </body>
 </html>
+{{define "order"}}<a class="ord" href="{{.}}" title="{{.}}" aria-label="order"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg></a>{{end}}
+{{define "server"}}<span class="name" title="{{.FQN}}">{{or .Name .PlanCode}}</span><span class="l2">{{with code .Name .PlanCode}}<span class="code">{{.}}</span>{{end}}{{template "order" .OrderURL}}</span>{{end}}
+{{define "cpu"}}{{.CPUName}}{{if .Cores}}<span class="l2 ct">{{.Cores}}</span>{{end}}{{end}}
 {{define "rows"}}<table class="t v">
 <tr><th>Server</th><th>CPU</th>{{if .Page.Ref}}<th class="num" title="CPU Mark against {{.Page.RefCPU}}">Multi</th><th class="num" title="Single thread rating against {{.Page.RefCPU}}">Single</th>{{end}}<th class="num">RAM</th><th>Disks</th><th class="num" title="monthly, setup below">€/mo</th><th title="Last seen in stock">Last seen</th>{{range .Page.DCLabels}}<th class="dcc" title="{{.Title}}">{{.Text}}</th>{{end}}</tr>
 {{range .Rows}}<tr{{if .Out}} class="out"{{end}}>
-  <td><a class="name" href="{{.OrderURL}}" title="{{.FQN}}">{{or .Name .PlanCode}}</a>{{with code .Name .PlanCode}}<span class="code">{{.}}</span>{{end}}</td>
-  <td class="cpu">{{.CPUName}}{{if .Cores}}<span class="ct">{{.Cores}}</span>{{end}}</td>
+  <td>{{template "server" .}}</td>
+  <td class="cpu">{{template "cpu" .}}</td>
   {{if $.Page.Ref}}<td class="num"><span class="{{.Multi.Class}}" title="{{.Multi.Title}}">{{.Multi.Text}}</span></td><td class="num"><span class="{{.Single.Class}}" title="{{.Single.Title}}">{{.Single.Text}}</span></td>{{end}}
   <td class="num">{{.RAM}} GB</td>
   <td class="disks">{{range $i, $d := .Disks}}{{if $i}} + {{end}}{{$d}}{{end}}</td>

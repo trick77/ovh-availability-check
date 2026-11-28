@@ -33,7 +33,7 @@ func TestPage(t *testing.T) {
 	}
 	ks2 := watch.Variant{FQN: "24sk202.x", PlanCode: "24sk202", Name: "KS-2", CPU: "Intel Xeon-D 1540", RAM: 64,
 		Disks: []ovh.Disk{{Count: 2, SizeGB: 450, Kind: "nvme"}}, Rent: 26.99, Priced: true,
-		Stock: map[string]string{"gra": "72H"}}
+		Stock: map[string]string{"gra": "72H"}, OrderURL: "https://eco.ovhcloud.com/fr/kimsufi/ks-2/"}
 	gone := ks2
 	gone.FQN, gone.Name, gone.Stock = "gone", "KS-GONE", map[string]string{"gra": "unavailable"}
 	cfg := watch.Config{Datacenters: []string{"gra"}, Interval: watch.Duration(2 * time.Minute),
@@ -98,11 +98,24 @@ func TestPage(t *testing.T) {
 		`<span class="pill">≤ 30 €/mo</span>`,
 		"failed on channel 1 (ntfy) · retrying", `<span class="pill faint"`, // deliveries
 		`<span class="pill slow" title="gra: 72H">gra</span>`, // the restock's DC, and the log's
-		`href="https://eco.ovhcloud.com/fr/kimsufi/ks-1/" title="https://eco.ovhcloud.com/fr/kimsufi/ks-1/">order ↗</a>`,
+		// An imported push's order link: the cart icon, like everywhere.
+		`<a class="ord" href="https://eco.ovhcloud.com/fr/kimsufi/ks-1/" title="https://eco.ovhcloud.com/fr/kimsufi/ks-1/" aria-label="order">`,
 	} {
 		if !strings.Contains(body, want) {
 			t.Errorf("/ lacks %q", want)
 		}
+	}
+	// Wanted: name on top; code, order icon and cores on the second line.
+	_, wanted, _ := strings.Cut(body, "<h2>Wanted and in stock</h2>")
+	wanted, _, _ = strings.Cut(wanted, "<h2>Wishes</h2>")
+	for _, want := range []string{`<span class="l2"><span class="code">24sk202</span><a class="ord" href="https://eco.ovhcloud.com/fr/kimsufi/ks-2/"`,
+		`<span class="l2 ct">8C/16T</span>`} {
+		if !strings.Contains(wanted, want) {
+			t.Errorf("wanted lacks %q", want)
+		}
+	}
+	if strings.Contains(body, `<a class="name"`) || strings.Contains(body, "order ↗") {
+		t.Error("/ still has the hidden name link or the order text")
 	}
 	if strings.Contains(body, ">https://") {
 		t.Error("/ shows a full link")
@@ -185,7 +198,16 @@ func TestPage(t *testing.T) {
 		t.Error("?all=1 lacks the unavailable mark")
 	}
 
+	if !strings.Contains(body, `<link rel="icon" type="image/svg+xml" href="icon.svg?v=`+iconVersion+`">`) {
+		t.Error("/ lacks the app icon")
+	}
 	rec := httptest.NewRecorder()
+	w.routes().ServeHTTP(rec, httptest.NewRequest("GET", "/icon.svg", nil))
+	if rec.Code != 200 || rec.Header().Get("Content-Type") != "image/svg+xml" ||
+		!strings.Contains(rec.Header().Get("Cache-Control"), "immutable") || !strings.Contains(rec.Body.String(), "<svg") {
+		t.Errorf("icon: %d %q", rec.Code, rec.Header())
+	}
+	rec = httptest.NewRecorder()
 	w.routes().ServeHTTP(rec, httptest.NewRequest("GET", "/fonts/SansWebVariable-TextRegular.woff2", nil))
 	if rec.Code != 200 || !strings.Contains(rec.Header().Get("Cache-Control"), "immutable") {
 		t.Errorf("font: %d %q", rec.Code, rec.Header().Get("Cache-Control"))
@@ -222,6 +244,11 @@ func TestCompact(t *testing.T) {
 		if got := shortDC(dc); got != want {
 			t.Errorf("shortDC(%s) = %q", dc, got)
 		}
+	}
+	// Every order link the catalog makes is the order icon, a range overview too; anything else stays a link.
+	ps := linkify("a https://eco.ovhcloud.com/fr/ b https://www.ovhcloud.com/fr/bare-metal/ c https://status.ovhcloud.com/x")
+	if len(ps) != 6 || !ps[1].Order || !ps[3].Order || ps[5].Order || ps[5].Text != "link ↗" {
+		t.Errorf("linkify %+v", ps)
 	}
 	if got := thousands(15234); got != "15'234" {
 		t.Errorf("thousands: %q", got)
