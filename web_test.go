@@ -243,6 +243,58 @@ func (predStore) SavePredictions(context.Context, map[string]predict.Prediction,
 	return nil
 }
 
+// Just above a wish and in stock: under the wanted ones, muted, with what it misses; not counted. Sold out: absent.
+func TestPageNear(t *testing.T) {
+	base := watch.Variant{PlanCode: "24sk202", CPU: "Intel Xeon-D 1540", RAM: 64, Priced: true,
+		Disks: []ovh.Disk{{Count: 2, SizeGB: 450, Kind: "nvme"}}, Stock: map[string]string{"gra": "1H-low"},
+		OrderURL: "https://eco.ovhcloud.com/fr/kimsufi/ks-2/"}
+	wanted, near, gone := base, base, base
+	wanted.FQN, wanted.Name, wanted.Rent = "w", "KS-WANT", 26.99
+	near.FQN, near.Name, near.Rent = "n", "KS-NEAR", 31.99
+	gone.FQN, gone.Name, gone.Rent, gone.Stock = "g", "KS-GONE", 31.99, map[string]string{"gra": "unavailable"}
+	cfg := watch.Config{Datacenters: []string{"gra"}, Interval: watch.Duration(2 * time.Minute),
+		Want: []watch.Want{{Name: "cheap", PriceMax: 30}}}
+	now := time.Now()
+	get := func(vs []watch.Variant) string {
+		s := watch.State{}.Observe(vs, now, 2*time.Minute)
+		w := &watcher{cfg: cfg, variants: vs, polledAt: now, catalogAt: now, state: s}
+		rec := httptest.NewRecorder()
+		w.routes().ServeHTTP(rec, httptest.NewRequest("GET", "/", nil))
+		body := rec.Body.String()
+		if !strings.Contains(body, "<title>OVH restock") {
+			t.Fatalf("no page: %d", rec.Code)
+		}
+		return body
+	}
+	section := func(body string) string {
+		_, s, _ := strings.Cut(body, "<h2>Wanted and in stock</h2>")
+		s, _, _ = strings.Cut(s, "<h2>Wishes</h2>")
+		return s
+	}
+	body := get([]watch.Variant{near, gone, wanted})
+	s := section(body)
+	if !strings.Contains(body, "<title>OVH restock"+sep+"1 in stock</title>") {
+		t.Error("the just-above one is counted in the title")
+	}
+	w, n := strings.Index(s, "KS-WANT"), strings.Index(s, "KS-NEAR")
+	if w < 0 || n < w {
+		t.Errorf("KS-NEAR not under KS-WANT (%d, %d)", w, n)
+	}
+	for _, want := range []string{`<tr class="above">`, "just above: &#43;1.99 € over 30"} {
+		if !strings.Contains(s, want) {
+			t.Errorf("wanted section lacks %q", want)
+		}
+	}
+	if strings.Count(s, `<tr class="above">`) != 1 || strings.Contains(s, "KS-GONE") || strings.Contains(s, "Nothing wanted") {
+		t.Error("wrong rows in the wanted section")
+	}
+	// Nothing wanted in stock: the line says so, the just-above one still shows below it.
+	s = section(get([]watch.Variant{near}))
+	if !strings.Contains(s, "Nothing wanted is in stock right now.") || !strings.Contains(s, `<tr class="above">`) {
+		t.Error("without wanted stock: no empty line or no just-above row")
+	}
+}
+
 func TestCompact(t *testing.T) {
 	for d, want := range map[time.Duration]string{
 		30 * time.Second: "<1m", 42 * time.Minute: "42m", 100 * time.Minute: "1h 40m", 5 * time.Hour: "5h",

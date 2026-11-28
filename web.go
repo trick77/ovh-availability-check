@@ -94,6 +94,7 @@ type pageData struct {
 	Tiles       []tile
 	Wants       []wantRow
 	Wanted      []row
+	InStock     []row // Wanted, then the just-above ones in stock: muted, never counted (never pushed either)
 	All         []row
 	AllCount    int
 	History     []histVariant
@@ -143,6 +144,7 @@ type row struct {
 	Last    cell
 	DCs     []cell
 	Out     bool
+	Near    string // the rule it misses, when just above a wish
 }
 
 type histVariant struct {
@@ -237,19 +239,26 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	var wanted, scope []watch.Variant
+	var above []row
 	for _, v := range vs {
-		if w.cfg.Wanted(v) {
+		want := w.cfg.Wanted(v)
+		why, near := w.cfg.NearMiss(v)
+		if want {
 			wanted = append(wanted, v)
+			if len(v.InStock()) > 0 {
+				d.Wanted = append(d.Wanted, d.row(v, state, now))
+			}
 		}
-		if w.cfg.InScope(v) {
+		if want || near {
 			scope = append(scope, v)
 		}
-	}
-	for _, v := range wanted {
-		if len(v.InStock()) > 0 {
-			d.Wanted = append(d.Wanted, d.row(v, state, now))
+		if near && len(v.InStock()) > 0 {
+			r := d.row(v, state, now)
+			r.Near = why
+			above = append(above, r)
 		}
 	}
+	d.InStock = append(slices.Clip(d.Wanted), above...)
 	if d.ShowAll {
 		for _, v := range vs {
 			d.All = append(d.All, d.row(v, state, now))
