@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math/rand/v2"
 	"os"
-	"path/filepath"
 	"slices"
 	"strings"
 	"testing"
@@ -120,7 +119,7 @@ func TestEvalPattern(t *testing.T) {
 		if err != nil || client == nil {
 			t.Fatalf("%s: no client (key missing?): %v", model, err)
 		}
-		s, err := New(Options{Client: client, Model: model, DailyCalls: 1000, Path: filepath.Join(t.TempDir(), "p.json"),
+		s, err := New(t.Context(), Options{Client: client, Model: model, DailyCalls: 1000, Store: &memStore{},
 			Loc: zurich})
 		if err != nil {
 			t.Fatal(err)

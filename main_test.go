@@ -13,11 +13,26 @@ import (
 	"testing"
 	"time"
 
+	"github.com/trick77/toolkit/notify"
+
+	"github.com/trick77/ovh-restock/internal/ovh"
+	"github.com/trick77/ovh-restock/internal/store"
 	"github.com/trick77/ovh-restock/internal/watch"
 )
 
 // fakeOVH serves the fixtures, KS-2 32 GB NVMe put in stock in gra.
 func fakeOVH(t *testing.T) *httptest.Server {
+	t.Helper()
+	return fakeOVHWith(t, func(dc string) string {
+		if dc == "gra" {
+			return "1H-low"
+		}
+		return ""
+	})
+}
+
+// fakeOVHWith serves the fixtures, KS-2 32 GB NVMe's stock per DC as avail says at each request ("": the fixture's).
+func fakeOVHWith(t *testing.T, avail func(dc string) string) *httptest.Server {
 	t.Helper()
 	b, err := os.ReadFile("internal/ovh/testdata/availabilities.json")
 	if err != nil {
@@ -27,22 +42,33 @@ func fakeOVH(t *testing.T) *httptest.Server {
 	if err := json.Unmarshal(b, &av); err != nil {
 		t.Fatal(err)
 	}
+	dcs := map[string]map[string]any{}
+	fixed := map[string]any{}
 	for _, a := range av {
 		if a["fqn"] == "24sk202.ram-32g-ecc-2133.softraid-2x450nvme" {
 			for _, d := range a["datacenters"].([]any) {
-				if dc := d.(map[string]any); dc["datacenter"] == "gra" {
-					dc["availability"] = "1H-low"
-				}
+				dc := d.(map[string]any)
+				name := dc["datacenter"].(string)
+				dcs[name], fixed[name] = dc, dc["availability"]
 			}
 		}
 	}
-	stock, _ := json.Marshal(av)
 	catalog, err := os.ReadFile("internal/ovh/testdata/catalog.json")
 	if err != nil {
 		t.Fatal(err)
 	}
+	var mu sync.Mutex
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /dedicated/server/datacenter/availabilities", func(w http.ResponseWriter, _ *http.Request) {
+		mu.Lock()
+		for name, dc := range dcs {
+			dc["availability"] = fixed[name]
+			if a := avail(name); a != "" {
+				dc["availability"] = a
+			}
+		}
+		stock, _ := json.Marshal(av)
+		mu.Unlock()
 		_, _ = w.Write(stock)
 	})
 	mux.HandleFunc("GET /order/catalog/public/eco", func(w http.ResponseWriter, _ *http.Request) { _, _ = w.Write(catalog) })
@@ -130,9 +156,11 @@ func TestServePushesOnce(t *testing.T) {
 		!strings.HasSuffix(body, "· gra\nhttps://eco.ovhcloud.com/fr/kimsufi/ks-2/") {
 		t.Errorf("body %q", body)
 	}
-	s, err := watch.LoadState(filepath.Join(data, "state.json"))
-	if err != nil || len(s.Notified) != 1 || len(s.Pushes) != 1 || len(s.Spans) != 1 {
-		t.Fatalf("state %+v %v", s, err)
+	s := load(t, data)
+	const ks2 = "24sk202.ram-32g-ecc-2133.softraid-2x450nvme"
+	if len(s.Notified) != 1 || len(s.Events) != 1 || s.Events[0].Delivery != watch.Sent ||
+		len(s.Events[0].Items) != 1 || len(s.Spans[ks2]["gra"]) != 1 {
+		t.Fatalf("state %+v", s)
 	}
 
 	// A restart with the same stock pushes nothing, and minutes after the last test push it sends none either.
@@ -143,6 +171,121 @@ func TestServePushesOnce(t *testing.T) {
 	<-done
 	if len(h.bodies) != 2 {
 		t.Errorf("pushed again after a restart: %q", h.bodies[2:])
+	}
+}
+
+// load reads data's database.
+func load(t *testing.T, data string) watch.State {
+	t.Helper()
+	db, err := store.Open(t.Context(), data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = db.Close() }()
+	s, err := db.Load(t.Context())
+	if err != nil {
+		t.Fatal(err)
+	}
+	return s
+}
+
+func TestServeWithoutChannel(t *testing.T) {
+	apiBase = fakeOVH(t).URL
+	t.Setenv("BACKEND_NOTIFY_URLS", "")
+	data, _ := dirs(t, `{"datacenters":["gra","rbx"],"want":[{"plans":["ks-2"],"ram_max_gb":32}]}`)
+	// The first poll runs at start; the database is read once serve is done with it.
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	if err := serve(ctx, "127.0.0.1:0", false, false); err != nil {
+		t.Fatal(err)
+	}
+	s := load(t, data)
+	// No channel: the restock is an event all the same, and its pairs count as evented (a channel added later
+	// doesn't push stock already there).
+	if len(s.Events) != 1 || s.Events[0].Delivery != watch.NoChannel || s.Events[0].Retry || len(s.Notified) != 1 {
+		t.Errorf("state %+v", s)
+	}
+}
+
+func TestRetryOnSameEvent(t *testing.T) {
+	data, _ := dirs(t, `{"datacenters":["gra"],"want":[{"ram_max_gb":32}]}`)
+	db, err := store.Open(t.Context(), data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = db.Close() }()
+	dead, err := notify.NewChannels([]string{"generic+http://127.0.0.1:1/hook"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	client := ovh.NewClient()
+	client.Base = fakeOVH(t).URL
+	w := &watcher{cfg: watch.Config{Datacenters: []string{"gra"}, Interval: watch.Duration(time.Minute),
+		Want: []watch.Want{{RAMMax: 32}}}, client: client, channels: dead, db: db}
+	w.poll(t.Context())
+	if e := w.state.Events; len(e) != 1 || !e[0].Retry || !strings.HasPrefix(e[0].Delivery, "failed") {
+		t.Fatalf("events %+v", e)
+	}
+	// The channel works again: the same event is delivered, no second one.
+	h, url := newHook(t)
+	if w.channels, err = notify.NewChannels([]string{url}); err != nil {
+		t.Fatal(err)
+	}
+	w.poll(t.Context())
+	h.waitFor(t, "KS-2")
+	if e := w.state.Events; len(e) != 1 || e[0].Retry || e[0].Delivery != watch.Sent {
+		t.Errorf("events %+v", e)
+	}
+	w.poll(t.Context())
+	if len(h.bodies) != 1 {
+		t.Errorf("sent again: %q", h.bodies)
+	}
+	if s, _ := db.Load(t.Context()); len(s.Events) != 1 || s.Events[0].Delivery != watch.Sent {
+		t.Errorf("stored %+v", s.Events)
+	}
+}
+
+func TestRetrySoldOutComesBack(t *testing.T) {
+	data, _ := dirs(t, `{"datacenters":["gra","rbx"],"want":[{"ram_max_gb":32}]}`)
+	db, err := store.Open(t.Context(), data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = db.Close() }()
+	dead, err := notify.NewChannels([]string{"generic+http://127.0.0.1:1/hook"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// gra flips, rbx stays in stock: the failed event keeps retrying for rbx.
+	avail := "1H-low"
+	client := ovh.NewClient()
+	client.Base = fakeOVHWith(t, func(dc string) string {
+		if dc == "gra" {
+			return avail
+		}
+		return "1H-low"
+	}).URL
+	w := &watcher{cfg: watch.Config{Datacenters: []string{"gra", "rbx"}, Interval: watch.Duration(time.Minute),
+		Want: []watch.Want{{RAMMax: 32}}}, client: client, channels: dead, db: db}
+	w.poll(t.Context()) // in at gra and rbx, the push fails: retried while in stock
+	avail = "unavailable"
+	w.poll(t.Context()) // gra sold out, rbx retried and failed again
+	if e := w.state.Events; len(e) != 1 || !e[0].Retry {
+		t.Fatalf("events %+v", e)
+	}
+	// gra back, the channel works: one push with both, gra as fresh, not gra a second time from the old event.
+	h, url := newHook(t)
+	if w.channels, err = notify.NewChannels([]string{url}); err != nil {
+		t.Fatal(err)
+	}
+	avail = "1H-low"
+	w.poll(t.Context())
+	h.waitFor(t, "KS-2")
+	w.poll(t.Context())
+	// (The polls share a second here, so the new event takes the old one's place: one per At and Kind.)
+	if len(h.bodies) != 1 || strings.Count(h.bodies[0], "· gra") != 1 || !strings.Contains(h.bodies[0], "rbx") ||
+		w.state.Events[0].Delivery != watch.Sent || w.state.Events[0].Retry {
+		t.Errorf("bodies %q events %+v", h.bodies, w.state.Events)
 	}
 }
 
@@ -197,28 +340,37 @@ func TestHello(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	data := t.TempDir()
+	marks := func() *store.Store {
+		db, err := store.Open(t.Context(), t.TempDir())
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Cleanup(func() { _ = db.Close() })
+		return db
+	}
+	db := marks()
 	now := time.Now()
-	hello(t.Context(), on, data, now)
+	hello(t.Context(), on, db, now)
 	if len(h.bodies) != 1 || !strings.Contains(h.bodies[0], "sent at every start") || len(off.bodies) != 0 {
 		t.Fatalf("bodies %q, switched off %q", h.bodies, off.bodies)
 	}
-	b, err := os.ReadFile(filepath.Join(data, helloMark))
-	if err != nil || strings.Contains(string(b), "127.0.0.1") {
-		t.Fatalf("mark %s %v", b, err)
+	took, err := db.Hello(t.Context())
+	if err != nil || len(took) != 1 || took[urlKey(url)].IsZero() {
+		t.Errorf("marks %v %v: only the channel that took it", took, err)
 	}
-	var took map[string]time.Time
-	if err := json.Unmarshal(b, &took); err != nil || len(took) != 1 || took[urlKey(url)].IsZero() {
-		t.Errorf("mark %v %v: only the channel that took it", took, err)
+	for k := range took {
+		if strings.Contains(k, "127.0.0.1") {
+			t.Errorf("mark holds the URL: %s", k)
+		}
 	}
 
 	// Within helloQuiet the working channel is quiet; a channel added since is tested.
 	h2, url2 := newHook(t)
-	hello(t.Context(), append(on, url2), data, now.Add(helloQuiet-time.Second))
+	hello(t.Context(), append(on, url2), db, now.Add(helloQuiet-time.Second))
 	if len(h.bodies) != 1 || len(h2.bodies) != 1 {
 		t.Errorf("within helloQuiet: %d, new channel %d", len(h.bodies), len(h2.bodies))
 	}
-	hello(t.Context(), on, data, now.Add(helloQuiet))
+	hello(t.Context(), on, db, now.Add(helloQuiet))
 	if len(h.bodies) != 2 {
 		t.Error("no test push after helloQuiet")
 	}
@@ -226,10 +378,10 @@ func TestHello(t *testing.T) {
 	// A shutdown cuts the send: nothing counts as taken.
 	ctx, cancel := context.WithCancel(t.Context())
 	cancel()
-	fresh := t.TempDir()
+	fresh := marks()
 	hello(ctx, []string{url}, fresh, now)
-	if b, _ := os.ReadFile(filepath.Join(fresh, helloMark)); strings.Contains(string(b), urlKey(url)) {
-		t.Errorf("cut send marked as taken: %s", b)
+	if took, _ := fresh.Hello(t.Context()); !took[urlKey(url)].IsZero() {
+		t.Errorf("cut send marked as taken: %v", took)
 	}
 }
 
@@ -249,16 +401,20 @@ func TestPollFailureKeepsState(t *testing.T) {
 	apiBase = down.URL
 	t.Setenv("BACKEND_NOTIFY_URLS", "")
 	data, _ := dirs(t, `{"datacenters":["gra"],"want":[{"ram_max_gb":64}]}`)
-	if err := (watch.State{Notified: []string{"x@gra"}}).Save(filepath.Join(data, "state.json")); err != nil {
+	db, err := store.Open(t.Context(), data)
+	if err != nil {
 		t.Fatal(err)
 	}
+	if err := db.Save(t.Context(), watch.State{}, watch.State{Notified: []string{"x@gra"}}); err != nil {
+		t.Fatal(err)
+	}
+	_ = db.Close()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 	if err := serve(ctx, "127.0.0.1:0", false, false); err != nil {
 		t.Fatal(err)
 	}
-	s, _ := watch.LoadState(filepath.Join(data, "state.json"))
-	if len(s.Notified) != 1 {
+	if s := load(t, data); len(s.Notified) != 1 {
 		t.Errorf("failed poll changed the state: %v", s)
 	}
 }

@@ -1,6 +1,8 @@
 package predict
 
 import (
+	"context"
+	"maps"
 	"math/rand/v2"
 	"slices"
 	"time"
@@ -26,7 +28,7 @@ const fqn = "x.ram-32g.softraid-2x450nvme"
 // stretches without polling.
 func synth(arrivals []time.Time, stay time.Duration, gaps ...watch.Span) watch.State {
 	start := nowT.Add(-watch.Keep)
-	s := watch.State{Since: start, PolledAt: nowT, Spans: map[string][]watch.Span{}}
+	s := watch.State{Since: start, AllSince: start, PolledAt: nowT, Spans: map[string]map[string][]watch.Span{}}
 	from := start
 	for _, g := range gaps {
 		s.Polled = append(s.Polled, watch.Span{From: from, To: g.From})
@@ -34,14 +36,42 @@ func synth(arrivals []time.Time, stay time.Duration, gaps ...watch.Span) watch.S
 	}
 	s.Polled = append(s.Polled, watch.Span{From: from, To: nowT})
 	slices.SortFunc(arrivals, func(a, b time.Time) int { return a.Compare(b) })
-	k := watch.Key(fqn, "gra")
 	for _, a := range arrivals {
 		if a.After(nowT) || a.Before(start) {
 			continue
 		}
-		s.Spans[k] = append(s.Spans[k], watch.Span{From: a.UTC(), To: a.Add(stay).UTC(), Gone: a.Add(stay + 2*time.Minute).UTC()})
+		addSpan(&s, fqn, "gra", watch.Span{From: a.UTC(), To: a.Add(stay).UTC(), Gone: a.Add(stay + 2*time.Minute).UTC()})
 	}
 	return s
+}
+
+// memStore is a Store in memory.
+type memStore struct{ m map[string]Prediction }
+
+func (m *memStore) Predictions(context.Context) (map[string]Prediction, error) {
+	return maps.Clone(m.m), nil
+}
+
+func (m *memStore) SavePredictions(_ context.Context, put map[string]Prediction, del []string) error {
+	if m.m == nil {
+		m.m = map[string]Prediction{}
+	}
+	maps.Copy(m.m, put)
+	for _, k := range del {
+		delete(m.m, k)
+	}
+	return nil
+}
+
+// addSpan appends sp to fqn's spans in dc.
+func addSpan(s *watch.State, fqn, dc string, sp ...watch.Span) {
+	if s.Spans == nil {
+		s.Spans = map[string]map[string][]watch.Span{}
+	}
+	if s.Spans[fqn] == nil {
+		s.Spans[fqn] = map[string][]watch.Span{}
+	}
+	s.Spans[fqn][dc] = append(s.Spans[fqn][dc], sp...)
 }
 
 // weekly is an arrival on each of wds at hh:mm, ±jitter, over the kept window; miss is the chance a week skips.

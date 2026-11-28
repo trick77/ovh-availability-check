@@ -6,6 +6,7 @@ import (
 	"math"
 	"slices"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/trick77/ovh-restock/internal/ovh"
@@ -125,6 +126,10 @@ const (
 // misses are the criteria of w that v fails, stock aside.
 func (w Want) misses(v Variant) []miss {
 	var out []miss
+	// A product the wish doesn't name is never near: the user asked for that one.
+	if len(w.Plans) > 0 && !slices.ContainsFunc(w.Plans, func(p string) bool { return PlanIs(v, p) }) {
+		out = append(out, miss{false, "product"})
+	}
 	if w.RAMMin > 0 && v.RAM < w.RAMMin {
 		out = append(out, miss{v.RAM > 0 && v.RAM*2 >= w.RAMMin, fmt.Sprintf("%d GB, wants ≥ %d", v.RAM, w.RAMMin)})
 	}
@@ -162,11 +167,39 @@ func (w Want) misses(v Variant) []miss {
 	return out
 }
 
+// PlanIs tells whether p names v's product: its planCode ("27skle03-v1") or catalog name ("KS-LE-3"), case,
+// dashes and spaces aside, exactly: "KS-5" is not "KS-5-A".
+func PlanIs(v Variant, p string) bool {
+	n := normPlan(p)
+	return n != "" && (n == normPlan(v.PlanCode) || n == normPlan(v.Name))
+}
+
+func normPlan(s string) string {
+	return strings.Map(func(r rune) rune {
+		if r == '-' || r == ' ' || r == '_' {
+			return -1
+		}
+		return unicode.ToLower(r)
+	}, s)
+}
+
+// UnknownPlans are w's plans no variant of vs has: a typo would wait forever. Meaningful only with a catalog
+// (without one variants have no names).
+func (w Want) UnknownPlans(vs []Variant) []string {
+	var out []string
+	for _, p := range w.Plans {
+		if !slices.ContainsFunc(vs, func(v Variant) bool { return PlanIs(v, p) }) {
+			out = append(out, p)
+		}
+	}
+	return out
+}
+
 // Matches tells whether v meets w, stock aside.
 func (w Want) Matches(v Variant) bool { return len(w.misses(v)) == 0 }
 
 // Near tells whether v is just above w: it fails exactly one criterion, narrowly. why says which ("+1.99 € over
-// 30"). A CPU or disk-kind mismatch is never near.
+// 30"). A product, CPU or disk-kind mismatch is never near.
 func (w Want) Near(v Variant) (why string, ok bool) {
 	m := w.misses(v)
 	if len(m) != 1 || !m[0].near {
@@ -188,7 +221,8 @@ func (c Config) NearMiss(v Variant) (why string, ok bool) {
 	return "", false
 }
 
-// InScope tells whether v is wanted or just above a wish: what the history keeps and the prediction looks at.
+// InScope tells whether v is wanted or just above a wish: what the page's history, the log and the prediction look
+// at. The state keeps every pair's history either way.
 func (c Config) InScope(v Variant) bool {
 	_, near := c.NearMiss(v)
 	return near || c.Wanted(v)
@@ -217,6 +251,32 @@ func Current(c Config, vs []Variant) map[string]Pair {
 			p := Pair{v.FQN, dc}
 			out[p.key()] = p
 		}
+	}
+	return out
+}
+
+// Items are fresh's servers as the page shows a restock event, cheapest first.
+func Items(vs []Variant, fresh []Pair) []Item {
+	dcs := map[string][]string{}
+	for _, p := range fresh {
+		dcs[p.FQN] = append(dcs[p.FQN], p.DC)
+	}
+	var out []Item
+	for _, v := range vs { // vs is cheapest first
+		d, ok := dcs[v.FQN]
+		if !ok {
+			continue
+		}
+		slices.Sort(d)
+		it := Item{FQN: v.FQN, Name: v.Name, PlanCode: v.PlanCode, CPU: v.CPU, RAM: v.RAM, Rent: v.Rent, Priced: v.Priced,
+			OrderURL: v.OrderURL}
+		for _, x := range v.Disks {
+			it.Disks = append(it.Disks, x.String())
+		}
+		for _, dc := range d {
+			it.DCs = append(it.DCs, ItemDC{DC: dc, Slow: v.Stock[dc] == "72H"})
+		}
+		out = append(out, it)
 	}
 	return out
 }

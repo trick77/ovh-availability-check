@@ -3,6 +3,7 @@ module github.com/trick77/ovh-restock
 go 1.27.2
 
 require (
+	github.com/ncruces/go-sqlite3 v0.38.1
 	github.com/trick77/ship/kit v0.23.1
 	github.com/trick77/toolkit v0.10.0
 )
@@ -10,6 +11,8 @@ require (
 require (
 	github.com/mattn/go-colorable v0.1.16 // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
+	github.com/ncruces/go-sqlite3-wasm/v6 v6.7.35401 // indirect
+	github.com/ncruces/julianday v1.0.0 // indirect
 	github.com/nicholas-fedor/shoutrrr v0.25.1 // indirect
 	go.yaml.in/yaml/v3 v3.0.6 // indirect
 	golang.org/x/oauth2 v0.38.0 // indirect

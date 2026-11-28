@@ -79,6 +79,11 @@ func TestMatches(t *testing.T) {
 		{"price over", Want{PriceMax: 25}, ks2, false},
 		{"price unknown never matches", Want{PriceMax: 1000}, unpriced, false},
 		{"no price wish takes unpriced", Want{RAMMax: 64}, unpriced, true},
+		{"plan by name", Want{Plans: []string{"ks 2"}}, ks2, true},
+		{"plan by code", Want{Plans: []string{"x", "24SK202"}}, ks2, true},
+		{"plan exact", Want{Plans: []string{"KS-2-A"}}, ks2, false},
+		{"plan and ram", Want{Plans: []string{"KS-2"}, RAMMin: 32}, ks2, true},
+		{"plan and ram short", Want{Plans: []string{"KS-2"}, RAMMin: 128}, ks2, false},
 	} {
 		if got := tc.w.Matches(tc.v); got != tc.want {
 			t.Errorf("%s: %v", tc.name, got)
@@ -109,11 +114,28 @@ func TestNear(t *testing.T) {
 		{"two misses", Want{PriceMax: 25, RAMMin: 128}, ks2, false, ""},
 		{"matches is not near", Want{PriceMax: 30}, ks2, false, ""},
 		{"too slow never near", Want{CPUMinPct: pct(-10)}, slow, false, ""},
+		{"other product never near", Want{Plans: []string{"KS-3"}}, ks2, false, ""},
 	} {
 		why, near := tc.w.Near(tc.v)
 		if near != tc.near || why != tc.why {
 			t.Errorf("%s: %v %q", tc.name, near, why)
 		}
+	}
+}
+
+func TestPlans(t *testing.T) {
+	w := Want{Plans: []string{"KS-2", "ks-le-9"}}
+	if u := w.UnknownPlans([]Variant{ks2}); len(u) != 1 || u[0] != "ks-le-9" {
+		t.Errorf("unknown %v", u)
+	}
+	if err := (Want{Plans: []string{"KS-2"}}).Check(false); err != nil {
+		t.Errorf("plan alone refused: %v", err)
+	}
+	if err := (Want{Plans: []string{" - "}}).Check(false); err == nil {
+		t.Error("empty plan accepted")
+	}
+	if err := (Want{Name: "x"}).Check(false); err == nil {
+		t.Error("no criterion accepted")
 	}
 }
 
@@ -201,14 +223,8 @@ func TestEdges(t *testing.T) {
 		t.Fatalf("fresh %v", fresh)
 	}
 
-	// A failed push records nothing: the next poll tries again.
-	s := State{}.Next(cur, fresh, false)
-	if len(s.New(cur)) != 2 {
-		t.Errorf("failed push recorded: %v", s)
-	}
-
-	// Sent: the same stock fires nothing again.
-	s = State{}.Next(cur, fresh, true)
+	// Evented, delivered or not: the same stock fires nothing again (a failed delivery is retried on its event).
+	s := State{}.Next(cur, fresh)
 	if n := s.New(Current(c, vs)); len(n) != 0 {
 		t.Errorf("repeat: %v", n)
 	}
@@ -217,7 +233,7 @@ func TestEdges(t *testing.T) {
 	out := ks2
 	out.Stock = map[string]string{"gra": "unavailable", "sbg": "1H-low"}
 	cur2 := Current(c, []Variant{out})
-	s = s.Next(cur2, s.New(cur2), true)
+	s = s.Next(cur2, s.New(cur2))
 	if len(s.Notified) != 1 {
 		t.Errorf("sold out kept: %v", s.Notified)
 	}
@@ -227,27 +243,9 @@ func TestEdges(t *testing.T) {
 
 	// A wish added later fires for stock already there, because the state holds pushes, not snapshots.
 	c2 := Config{Datacenters: c.Datacenters, Want: []Want{{RAMMax: 32}}}
-	s = State{}.Next(Current(c2, vs), nil, true)
+	s = State{}.Next(Current(c2, vs), nil)
 	if n := s.New(Current(c, vs)); len(n) != 2 {
 		t.Errorf("new wish: %v", n)
-	}
-}
-
-func TestStateSaveLoad(t *testing.T) {
-	p := filepath.Join(t.TempDir(), "state.json")
-	if s, err := LoadState(p); err != nil || len(s.Notified) != 0 {
-		t.Fatalf("missing file: %v %v", s, err)
-	}
-	in := State{Notified: []string{"a@gra"}}
-	if err := in.Save(p); err != nil {
-		t.Fatal(err)
-	}
-	out, err := LoadState(p)
-	if err != nil || !reflect.DeepEqual(in, out) {
-		t.Errorf("got %v %v", out, err)
-	}
-	if ents, _ := os.ReadDir(filepath.Dir(p)); len(ents) != 1 {
-		t.Errorf("temp file left: %v", ents)
 	}
 }
 

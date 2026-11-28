@@ -24,7 +24,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
-    # ./data: state.json (pushes, stock history), prices.json, predictions.json. ./conf: config.json, the wishes,
+    # ./data: app.db (SQLite: stock history, prices, updates, predictions). ./conf: config.json, the wishes,
     # read-only inside.
     volumes:
       - ./data:/data

@@ -2,12 +2,7 @@ package watch
 
 import (
 	"cmp"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"io/fs"
-	"os"
-	"path/filepath"
+	"maps"
 	"slices"
 	"time"
 
@@ -24,71 +19,64 @@ const (
 const (
 	seenKeep  = 180 * 24 * time.Hour // "last in stock" outlives the history
 	priceKeep = 365 * 24 * time.Hour
-	maxSpans  = 2000 // per pair: one flapping every poll for weeks stays below 1 MB
-	maxPushes = 20
+	maxSpans  = 2000 // per pair: one flapping every poll for weeks stays bounded
+	maxEvents = 200  // besides Keep: a wide wish firing every poll stays bounded; the page shows 20
 )
 
-// State is data/state.json: what was pushed, plus the history the page shows.
+// State is what was evented, plus the history the page shows. internal/store keeps it in SQLite and writes only
+// what changed between two states.
 type State struct {
-	// Notified are the pairs already pushed. It holds what was notified, not the last snapshot, so a wish added later
-	// still fires for stock that is already there.
-	Notified []string `json:"notified"`
+	// Notified are the pairs that got a restock event, delivered or not. It holds what was evented, not the last
+	// snapshot, so a wish added later still fires for stock that is already there.
+	Notified []string
 	// Since is the first observed poll: the page's "never" means never since then.
-	Since time.Time `json:"since,omitzero"`
+	Since time.Time
+	// AllSince is the first poll that tracked every pair, not only the in-scope ones (until 0.4 only those had
+	// spans). A variant's history counts from here at the latest: before, nobody watched it.
+	AllSince time.Time
 	// PolledAt is the last observed poll. A longer pause than gapAfter intervals ends every streak: nobody saw what
 	// happened in between.
-	PolledAt time.Time `json:"polled_at,omitzero"`
-	// Seen is every variant ever in stock in a watched DC, wanted or not, by fqn. Per variant, not per pair: the
-	// live API has ~5700 pairs in stock, 1.2 MB rewritten every poll (2026-11).
-	Seen map[string]Seen `json:"seen,omitempty"`
+	PolledAt time.Time
+	// Seen is every variant ever in stock in a watched DC by fqn: the current or last streak.
+	Seen map[string]Seen
 	// Polled are the stretches polls covered; outside them the history has no data.
-	Polled []Span `json:"polled,omitempty"`
-	// Spans are the in-stock stretches of in-scope pairs (wanted or just above a wish), by Key, oldest first.
-	Spans map[string][]Span `json:"spans,omitempty"`
-	// Prices are each variant's price points by fqn, one per change, oldest first. They live in prices.json, written
-	// only when a price moves: every variant's, ~0.5 MB.
-	Prices map[string][]Price `json:"-"`
-	// Pushes are the pushes sent or tried, newest first.
-	Pushes []Push `json:"pushes,omitempty"`
-	// DigestAt is when the last weekly digest went out: a restart must not send it twice.
-	DigestAt time.Time `json:"digest_at,omitzero"`
+	Polled []Span
+	// Spans are the in-stock stretches of every pair in the watched DCs, by fqn, then DC, oldest first. Every pair,
+	// not only the wanted ones (user): a new wish must not wait weeks for history.
+	Spans map[string]map[string][]Span
+	// Prices are each variant's price points by fqn, one per change, oldest first.
+	Prices map[string][]Price
+	// Events are the restocks and digests, newest first, delivered or not.
+	Events []Event
+	// DigestAt is when the last weekly digest was made: a restart must not make it twice.
+	DigestAt time.Time
 
-	// lastIn are the pairs in stock at the last poll, wanted or not: a pair that turns wanted while in stock came in
-	// unseen. Memory only (~5700 pairs); nil after a restart, when every new span is quiet.
-	lastIn map[string]bool
+	// warm: a poll ran since the start. The first poll's new spans are quiet: what is in stock then came in unseen
+	// (a restart, the first poll after the import that started tracking every pair).
+	warm bool
 }
 
-// Seen is one variant's stock streak, in any watched DC.
-type Seen struct {
-	Since time.Time `json:"since"` // the current or last streak began
-	Last  time.Time `json:"last"`  // last poll that saw it in stock
-	In    bool      `json:"in"`    // in stock at the last poll
-}
+// Event kinds.
+const (
+	KindRestock = "restock"
+	KindDigest  = "digest"
+)
 
-// Span is a stretch of time. Slow: orderable with 72H delivery rather than 1H. Gone is the poll that found it sold
-// out; zero while open or when polling stopped. Quiet: nobody saw it come in (first poll, after a gap or a restart,
-// or already in stock when it turned wanted), so the log has no "in" for it.
-type Span struct {
-	From  time.Time `json:"from"`
-	To    time.Time `json:"to"`
-	Gone  time.Time `json:"gone,omitzero"`
-	Slow  bool      `json:"slow,omitempty"`
-	Quiet bool      `json:"quiet,omitempty"`
-}
+// Delivery values besides "failed on …" and "partly failed on …".
+const (
+	Sent      = "sent"
+	NoChannel = "no channel"
+)
 
-// Price is a variant's catalog price from At on.
-type Price struct {
-	At    time.Time `json:"at"`
-	Rent  float64   `json:"rent"`
-	Setup float64   `json:"setup"`
-}
-
-// Push is one push sent, or failed.
-type Push struct {
-	At    time.Time `json:"at"`
-	Title string    `json:"title"`
-	Body  string    `json:"body"`
-	Err   string    `json:"err,omitempty"`
+// Pairs are the event's pairs.
+func (e Event) Pairs() []Pair {
+	var out []Pair
+	for _, it := range e.Items {
+		for _, d := range it.DCs {
+			out = append(out, Pair{it.FQN, d.DC})
+		}
+	}
+	return out
 }
 
 // Key names a pair in the state: fqn@dc.
@@ -101,65 +89,7 @@ const (
 	gapSlack = 5 * time.Minute
 )
 
-// pricesPath is prices.json next to state.json.
-func pricesPath(statePath string) string {
-	return filepath.Join(filepath.Dir(statePath), "prices.json")
-}
-
-// LoadState reads path and the prices.json next to it; a missing file is empty.
-func LoadState(path string) (State, error) {
-	var s State
-	if err := readJSON(path, &s); err != nil {
-		return State{}, err
-	}
-	if err := readJSON(pricesPath(path), &s.Prices); err != nil {
-		return State{}, err
-	}
-	return s, nil
-}
-
-func readJSON(path string, v any) error {
-	b, err := os.ReadFile(path) //nolint:gosec // G304: the operator's BACKEND_DATA_DIR
-	if errors.Is(err, fs.ErrNotExist) {
-		return nil
-	}
-	if err != nil {
-		return err
-	}
-	if err := json.Unmarshal(b, v); err != nil {
-		return fmt.Errorf("%s: %w", path, err)
-	}
-	return nil
-}
-
-// Save writes s to path, without the prices.
-func (s State) Save(path string) error { return writeJSON(path, s) }
-
-// SavePrices writes the prices next to path.
-func (s State) SavePrices(path string) error { return writeJSON(pricesPath(path), s.Prices) }
-
-// writeJSON writes atomically: a crash mid-write must not leave a broken file that re-pushes everything.
-func writeJSON(path string, v any) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-	tmp, err := os.CreateTemp(filepath.Dir(path), ".state-*")
-	if err != nil {
-		return err
-	}
-	defer func() { _ = os.Remove(tmp.Name()) }() // gone after the rename: only a failed write leaves it
-	if _, err := tmp.Write(b); err != nil {
-		_ = tmp.Close()
-		return err
-	}
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-	return os.Rename(tmp.Name(), path)
-}
-
-// New are the pairs of cur not pushed yet, sorted.
+// New are the pairs of cur not evented yet, sorted.
 func (s State) New(cur map[string]Pair) []Pair {
 	var out []Pair
 	for k, p := range cur {
@@ -171,41 +101,64 @@ func (s State) New(cur map[string]Pair) []Pair {
 	return out
 }
 
-// Next is the state after a poll: what was pushed and is still in stock, plus fresh when its push went out. A pair
-// out of stock drops out, so it fires again when it returns; sold out itself sends nothing.
-func (s State) Next(cur map[string]Pair, fresh []Pair, sent bool) State {
+// Next is the state after a poll: what was evented and is still in stock, plus fresh. A pair out of stock drops
+// out, so it fires again when it returns; sold out itself makes no event.
+func (s State) Next(cur map[string]Pair, fresh []Pair) State {
 	var out []string
 	for _, k := range s.Notified {
 		if _, ok := cur[k]; ok {
 			out = append(out, k)
 		}
 	}
-	if sent {
-		for _, p := range fresh {
-			out = append(out, p.key())
-		}
+	for _, p := range fresh {
+		out = append(out, p.key())
 	}
 	slices.Sort(out)
 	s.Notified = slices.Compact(out)
 	return s
 }
 
-// AddPush keeps p, newest first.
-func (s State) AddPush(p Push) State {
-	s.Pushes = append([]Push{p}, s.Pushes...)[:min(len(s.Pushes)+1, maxPushes)]
+// AddEvent keeps e, newest first. An event of the same At and Kind is replaced.
+func (s State) AddEvent(e Event) State {
+	e.At = stamp(e.At)
+	out := make([]Event, 0, len(s.Events)+1)
+	out = append(out, e)
+	for _, o := range s.Events {
+		if !o.At.Equal(e.At) || o.Kind != e.Kind {
+			out = append(out, o)
+		}
+	}
+	slices.SortStableFunc(out, func(a, b Event) int { return b.At.Compare(a.At) })
+	s.Events = out[:min(len(out), maxEvents)]
 	return s
 }
 
-// Observe records a good poll at now. It never changes s's maps or slices in place: the page reads the old state
-// while the next is built.
-func (s State) Observe(vs []Variant, wanted func(Variant) bool, now time.Time, every time.Duration) State {
+// SetDelivery records a retry's outcome on the event e names.
+func (s State) SetDelivery(e Event, delivery string, retry bool) State {
+	out := slices.Clone(s.Events)
+	for i, o := range out {
+		if o.At.Equal(e.At) && o.Kind == e.Kind {
+			out[i].Delivery, out[i].Retry = delivery, retry
+		}
+	}
+	s.Events = out
+	return s
+}
+
+// Observe records a good poll at now: every pair of vs, wanted or not. It never changes s's maps or slices in
+// place: the page reads the old state while the next is built, and the store diffs the two.
+func (s State) Observe(vs []Variant, now time.Time, every time.Duration) State {
 	now = stamp(now)
 	prev := s.PolledAt
 	gap := prev.IsZero() || now.Sub(prev) > gapAfter*every+gapSlack
 	if s.Since.IsZero() {
 		s.Since = now
 	}
+	if s.AllSince.IsZero() {
+		s.AllSince = now
+	}
 	s.PolledAt = now
+	quiet := gap || !s.warm
 
 	polled := slices.Clone(s.Polled)
 	if n := len(polled); n > 0 && !gap && polled[n-1].To.Equal(prev) {
@@ -222,15 +175,27 @@ func (s State) Observe(vs []Variant, wanted func(Variant) bool, now time.Time, e
 		}
 		seen[k] = e
 	}
-	spans := make(map[string][]Span, len(s.Spans))
-	for k, sp := range s.Spans {
-		spans[k] = sp
+	spans := maps.Clone(s.Spans)
+	if spans == nil {
+		spans = map[string]map[string][]Span{}
+	}
+	owned := map[string]bool{}
+	// own is fqn's DC map, cloned on first write: the old state's stays as it was.
+	own := func(fqn string) map[string][]Span {
+		if !owned[fqn] {
+			m := maps.Clone(spans[fqn])
+			if m == nil {
+				m = map[string][]Span{}
+			}
+			spans[fqn], owned[fqn] = m, true
+		}
+		return spans[fqn]
 	}
 	in, pairs, listed := map[string]bool{}, map[string]bool{}, map[string]bool{}
 	for _, v := range vs {
-		w := wanted(v)
 		for dc, a := range v.Stock {
-			listed[Key(v.FQN, dc)] = true
+			k := Key(v.FQN, dc)
+			listed[k] = true
 			if !ovh.InStock(a) {
 				continue
 			}
@@ -243,26 +208,33 @@ func (s State) Observe(vs []Variant, wanted func(Variant) bool, now time.Time, e
 				e.Last = now
 				seen[v.FQN] = e
 			}
-			k := Key(v.FQN, dc)
 			pairs[k] = true
-			// A pair that stops being wanted while in stock (a price rise, a config edit) keeps its open span until it
-			// sells out: otherwise the log would claim an "out".
-			if w || isOpen(spans[k], prev, gap) {
-				quiet := gap || s.lastIn == nil || s.lastIn[k]
-				spans[k] = extend(spans[k], now, prev, gap, a == "72H", quiet)
-			}
+			m := own(v.FQN)
+			m[dc] = extend(m[dc], now, prev, gap, a == "72H", quiet)
 		}
 	}
 	// Gone needs the pair still listed and out of stock. A pair no longer listed (a DC dropped from the config, a
-	// variant OVH stopped listing) just stops: nobody saw it sell out.
-	for k, sp := range spans {
-		if n := len(sp); !pairs[k] && listed[k] && isOpen(sp, prev, gap) {
-			sp = slices.Clone(sp)
-			sp[n-1].Gone = now
-			spans[k] = sp
+	// variant OVH stopped listing) just stops: nobody saw it sell out. Cut: spans older than Keep go.
+	for fqn, m := range spans {
+		for dc, sp := range m {
+			k := Key(fqn, dc)
+			cut := sp
+			if n := len(sp); !pairs[k] && listed[k] && isOpen(sp, prev, gap) {
+				cut = slices.Clone(sp)
+				cut[n-1].Gone = now
+			}
+			cut = cutSpans(cut, now.Add(-Keep))
+			switch {
+			case len(cut) == 0:
+				delete(own(fqn), dc)
+			case len(cut) != len(sp) || &cut[0] != &sp[0]:
+				own(fqn)[dc] = cut
+			}
+		}
+		if len(spans[fqn]) == 0 {
+			delete(spans, fqn)
 		}
 	}
-	s.lastIn = pairs
 	for k, e := range seen {
 		if e.In && !in[k] {
 			e.In = false
@@ -272,19 +244,19 @@ func (s State) Observe(vs []Variant, wanted func(Variant) bool, now time.Time, e
 			delete(seen, k)
 		}
 	}
-	for k, sp := range spans {
-		sp = cutSpans(sp, now.Add(-Keep))
-		if len(sp) == 0 {
-			delete(spans, k)
-			continue
+	if n := len(s.Events); n > 0 && now.Sub(s.Events[n-1].At) > Keep {
+		i := slices.IndexFunc(s.Events, func(e Event) bool { return now.Sub(e.At) > Keep })
+		var kept []Event
+		if i > 0 {
+			kept = slices.Clone(s.Events[:i])
 		}
-		spans[k] = sp
+		s.Events = kept
 	}
-	s.Seen, s.Spans = seen, spans
+	s.Seen, s.Spans, s.warm = seen, spans, true
 	return s
 }
 
-// stamp is a time as the state keeps it: UTC, whole seconds, so the JSON stays short ("2026-11-27T16:28:12Z").
+// stamp is a time as the state keeps it: UTC, whole seconds (the store writes unix seconds).
 func stamp(t time.Time) time.Time { return t.UTC().Truncate(time.Second) }
 
 // isOpen tells whether a pair's last span was in stock at the previous poll.
@@ -329,16 +301,15 @@ func cutSpans(sp []Span, from time.Time) []Span {
 }
 
 // ObservePrices records each priced variant's price when it differs from the last one kept. Points older than a year
-// go, except the last of them: it is the baseline the next change compares to. changed tells whether prices.json
-// needs writing.
-func (s State) ObservePrices(vs []Variant, now time.Time) (_ State, changed bool) {
+// go, except the last of them: it is the baseline the next change compares to.
+func (s State) ObservePrices(vs []Variant, now time.Time) State {
 	now = stamp(now)
 	var prices map[string][]Price
 	own := func() {
 		if prices == nil {
-			prices = make(map[string][]Price, len(s.Prices)+1)
-			for k, p := range s.Prices {
-				prices[k] = p
+			prices = maps.Clone(s.Prices)
+			if prices == nil {
+				prices = map[string][]Price{}
 			}
 		}
 	}
@@ -370,14 +341,25 @@ func (s State) ObservePrices(vs []Variant, now time.Time) (_ State, changed bool
 			delete(prices, k)
 		}
 	}
-	if prices == nil {
-		return s, false
+	if prices != nil {
+		s.Prices = prices
 	}
-	s.Prices = prices
-	return s, true
+	return s
 }
 
-// Change is one entry of the stock log: a wanted pair came in or went out.
+// TrackedFrom is when fqn's history starts: AllSince (every pair is tracked from there on), or Since for a variant
+// with a span before AllSince: in scope under 0.3, so watched all along (its first kept span may be recent, and
+// counting from there would drop its prediction at the upgrade). Before it, no data: not sold out.
+func (s State) TrackedFrom(fqn string) time.Time {
+	for _, sp := range s.Spans[fqn] {
+		if len(sp) > 0 && sp[0].From.Before(s.AllSince) {
+			return s.Since
+		}
+	}
+	return s.AllSince
+}
+
+// Change is one entry of the stock log: a pair came in or went out.
 type Change struct {
 	At      time.Time
 	FQN, DC string
@@ -386,12 +368,29 @@ type Change struct {
 	For     time.Duration // how long it was in stock, on an out
 }
 
-// Changes are the stock log, newest first: a span's start unless it is Quiet, its Gone. A switch between 1H and 72H
-// is no change. For runs from the streak's start to the poll that found it gone.
-func (s State) Changes() []Change {
+// Changes are the stock log of the variants keep takes (nil: all), newest first: a span's start unless it is Quiet,
+// its Gone. A switch between 1H and 72H is no change. For runs from the streak's start to the poll that found it
+// gone.
+func (s State) Changes(keep func(fqn string) bool) []Change {
 	var out []Change
-	for k, sp := range s.Spans {
-		fqn, dc := splitKey(k)
+	for fqn, m := range s.Spans {
+		if keep == nil || keep(fqn) {
+			out = appendChanges(out, fqn, m)
+		}
+	}
+	sortChanges(out)
+	return out
+}
+
+// ChangesOf is Changes for one variant.
+func (s State) ChangesOf(fqn string) []Change {
+	out := appendChanges(nil, fqn, s.Spans[fqn])
+	sortChanges(out)
+	return out
+}
+
+func appendChanges(out []Change, fqn string, m map[string][]Span) []Change {
+	for dc, sp := range m {
 		for i, x := range sp {
 			cont := i > 0 && sp[i-1].To.Equal(x.From)
 			if !cont && !x.Quiet {
@@ -406,13 +405,17 @@ func (s State) Changes() []Change {
 			}
 		}
 	}
-	slices.SortFunc(out, func(a, b Change) int {
-		return cmp.Or(b.At.Compare(a.At), cmp.Compare(a.FQN, b.FQN), cmp.Compare(a.DC, b.DC))
-	})
 	return out
 }
 
-func splitKey(k string) (fqn, dc string) {
+func sortChanges(out []Change) {
+	slices.SortFunc(out, func(a, b Change) int {
+		return cmp.Or(b.At.Compare(a.At), cmp.Compare(a.FQN, b.FQN), cmp.Compare(a.DC, b.DC))
+	})
+}
+
+// SplitKey splits fqn@dc.
+func SplitKey(k string) (fqn, dc string) {
 	for i := len(k) - 1; i >= 0; i-- {
 		if k[i] == '@' {
 			return k[:i], k[i+1:]

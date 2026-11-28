@@ -5,11 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/fs"
 	"log/slog"
+	"maps"
 	"math"
-	"os"
-	"path/filepath"
+	"reflect"
 	"slices"
 	"sync"
 	"time"
@@ -26,10 +25,17 @@ const askEvery = 6 * time.Hour
 type Options struct {
 	Client     *llmwire.Client // nil: no model, nothing is asked
 	Model      string
-	DailyCalls int    // per local day, all kinds of call together
-	Path       string // predictions.json
+	DailyCalls int   // per local day, all kinds of call together
+	Store      Store // nil: nothing kept (-wish)
 	Loc        *time.Location
 	Log        *slog.Logger
+}
+
+// Store keeps the predictions: internal/store's SQLite.
+type Store interface {
+	Predictions(ctx context.Context) (map[string]Prediction, error)
+	// SavePredictions writes put and deletes del, one transaction.
+	SavePredictions(ctx context.Context, put map[string]Prediction, del []string) error
 }
 
 // Service keeps the predictions and asks the model in the background.
@@ -46,7 +52,8 @@ type Service struct {
 	broke  bool  // the day's budget ran out (logged once)
 	spent  int64 // nano-USD at list price, since start
 
-	saveMu sync.Mutex // marshal and rename as one: two savers must not land an older file last
+	saveMu sync.Mutex            // diff and write as one: two savers must not land an older state last
+	saved  map[string]Prediction // what the store holds; a failed write leaves it, the next save carries the diff
 }
 
 // Spent is what the calls cost so far, in USD at the vendor's list price.
@@ -77,8 +84,8 @@ func FromEnv(model string, cfg llmwire.Config) (*llmwire.Client, error) {
 	return c, nil
 }
 
-// New loads o.Path and returns the service; Run asks the model.
-func New(o Options) (*Service, error) {
+// New loads the store's predictions and returns the service; Run asks the model.
+func New(ctx context.Context, o Options) (*Service, error) {
 	if o.Log == nil {
 		o.Log = slog.Default()
 	}
@@ -86,16 +93,14 @@ func New(o Options) (*Service, error) {
 		o.Loc = time.Local
 	}
 	s := &Service{o: o, jobs: make(chan History, 64), preds: map[string]Prediction{}, queued: map[string]bool{},
-		tried: map[string]try{}}
-	b, err := os.ReadFile(o.Path)
-	switch {
-	case o.Path == "": // nothing kept (-wish)
-	case errors.Is(err, fs.ErrNotExist):
-	case err != nil:
-		return nil, err
-	default:
-		if err := json.Unmarshal(b, &s.preds); err != nil {
-			return nil, fmt.Errorf("%s: %w", o.Path, err)
+		tried: map[string]try{}, saved: map[string]Prediction{}}
+	if o.Store != nil {
+		ps, err := o.Store.Predictions(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("predictions: %w", err)
+		}
+		if ps != nil {
+			s.preds, s.saved = ps, maps.Clone(ps)
 		}
 	}
 	if o.Client != nil {
@@ -336,36 +341,34 @@ func (s *Service) spend() bool {
 	return true
 }
 
+// save writes the predictions that changed since the last save.
 func (s *Service) save() {
-	if s.o.Path == "" {
+	if s.o.Store == nil {
 		return
 	}
 	s.saveMu.Lock()
 	defer s.saveMu.Unlock()
 	s.mu.Lock()
-	b, err := json.Marshal(s.preds)
+	cur := maps.Clone(s.preds)
 	s.mu.Unlock()
-	if err == nil {
-		err = writeFile(s.o.Path, b)
+	put := map[string]Prediction{}
+	for k, p := range cur {
+		if old, ok := s.saved[k]; !ok || !reflect.DeepEqual(old, p) {
+			put[k] = p
+		}
 	}
-	if err != nil {
+	var del []string
+	for k := range s.saved {
+		if _, ok := cur[k]; !ok {
+			del = append(del, k)
+		}
+	}
+	if len(put) == 0 && len(del) == 0 {
+		return
+	}
+	if err := s.o.Store.SavePredictions(context.Background(), put, del); err != nil {
 		s.o.Log.Error("predictions", "err", err)
+		return
 	}
-}
-
-// writeFile writes atomically, as state.json is.
-func writeFile(path string, b []byte) error {
-	tmp, err := os.CreateTemp(filepath.Dir(path), ".predictions-*")
-	if err != nil {
-		return err
-	}
-	defer func() { _ = os.Remove(tmp.Name()) }()
-	if _, err := tmp.Write(b); err != nil {
-		_ = tmp.Close()
-		return err
-	}
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-	return os.Rename(tmp.Name(), path)
+	s.saved = cur
 }
