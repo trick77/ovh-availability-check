@@ -11,7 +11,6 @@ import (
 	"maps"
 	"math"
 	"net/http"
-	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -72,7 +71,6 @@ type rowsArg struct {
 }
 
 const (
-	maxChanges      = 30
 	maxPriceChanges = 20
 )
 
@@ -106,31 +104,9 @@ type pageData struct {
 	Quiet       []string
 	Almost      []almostRow
 	Axis        []string
-	Changes     []changeRow
+	Activity    []activityRow
 	Prices      []priceRow
 	MorePrices  bool
-	Updates     []updateRow
-}
-
-// updateRow is one event: a restock's servers, or a digest's (or an imported push's) text.
-type updateRow struct {
-	At       time.Time
-	Kind     string // Restock, Digest
-	Head     string // "2 servers", or the title
-	Delivery cell
-	Items    []updateItem
-	Body     []bodyPart // when there are no items
-}
-
-type updateItem struct {
-	Name, Code, Spec, Price, OrderURL string
-	DCs                               []cell
-}
-
-// bodyPart is a stretch of text, or a link shown short (Href set): the order icon when Order, else "link ↗".
-type bodyPart struct {
-	Text, Href string
-	Order      bool
 }
 
 // cell is a table cell worked out in Go, so the template only prints: text, a CSS class, a tooltip.
@@ -202,15 +178,6 @@ type rect struct {
 	Title string
 }
 
-type changeRow struct {
-	At         time.Time
-	Kind       string // in, out, price
-	Name, Code string
-	Text       string
-	DC         cell // a pill: 1H or 72H on an in
-	Extra      string
-}
-
 type priceRow struct {
 	At                 time.Time
 	Name, Code, Config string
@@ -222,6 +189,9 @@ func (w *watcher) routes() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /{$}", w.page)
 	mux.HandleFunc("GET /fonts/{name}", serveFont)
+	if w.hub != nil {
+		mux.HandleFunc("GET /events", w.events)
+	}
 	mux.HandleFunc("GET /icon.svg", func(rw http.ResponseWriter, _ *http.Request) {
 		rw.Header().Set("Content-Type", "image/svg+xml")
 		rw.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
@@ -262,7 +232,6 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 	}
 	now := time.Now()
 	d.Since = state.Since
-	d.Updates = updates(state.Events)
 	if c, ok := ovh.CPU(w.cfg.ReferenceCPU); ok && c.Mark > 0 {
 		d.Ref, d.RefCPU = &c, shortCPU(w.cfg.ReferenceCPU)
 	}
@@ -314,7 +283,7 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 		d.HistNowPct = fmt.Sprintf("%.3f%%", float64(d.HistNow)*100/float64(d.HistW))
 	}
 	d.Almost = d.almost(scope, w.cfg, state, now)
-	d.Changes = changes(scope, state, now)
+	d.Activity = activity(scope, w.cfg, state, now)
 	d.Prices, d.MorePrices = priceChanges(vs, w.cfg, state, d.ShowAll)
 	d.Tiles = tiles(d, wanted, scope, preds, state, now)
 
@@ -634,46 +603,6 @@ func inScope(scope []watch.Variant) func(string) bool {
 	return func(fqn string) bool { return in[fqn] }
 }
 
-// changes is the stock log: in/out of in-scope pairs from the spans, and the price changes of scope.
-func changes(scope []watch.Variant, s watch.State, now time.Time) []changeRow {
-	byFQN := map[string]watch.Variant{}
-	for _, v := range scope {
-		byFQN[v.FQN] = v
-	}
-	var out []changeRow
-	for _, c := range s.Changes(inScope(scope)) {
-		v := byFQN[c.FQN]
-		r := changeRow{At: c.At, Kind: "out", Name: cmp.Or(v.Name, v.PlanCode), Code: code(v.Name, v.PlanCode),
-			Text: config(v), DC: cell{Text: shortDC(c.DC), Class: "pill", Title: c.DC}}
-		if v.Priced {
-			r.Text += " · " + money(v.Rent) + " €"
-		}
-		if c.In {
-			r.Kind, r.DC.Class, r.DC.Title = "in", "pill on", c.DC+": 1H"
-			if c.Slow {
-				r.DC.Class, r.DC.Title = "pill slow", c.DC+": 72H"
-			}
-		} else {
-			r.Extra = "after " + compact(c.For)
-		}
-		out = append(out, r)
-	}
-	for _, v := range scope {
-		ps := s.Prices[v.FQN]
-		for i := 1; i < len(ps); i++ {
-			// A setup-only change is in the price table; here it would read "18.99 € → 18.99 €".
-			if now.Sub(ps[i].At) > watch.Window || ps[i].Rent == ps[i-1].Rent {
-				continue
-			}
-			out = append(out, changeRow{At: ps[i].At, Kind: "price", Name: cmp.Or(v.Name, v.PlanCode),
-				Code: code(v.Name, v.PlanCode),
-				Text: config(v) + " · " + money(ps[i-1].Rent) + " € → " + money(ps[i].Rent) + " €"})
-		}
-	}
-	slices.SortStableFunc(out, func(a, b changeRow) int { return b.At.Compare(a.At) })
-	return out[:min(len(out), maxChanges)]
-}
-
 // priceChanges lists every price change, wanted variants first, newest first; all lists every variant's.
 func priceChanges(vs []watch.Variant, c watch.Config, s watch.State, all bool) ([]priceRow, bool) {
 	type item struct {
@@ -889,92 +818,6 @@ func code(name, plan string) string {
 		return ""
 	}
 	return plan
-}
-
-const maxUpdates = 20
-
-// updates are the newest events for the page.
-func updates(es []watch.Event) []updateRow {
-	var out []updateRow
-	for _, e := range es[:min(len(es), maxUpdates)] {
-		u := updateRow{At: e.At, Kind: "Restock", Head: e.Title, Delivery: deliveryCell(e)}
-		if e.Kind == watch.KindDigest {
-			u.Kind = "Digest"
-		}
-		for _, it := range e.Items {
-			ui := updateItem{Name: cmp.Or(it.Name, it.PlanCode), Code: code(it.Name, it.PlanCode), OrderURL: it.OrderURL}
-			var spec []string
-			if it.CPU != "" {
-				spec = append(spec, shortCPU(it.CPU))
-			}
-			spec = append(spec, itoa(it.RAM)+" GB")
-			if len(it.Disks) > 0 {
-				spec = append(spec, strings.Join(it.Disks, " + "))
-			}
-			ui.Spec = strings.Join(spec, " · ")
-			if it.Priced {
-				ui.Price = money(it.Rent) + " €"
-			}
-			for _, d := range it.DCs {
-				c := cell{Text: shortDC(d.DC), Class: "pill on", Title: d.DC + ": 1H"}
-				if d.Slow {
-					c.Class, c.Title = "pill slow", d.DC+": 72H"
-				}
-				ui.DCs = append(ui.DCs, c)
-			}
-			u.Items = append(u.Items, ui)
-		}
-		if len(u.Items) > 0 {
-			u.Head = "1 server"
-			if n := len(u.Items); n != 1 {
-				u.Head = itoa(n) + " servers"
-			}
-		} else {
-			u.Body = linkify(e.Body)
-		}
-		out = append(out, u)
-	}
-	return out
-}
-
-func deliveryCell(e watch.Event) cell {
-	switch {
-	case e.Delivery == watch.Sent:
-		return cell{Text: e.Delivery, Class: "pill"}
-	case e.Delivery == watch.NoChannel:
-		return cell{Text: e.Delivery, Class: "pill faint", Title: "BACKEND_NOTIFY_URLS has no channel on"}
-	case e.Retry:
-		return cell{Text: e.Delivery + " · retrying", Class: "pill bad", Title: "sent again each poll while in stock"}
-	}
-	return cell{Text: e.Delivery, Class: "pill bad"}
-}
-
-var urlRE = regexp.MustCompile(`https?://\S+`)
-
-// orderLink tells whether u is one ovh.Catalog.OrderURL makes: a Kimsufi server's page or, for the rest, its
-// range's overview (OVH has no page per server there; the overview is where it is ordered). The page shows every
-// such link as the order icon, in the tables and in push texts alike.
-func orderLink(u string) bool {
-	return strings.HasPrefix(u, "https://eco.ovhcloud.com/fr/") || strings.HasPrefix(u, "https://www.ovhcloud.com/fr/bare-metal/")
-}
-
-// linkify splits a push text into text and its links, each shown short: the order icon for an order link,
-// "link ↗" for anything else (an icon would claim it orders).
-func linkify(s string) []bodyPart {
-	var out []bodyPart
-	last := 0
-	for _, m := range urlRE.FindAllStringIndex(s, -1) {
-		if m[0] > last {
-			out = append(out, bodyPart{Text: s[last:m[0]]})
-		}
-		u := s[m[0]:m[1]]
-		out = append(out, bodyPart{Text: "link ↗", Href: u, Order: orderLink(u)})
-		last = m[1]
-	}
-	if last < len(s) {
-		out = append(out, bodyPart{Text: s[last:]})
-	}
-	return out
 }
 
 // shortDC drops a 3-AZ region's prefix, so seven DC columns fit beside the table: "eu-west-par-a" → "par-a".
