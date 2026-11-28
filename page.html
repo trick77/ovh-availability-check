@@ -67,6 +67,10 @@ table.t tr:last-child td { border-bottom: 0; }
 table.t .num { text-align: right; font-variant-numeric: tabular-nums; }
 table.t td.rule { white-space: normal; min-width: 14em; }
 table.t tr.out td { color: var(--muted); }
+/* Just above a wish, in stock: shown under the wanted ones, muted (user); the pill says what it misses. */
+table.t tr.above td, table.t tr.above .name { color: var(--muted); }
+table.t tr.above .pill { opacity: .7; }
+table.t tr.above .near { margin-left: 2px; }
 table.t tr:hover td { background: rgba(255,255,255,.018); }
 .name { font-weight: 500; color: var(--ink); }
 .sub { color: var(--muted); font-size: 12.5px; }
@@ -219,9 +223,9 @@ table.v .setup .pd { margin-right: 4px; }
 {{range .Tiles}}  <div class="tile{{if .Highlight}} hl{{end}}{{if .Predicted}} pred{{end}}"><div class="k">{{.Label}}</div><div class="v"{{if .Title}} title="{{.Title}}"{{end}}>{{.Value}}{{if .Unit}}<small>{{.Unit}}</small>{{end}}</div><div class="s{{if .SubClass}} {{.SubClass}}{{end}}">{{.Sub}}{{range .Parts}}<span{{if .Class}} class="{{.Class}}"{{end}}{{if .Title}} title="{{.Title}}"{{end}}>{{.Text}}</span>{{end}}</div></div>
 {{end}}</section>
 
-<div class="h2"><h2>Wanted and in stock</h2><p>Ordered by price.{{if .Ref}} CPU speed against the reference CPU {{.RefCPU}} ({{.Ref.Cores}}C/{{.Ref.Threads}}T).{{end}}</p></div>
+<div class="h2"><h2>Wanted and in stock</h2><p>Ordered by price, just above muted.{{if .Ref}} CPU speed against the reference CPU {{.RefCPU}} ({{.Ref.Cores}}C/{{.Ref.Threads}}T).{{end}}</p></div>
 <section class="panel scroll">
-{{if .Wanted}}{{template "rows" (rowsOf .Wanted $)}}{{else}}<div class="empty">Nothing wanted is in stock right now.</div>{{end}}
+{{if not .Wanted}}<div class="empty">Nothing wanted is in stock right now.</div>{{end}}{{if .InStock}}{{template "rows" (rowsOf .InStock $)}}{{end}}
 </section>
 
 <div class="h2"><h2>Wishes</h2><p>What config.json asks for, and what just misses it.</p></div>
@@ -372,12 +376,12 @@ table.v .setup .pd { margin-right: 4px; }
 </body>
 </html>
 {{define "order"}}<a class="ord" href="{{.}}" title="{{.}}" aria-label="order"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg></a>{{end}}
-{{define "server"}}<span class="srvname"><span class="name" title="{{.FQN}}">{{or .Name .PlanCode}}</span>{{if not .Out}}{{template "order" .OrderURL}}{{end}}</span>{{with code .Name .PlanCode}}<span class="l2"><span class="code">{{.}}</span></span>{{end}}{{end}}
+{{define "server"}}<span class="srvname"><span class="name" title="{{.FQN}}">{{or .Name .PlanCode}}</span>{{if not .Out}}{{template "order" .OrderURL}}{{end}}{{if .Near}}<span class="near" title="Misses one rule narrowly. Tracked like wanted ones, never pushed.">just above: {{.Near}}</span>{{end}}</span>{{with code .Name .PlanCode}}<span class="l2"><span class="code">{{.}}</span></span>{{end}}{{end}}
 {{define "actrow"}}<span class="when" data-at="{{.At.Unix}}" title="{{abs .At}}">{{ago .At}}</span><span class="kind {{.Kind}}">{{.Kind}}</span>{{if .Text}}<span class="dig">{{.Text}}</span>{{else}}<span class="srv"><span class="name">{{.Name}}</span>{{if .Code}}<span class="code">{{.Code}}</span>{{end}}</span><span class="spec">{{.Spec}}</span><span class="pr">{{if .Old}}<span class="old">{{.Old}}</span><span class="{{.PriceClass}}">{{.Price}}</span>{{else}}{{.Price}}{{end}}</span>{{end}}<span class="dcs">{{range .DCs}}<span class="{{.Class}}" title="{{.Title}}">{{.Text}}</span>{{end}}{{if .After}}<span class="after">{{.After}}</span>{{end}}</span><span class="del">{{if .Delivery.Text}}<span class="{{.Delivery.Class}}"{{if .Delivery.Title}} title="{{.Delivery.Title}}"{{end}}>{{.Delivery.Text}}</span>{{end}}</span>{{end}}
 {{define "cpu"}}{{.CPUName}}{{if .Cores}}<span class="l2 ct">{{.Cores}}</span>{{end}}{{end}}
 {{define "rows"}}<table class="t v">
 <tr><th>Server</th><th>CPU</th>{{if .Page.Ref}}<th class="num" title="CPU Mark against {{.Page.RefCPU}}">Multi</th><th class="num" title="Single thread rating against {{.Page.RefCPU}}">Single</th>{{end}}<th class="num">RAM</th><th>Disks</th><th class="num" title="monthly, setup below">€/mo</th><th title="Last seen in stock">Last seen</th>{{range .Page.DCLabels}}<th class="dcc" title="{{.Title}}">{{.Text}}</th>{{end}}</tr>
-{{range .Rows}}<tr{{if .Out}} class="out"{{end}}>
+{{range .Rows}}<tr{{if .Out}} class="out"{{else if .Near}} class="above"{{end}}>
   <td>{{template "server" .}}</td>
   <td class="cpu">{{template "cpu" .}}</td>
   {{if $.Page.Ref}}<td class="num"><span class="{{.Multi.Class}}" title="{{.Multi.Title}}">{{.Multi.Text}}</span></td><td class="num"><span class="{{.Single.Class}}" title="{{.Single.Title}}">{{.Single.Text}}</span></td>{{end}}
