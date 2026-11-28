@@ -25,6 +25,12 @@ func TestActivity(t *testing.T) {
 			[]watch.Pair{{FQN: "a", DC: "gra"}, {FQN: "a", DC: "rbx"}})})
 	s = s.Observe([]watch.Variant{in(map[string]string{"rbx": "unavailable", "gra": "unavailable"})}, t0.Add(4*time.Minute), 2*time.Minute)
 	s = s.AddEvent(watch.Event{At: t0.Add(5 * time.Minute), Kind: watch.KindDigest, Title: "OVH week 48", Body: "KS-4 came twice."})
+	// Pushes with no "in" at their own poll (a wish turned on while in stock, an imported 0.3 push): a pill on the
+	// latest earlier "in", never a line of their own; the newest push about an "in" wins.
+	s = s.AddEvent(watch.Event{At: t0.Add(3 * time.Minute), Kind: watch.KindRestock, Delivery: "failed on smtp",
+		Items: []watch.Item{{FQN: "a", Name: "KS-4", DCs: []watch.ItemDC{{DC: "rbx"}}}}})
+	s = s.AddEvent(watch.Event{At: t0.Add(3*time.Minute + time.Second), Kind: watch.KindRestock, Delivery: watch.Sent,
+		Body: "KS-4 · Intel Xeon-E3 1230 v6 · 16 GB · rbx\nhttps://eco.ovhcloud.com/fr/kimsufi/ks-4/"})
 
 	rows := activity([]watch.Variant{v}, cfg, s, t0.Add(10*time.Minute))
 	if len(rows) != 3 {

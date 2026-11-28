@@ -98,15 +98,14 @@ func TestPage(t *testing.T) {
 		`<span class="pill">≤ 30 €/mo</span>`,
 		"failed on channel 1 (ntfy) · retrying", `<span class="pill faint"`, // deliveries
 		`<span class="pill slow" title="gra: 72H">gra</span>`, // the restock's DC in the log
-		// An imported push: its server line, nothing to unfold.
-		`<span class="dig">KS-1 · rbx</span>`,
 		"<noscript><meta http-equiv=\"refresh\" content=\"60\"></noscript>", `new EventSource("events")`,
 	} {
 		if !strings.Contains(body, want) {
 			t.Errorf("/ lacks %q", want)
 		}
 	}
-	for _, gone := range []string{"<h2>Updates</h2>", "<h2>Stock changes</h2>", "<details", "no notification channel"} {
+	// A push is no line of its own: the imported one about KS-1 (no "in" to sit on) shows nowhere.
+	for _, gone := range []string{"<h2>Updates</h2>", "<h2>Stock changes</h2>", "<details", "no notification channel", "KS-1"} {
 		if strings.Contains(body, gone) {
 			t.Errorf("/ still has %q", gone)
 		}
