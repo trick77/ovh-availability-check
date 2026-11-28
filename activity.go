@@ -77,38 +77,46 @@ func activity(scope []watch.Variant, c watch.Config, s watch.State, now time.Tim
 		}
 		out[i].DCs = append(out[i].DCs, dc)
 	}
+	// A push is never a line of its own (user): its delivery is a pill on the "in" it was about. That is the arrival
+	// at the push's poll, else the server's latest arrival before it (it came in unseen, or turned wanted while in
+	// stock). A push with no such "in" shows nowhere. Events are newest first: the newest push about an "in" wins.
+	latestIn := func(at time.Time, match func(activityRow) bool) int {
+		best := -1
+		for i, r := range out {
+			if r.Kind == "in" && match(r) && !r.At.After(at) && (best < 0 || r.At.After(out[best].At)) {
+				best = i
+			}
+		}
+		return best
+	}
+	pill := func(i int, e watch.Event) {
+		if i >= 0 && out[i].Delivery.Text == "" {
+			out[i].Delivery, out[i].After = deliveryCell(e), ""
+		}
+	}
 	for _, e := range s.Events {
 		switch {
 		case e.Kind == watch.KindDigest:
 			out = append(out, activityRow{At: e.At, Kind: "digest", Delivery: deliveryCell(e),
 				Text: "Weekly digest · " + strings.TrimPrefix(e.Title, "OVH ")})
-		case len(e.Items) == 0: // imported from 0.3: text only
-			out = append(out, activityRow{At: e.At, Kind: "in", Delivery: deliveryCell(e), Text: firstLine(e.Body)})
+		case len(e.Items) == 0: // imported from 0.3: only its text names the server ("KS-2 · Intel … · gra")
+			name, _, _ := strings.Cut(firstLine(e.Body), " · ")
+			pill(latestIn(e.At, func(r activityRow) bool { return r.Name == name }), e)
 		default:
 			for _, it := range e.Items {
-				if i, ok := at[key{e.At.Unix(), it.FQN, true}]; ok {
-					out[i].Delivery, out[i].After = deliveryCell(e), ""
-					// A DC that came in unseen at the same poll (a quiet span) has no "in" of its own, but the push
-					// named it: the line shows every DC the push did.
-					for _, d := range it.DCs {
-						if !slices.ContainsFunc(out[i].DCs, func(x cell) bool { return x.Title == d.DC+": 1H" || x.Title == d.DC+": 72H" }) {
-							out[i].DCs = append(out[i].DCs, itemDC(d))
-						}
-					}
+				i, ok := at[key{e.At.Unix(), it.FQN, true}]
+				if !ok {
+					pill(latestIn(e.At, func(r activityRow) bool { return r.FQN == it.FQN }), e)
 					continue
 				}
-				// Pushed without an "in": it came in unseen (first poll after a start, a wish added for stock
-				// already there). The row is the push's own, from what the server was then.
-				r := activityRow{At: e.At, Kind: "in", Name: cmp.Or(it.Name, it.PlanCode), Code: code(it.Name, it.PlanCode),
-					Spec: spec(it.CPU, it.RAM, it.Disks), Delivery: deliveryCell(e)}
-				if it.Priced {
-					r.Price = money(it.Rent) + " €"
-				}
+				pill(i, e)
+				// A DC that came in unseen at the same poll (a quiet span) has no "in" of its own, but the push
+				// named it: the line shows every DC the push did.
 				for _, d := range it.DCs {
-					r.DCs = append(r.DCs, itemDC(d))
+					if !slices.ContainsFunc(out[i].DCs, func(x cell) bool { return x.Title == d.DC+": 1H" || x.Title == d.DC+": 72H" }) {
+						out[i].DCs = append(out[i].DCs, itemDC(d))
+					}
 				}
-				r.FQN = it.FQN
-				out = append(out, r)
 			}
 		}
 	}
