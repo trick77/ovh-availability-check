@@ -1,0 +1,27 @@
+<!--
+  OVH restock's icon: a server rack on trakk's orange chip (user). Format, chip, gradient, weight and transforms are
+  ../trakk's ui/public/icon.svg; read that file for the full argument.
+
+  THE GLYPH IS lucide's "server" (ISC), copied rather than imported. At 16px one glyph unit is half a pixel (pixel
+  2 + u/2) and the 3.0 stroke is 1.5 px wide, so no position puts both its edges on pixel boundaries: the edges
+  anti-alias either way. The racks are redrawn on x 3, 21 and y 3, 9, 15, 21 (lucide: 2, 22 / 2, 10, 14, 22) to keep
+  1.5 px of chip between them at 16px; lucide's spacing closes that gap at this weight.
+
+  Same bbox centre (12,12) as trakk's glyph, so the same transforms: outer scale 3.55556 / translate -10.6667, inner
+  scale 0.5625 / translate 5.25. The mark is painted in the page's bg token #1f1f1e.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <linearGradient id="og" x1="0" y1="0" x2="0.72" y2="1">
+    <stop offset="0" stop-color="#e08a68"/>
+    <stop offset="1" stop-color="#c25f34"/>
+  </linearGradient>
+  <g transform="translate(-10.6667 -10.6667) scale(3.55556)">
+    <rect x="3" y="3" width="18" height="18" rx="4" fill="url(#og)"/>
+    <g transform="translate(5.25 5.25) scale(0.5625)" fill="none" stroke="#1f1f1e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="6" rx="2"/>
+      <rect x="3" y="15" width="18" height="6" rx="2"/>
+      <path d="M7 6h.01"/>
+      <path d="M7 18h.01"/>
+    </g>
+  </g>
+</svg>

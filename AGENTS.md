@@ -36,8 +36,8 @@ migrate). No JS, page is `html/template`.
 - Spans for every pair (user: a new wish must not wait weeks; ≤ 0.3 in-scope only). Page/log/digest/LLM read
   in-scope: wanted or *just above* (one rule missed narrowly: price ≤ +10 %, RAM one step, disk ≤ 10 %). Before
   `AllSince`: no data, no gate time. Kept 90 d (weekly rhythm needs > 4 repeats). Price chart rejected (user).
-- Style: ../trakk's Warm Editorial dark (user). Pills = states/DCs; product code muted mono, no pill (user); links
-  short, never the full URL.
+- Style: ../trakk's Warm Editorial dark (user). Pills = states/DCs; product code muted mono, no pill; code + cores on
+  a cell's second line; order = cart icon, never the full URL; app icon on trakk's chip (all user).
 
 ## Storage (why)
 

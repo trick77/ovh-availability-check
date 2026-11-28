@@ -27,6 +27,17 @@ import (
 //go:embed page.html
 var pageHTML string
 
+// iconSVG is the app icon (server rack on trakk's chip, user); iconVersion goes into its URL, it
+// is cached for a year like the fonts.
+//
+//go:embed icon.svg
+var iconSVG []byte
+
+var iconVersion = func() string {
+	h := sha256.Sum256(iconSVG)
+	return hex.EncodeToString(h[:5])
+}()
+
 // fonts are the family's faces, as ../trakk ships them.
 //
 //go:embed fonts/*.woff2
@@ -68,6 +79,7 @@ const (
 type pageData struct {
 	Title       string
 	FontVersion string
+	IconVersion string
 	PolledAt    time.Time
 	PollErr     string
 	CatalogAt   time.Time
@@ -115,9 +127,10 @@ type updateItem struct {
 	DCs                               []cell
 }
 
-// bodyPart is a stretch of text, or a link shown short (Href set).
+// bodyPart is a stretch of text, or a link shown short (Href set): the order icon when Order, else "link ↗".
 type bodyPart struct {
 	Text, Href string
+	Order      bool
 }
 
 // cell is a table cell worked out in Go, so the template only prints: text, a CSS class, a tooltip.
@@ -209,6 +222,11 @@ func (w *watcher) routes() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /{$}", w.page)
 	mux.HandleFunc("GET /fonts/{name}", serveFont)
+	mux.HandleFunc("GET /icon.svg", func(rw http.ResponseWriter, _ *http.Request) {
+		rw.Header().Set("Content-Type", "image/svg+xml")
+		rw.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+		_, _ = rw.Write(iconSVG)
+	})
 	httpx.Health(mux, slog.Default())
 	return mux
 }
@@ -228,8 +246,8 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 	w.mu.Lock()
 	vs, state := w.variants, w.state
 	d := pageData{
-		FontVersion: fontVersion,
-		PolledAt:    w.polledAt, PollErr: w.pollErr, CatalogAt: w.catalogAt, CatErr: w.catErr,
+		FontVersion: fontVersion, IconVersion: iconVersion,
+		PolledAt: w.polledAt, PollErr: w.pollErr, CatalogAt: w.catalogAt, CatErr: w.catErr,
 		Interval:    short(time.Duration(w.cfg.Interval)),
 		ShowAll:     r.URL.Query().Get("all") == "1",
 		Datacenters: w.cfg.Datacenters, Channels: w.channels.Labels(), ChannelsOff: w.off,
@@ -933,8 +951,15 @@ func deliveryCell(e watch.Event) cell {
 
 var urlRE = regexp.MustCompile(`https?://\S+`)
 
-// linkify splits a push text into text and its links, each shown short: "order ↗" for a Kimsufi order page (the
-// only one OVH has per server), "link ↗" for anything else.
+// orderLink tells whether u is one ovh.Catalog.OrderURL makes: a Kimsufi server's page or, for the rest, its
+// range's overview (OVH has no page per server there; the overview is where it is ordered). The page shows every
+// such link as the order icon, in the tables and in push texts alike.
+func orderLink(u string) bool {
+	return strings.HasPrefix(u, "https://eco.ovhcloud.com/fr/") || strings.HasPrefix(u, "https://www.ovhcloud.com/fr/bare-metal/")
+}
+
+// linkify splits a push text into text and its links, each shown short: the order icon for an order link,
+// "link ↗" for anything else (an icon would claim it orders).
 func linkify(s string) []bodyPart {
 	var out []bodyPart
 	last := 0
@@ -943,11 +968,7 @@ func linkify(s string) []bodyPart {
 			out = append(out, bodyPart{Text: s[last:m[0]]})
 		}
 		u := s[m[0]:m[1]]
-		label := "link ↗"
-		if strings.HasPrefix(u, "https://eco.ovhcloud.com/") && strings.Contains(u, "/kimsufi/") {
-			label = "order ↗"
-		}
-		out = append(out, bodyPart{Text: label, Href: u})
+		out = append(out, bodyPart{Text: "link ↗", Href: u, Order: orderLink(u)})
 		last = m[1]
 	}
 	if last < len(s) {
