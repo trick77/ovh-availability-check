@@ -98,15 +98,15 @@ func TestPage(t *testing.T) {
 		`<span class="pill">≤ 30 €/mo</span>`,
 		"failed on channel 1 (ntfy) · retrying", `<span class="pill faint"`, // deliveries
 		`<span class="pill slow" title="gra: 72H">gra</span>`, // the restock's DC in the log
-		// An imported push: one line, the text behind a disclosure, its link "link ↗".
-		`<span class="dig">KS-1 · rbx</span>`, `<a class="lnk" href="https://eco.ovhcloud.com/fr/kimsufi/ks-1/"`,
+		// An imported push: its server line, nothing to unfold.
+		`<span class="dig">KS-1 · rbx</span>`,
 		"<noscript><meta http-equiv=\"refresh\" content=\"60\"></noscript>", `new EventSource("events")`,
 	} {
 		if !strings.Contains(body, want) {
 			t.Errorf("/ lacks %q", want)
 		}
 	}
-	for _, gone := range []string{"<h2>Updates</h2>", "<h2>Stock changes</h2>"} {
+	for _, gone := range []string{"<h2>Updates</h2>", "<h2>Stock changes</h2>", "<details", "no notification channel"} {
 		if strings.Contains(body, gone) {
 			t.Errorf("/ still has %q", gone)
 		}
@@ -263,10 +263,6 @@ func TestCompact(t *testing.T) {
 		if got := shortDC(dc); got != want {
 			t.Errorf("shortDC(%s) = %q", dc, got)
 		}
-	}
-	ps := linkify("a https://eco.ovhcloud.com/fr/ b")
-	if len(ps) != 3 || ps[1].Href != "https://eco.ovhcloud.com/fr/" || ps[1].Text != "link ↗" || ps[2].Text != " b" {
-		t.Errorf("linkify %+v", ps)
 	}
 	if got := thousands(15234); got != "15'234" {
 		t.Errorf("thousands: %q", got)

@@ -31,7 +31,8 @@ func TestActivity(t *testing.T) {
 		t.Fatalf("rows %+v", rows)
 	}
 	dig, out, arr := rows[0], rows[1], rows[2]
-	if dig.Kind != "digest" || !strings.Contains(dig.Text, "week 48") || len(dig.Body) == 0 {
+	// The digest is one line, never what was sent (user).
+	if dig.Kind != "digest" || dig.Text != "Weekly digest · week 48" {
 		t.Errorf("digest %+v", dig)
 	}
 	// Both DCs sold out at one poll: one row, two pills, the stay.

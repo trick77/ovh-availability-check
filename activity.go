@@ -2,7 +2,6 @@ package main
 
 import (
 	"cmp"
-	"regexp"
 	"slices"
 	"strings"
 	"time"
@@ -27,15 +26,9 @@ type activityRow struct {
 	DCs         []cell
 	After       string // out: "after 3h 6m"; in: "just above" for an unwanted server
 	Delivery    cell   // in: the push about it
-	Text        string // digest or imported push: one line, the rest in Body
-	Body        []bodyPart
+	Text        string // digest: "Weekly digest · week 47"; imported push: its server line. Never the pushed text (user)
 
 	stayed time.Duration // out: the longest stay among its DCs
-}
-
-// bodyPart is a stretch of text, or a link shown short (Href set).
-type bodyPart struct {
-	Text, Href string
 }
 
 // activity is the log of scope's stock and prices plus the events, newest first.
@@ -88,10 +81,9 @@ func activity(scope []watch.Variant, c watch.Config, s watch.State, now time.Tim
 		switch {
 		case e.Kind == watch.KindDigest:
 			out = append(out, activityRow{At: e.At, Kind: "digest", Delivery: deliveryCell(e),
-				Text: "Weekly digest · " + strings.TrimPrefix(e.Title, "OVH ") + " · " + firstLine(e.Body), Body: linkify(e.Body)})
+				Text: "Weekly digest · " + strings.TrimPrefix(e.Title, "OVH ")})
 		case len(e.Items) == 0: // imported from 0.3: text only
-			out = append(out, activityRow{At: e.At, Kind: "in", Delivery: deliveryCell(e), Text: firstLine(e.Body),
-				Body: linkify(e.Body)})
+			out = append(out, activityRow{At: e.At, Kind: "in", Delivery: deliveryCell(e), Text: firstLine(e.Body)})
 		default:
 			for _, it := range e.Items {
 				if i, ok := at[key{e.At.Unix(), it.FQN, true}]; ok {
@@ -190,24 +182,4 @@ func deliveryCell(e watch.Event) cell {
 		return cell{Text: e.Delivery + " · retrying", Class: "pill bad", Title: "sent again each poll while in stock"}
 	}
 	return cell{Text: e.Delivery, Class: "pill bad"}
-}
-
-var urlRE = regexp.MustCompile(`https?://\S+`)
-
-// linkify splits a push text into text and its links, each shown short as "link ↗": no order icon in Activity
-// (user), ordering is in the server tables.
-func linkify(s string) []bodyPart {
-	var out []bodyPart
-	last := 0
-	for _, m := range urlRE.FindAllStringIndex(s, -1) {
-		if m[0] > last {
-			out = append(out, bodyPart{Text: s[last:m[0]]})
-		}
-		out = append(out, bodyPart{Text: "link ↗", Href: s[m[0]:m[1]]})
-		last = m[1]
-	}
-	if last < len(s) {
-		out = append(out, bodyPart{Text: s[last:]})
-	}
-	return out
 }
