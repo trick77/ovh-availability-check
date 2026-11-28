@@ -23,6 +23,7 @@ import (
 
 	"github.com/trick77/ship/kit/httpx"
 	"github.com/trick77/ship/kit/run"
+	"github.com/trick77/ship/kit/sse"
 	"github.com/trick77/ship/kit/version"
 	"github.com/trick77/toolkit/llmwire"
 	"github.com/trick77/toolkit/notify"
@@ -178,7 +179,7 @@ func serve(ctx context.Context, addr string, notifyTest, digestNow bool) error {
 	client := ovh.NewClient()
 	client.Base = apiBase
 	w := &watcher{cfg: cfg, client: client, channels: channels, off: off, state: state, saved: state, db: db,
-		predict: svc, digestNow: digestNow}
+		predict: svc, digestNow: digestNow, hub: newHub()}
 	var wg sync.WaitGroup
 	if channels != nil {
 		// Beside the poll: a channel that hangs holds no restock push back.
@@ -197,7 +198,9 @@ func serve(ctx context.Context, addr string, notifyTest, digestNow bool) error {
 	})
 	slog.Info("listening", "addr", addr)
 	// Serve returns at once when the address can't be bound; stop ends the poll loop then too.
-	err = httpx.Serve(ctx, httpx.NewServer(addr, w.routes()), 5*time.Second)
+	srv := httpx.NewServer(addr, w.routes())
+	srv.RegisterOnShutdown(w.hub.Close) // an open stream is never idle: Shutdown would wait out its timeout
+	err = httpx.Serve(ctx, srv, 5*time.Second)
 	stop()
 	wg.Wait()
 	return err
@@ -216,8 +219,9 @@ type watcher struct {
 	catalog      *ovh.Catalog
 	catalogAt    time.Time
 	predict      *predict.Service
-	digestNow    bool // -digest-now: make the digest on the first poll with a catalog
-	plansChecked bool // wishes' unknown plans logged, after the first catalog
+	digestNow    bool            // -digest-now: make the digest on the first poll with a catalog
+	hub          *sse.Hub[int64] // the page's live update; nil: no /events
+	plansChecked bool            // wishes' unknown plans logged, after the first catalog
 
 	mu       sync.Mutex
 	state    watch.State
@@ -228,6 +232,7 @@ type watcher struct {
 }
 
 func (w *watcher) poll(ctx context.Context) {
+	defer w.published() // failed or not: the page shows the poll's time and error too
 	if w.catalog == nil || time.Since(w.catalogAt) > catalogAge {
 		cat, err := w.client.Catalog(ctx)
 		w.mu.Lock()

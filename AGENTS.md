@@ -1,7 +1,7 @@
 # AGENTS.md
 
 OVH dedicated server stock watcher. Go, stdlib + `trick77/toolkit` (notify, llmwire), SQLite (ncruces, kit
-migrate). No JS, page is `html/template`.
+migrate). Page: `html/template` + one inline script, no framework: SSE live swap (user: the 60 s reload jumped).
 
 ## OVH API facts (measured 2026-11)
 
@@ -22,22 +22,20 @@ migrate). No JS, page is `html/template`.
 - Only Kimsufi has a per-server order page: `eco.ovhcloud.com/fr/kimsufi/<name lowercased>/`, all 22 KS names 200,
   unknown names 404. So you Start's `/fr/so-you-start/` 404s.
 
-- Speed + cores/threads: `internal/ovh/cpus.json`, PassMark CPU Mark + single thread, looked up by hand. The
-  catalog's own `score` is missing on some products and not PassMark's current figure. A CPU OVH adds later shows `?`
-  until added there. Invoices spell one chip several ways (`Xeon-E3 1230 v6`, `i7-6700k`, `EPYC TURIN 9455`):
-  `cpuKey` normalizes.
+- `internal/ovh/cpus.json`: PassMark figures by hand; the catalog's `score` is missing on some products and outdated.
+  A new CPU shows `?` until added. Invoices spell one chip several ways: `cpuKey` normalizes.
 
 ## History (why)
 
 - Starts with the deploy. Nothing before the first catalog: `Wanted` needs CPU/price, spans would start late.
-- A pause over 3 intervals + 5 min ends every streak and span: the page must not claim stock nobody saw. Slack:
-  polls are an interval apart after each ends, a hanging catalog takes 2×90 s. Only a poll that finds a pair gone
-  logs "out"; a span that starts unseen (first poll after a start, gap) logs no "in".
+- A pause over 3 intervals + 5 min ends every streak and span (must not claim stock nobody saw; slack: a hanging
+  catalog takes 2×90 s). A span that starts unseen (first poll after a start, gap) logs no "in".
 - Spans for every pair (user: a new wish must not wait weeks; ≤ 0.3 in-scope only). Page/log/digest/LLM read
   in-scope: wanted or *just above* (one rule missed narrowly: price ≤ +10 %, RAM one step, disk ≤ 10 %). Before
   `AllSince`: no data, no gate time. Kept 90 d (weekly rhythm needs > 4 repeats). Price chart rejected (user).
 - Style: ../trakk's Warm Editorial dark (user). Pills = states/DCs; product code muted mono, no pill; code + cores on
-  a cell's second line; order = cart icon, never the full URL; app icon on trakk's chip (all user).
+  a cell's 2nd line; cart after the name, only when orderable, none in Activity; app icon on trakk's chip.
+  Activity = stock log + pushes + digests, one line each (all user).
 
 ## Storage (why)
 
@@ -52,12 +50,10 @@ migrate). No JS, page is `html/template`.
   - no call below ≥ 14 d observed, ≥ 4 arrivals, < 80 % of the time in stock (rare and always-there aren't sent);
   - a slot must catch ≥ half the observed weeks/days, an interval sit within 20 % of the measured median gap with
     regular gaps; evidence must cite real arrivals. Else "none".
-- Asked only on a change (user): a departure newer than the last call saw (failed calls too), ≤ 1 call/variant/6 h.
-  Next window and hit rate are rolled by code; a window polls didn't watch counts neither way.
-- GLM 5.3 flash in prod (z.ai). Evals run on MiMo flash only (user); never another model, never a paid run without
-  the user's explicit yes per run.
-- "Almost" (new, just above a wish) is arithmetic, no LLM: the model would only restate the numbers.
-- Digest figures are checked against the data; one unknown number → the plain list is sent instead.
+- Asked only on a change (user): a departure newer than the last call saw, ≤ 1 call/variant/6 h. Windows and hit
+  rate rolled by code; an unwatched window counts neither way.
+- GLM 5.3 flash in prod (z.ai). Evals on MiMo flash only (user), never a paid run without the user's yes per run.
+- "Almost" is arithmetic, no LLM. Digest figures checked against the data; one unknown number → plain list.
 
 ## Push logic (why)
 
@@ -74,8 +70,7 @@ migrate). No JS, page is `html/template`.
 - Commit subjects + PR titles: Go style `area: what` (e.g. `watch: drop sold-out pairs`), gated by ship; release
   notes group by area.
 - Fresh clone: `ship hooks` before the first push (check, conform and init install it too); without the pre-push hook a push skips the gate.
-- Name: OVH restock, `ovh-restock` (ovh-availability-check until 0.2.1). README screenshot: live stock + seeded
-  sample history, said so in the README.
+- Name OVH restock (ovh-availability-check until 0.2.1). README screenshot: live stock + seeded sample history.
 
 ## User choices
 

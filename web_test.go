@@ -76,7 +76,7 @@ func TestPage(t *testing.T) {
 		"8C/16T", `<span class="x `, // cores and the speed against the reference
 		`class="pill slow"`, "now · 1h", // 72H in gra, in stock for an hour
 		`class="h-slow"`, `class="h-out"`, // history: in stock and sold out
-		`<span class="ev in">in</span>`, `<span class="ev price">price</span>`,
+		`<span class="kind in">in</span>`, `<span class="kind price">price</span>`,
 		"↓2.00", "28.99", // the price cut
 	} {
 		if !strings.Contains(body, want) {
@@ -91,25 +91,40 @@ func TestPage(t *testing.T) {
 	if strings.Contains(body, "s3cret") || strings.Contains(body, "ntfy.example.com") {
 		t.Error("page leaks the notify URL")
 	}
-	for _, want := range []string{"<h2>Updates</h2>", `notify <span class="pill">channel 1 (ntfy)</span>`, "<s>smtp</s> off",
+	for _, want := range []string{"<h2>Activity</h2>", `notify <span class="pill">channel 1 (ntfy)</span>`, "<s>smtp</s> off",
 		"Last 30 days", `href="?days=7"`, "Just above", "multi </span><span class=\"x up\"", // the tile's figures coloured like the table
 		`<span class="code">24sk202</span>`, // the product code beside the name
 		`<span class="pill bad" title="no watched variant has this product">KS-9</span>`,
 		`<span class="pill">≤ 30 €/mo</span>`,
 		"failed on channel 1 (ntfy) · retrying", `<span class="pill faint"`, // deliveries
-		`<span class="pill slow" title="gra: 72H">gra</span>`, // the restock's DC, and the log's
-		// An imported push's order link: the cart icon, like everywhere.
-		`<a class="ord" href="https://eco.ovhcloud.com/fr/kimsufi/ks-1/" title="https://eco.ovhcloud.com/fr/kimsufi/ks-1/" aria-label="order">`,
+		`<span class="pill slow" title="gra: 72H">gra</span>`, // the restock's DC in the log
+		// An imported push: one line, the text behind a disclosure, its link "link ↗".
+		`<span class="dig">KS-1 · rbx</span>`, `<a class="lnk" href="https://eco.ovhcloud.com/fr/kimsufi/ks-1/"`,
+		"<noscript><meta http-equiv=\"refresh\" content=\"60\"></noscript>", `new EventSource("events")`,
 	} {
 		if !strings.Contains(body, want) {
 			t.Errorf("/ lacks %q", want)
 		}
 	}
-	// Wanted: name on top; code, order icon and cores on the second line.
+	for _, gone := range []string{"<h2>Updates</h2>", "<h2>Stock changes</h2>"} {
+		if strings.Contains(body, gone) {
+			t.Errorf("/ still has %q", gone)
+		}
+	}
+	// Activity: KS-2's restock is one "in" line carrying its push's delivery, not a second line for the push; no cart.
+	_, act, _ := strings.Cut(body, "<h2>Activity</h2>")
+	act, _, _ = strings.Cut(act, "</section>")
+	if n := strings.Count(act, "failed on channel 1 (ntfy) · retrying"); n != 1 {
+		t.Errorf("delivery shown %d times in Activity", n)
+	}
+	if strings.Contains(act, `aria-label="order"`) {
+		t.Error("cart in Activity")
+	}
+	// Wanted: the cart right after the name; code and cores on the second line.
 	_, wanted, _ := strings.Cut(body, "<h2>Wanted and in stock</h2>")
 	wanted, _, _ = strings.Cut(wanted, "<h2>Wishes</h2>")
-	for _, want := range []string{`<span class="l2"><span class="code">24sk202</span><a class="ord" href="https://eco.ovhcloud.com/fr/kimsufi/ks-2/"`,
-		`<span class="l2 ct">8C/16T</span>`} {
+	for _, want := range []string{`KS-2</span><a class="ord" href="https://eco.ovhcloud.com/fr/kimsufi/ks-2/"`,
+		`<span class="l2"><span class="code">24sk202</span></span>`, `<span class="l2 ct">8C/16T</span>`} {
 		if !strings.Contains(wanted, want) {
 			t.Errorf("wanted lacks %q", want)
 		}
@@ -197,6 +212,10 @@ func TestPage(t *testing.T) {
 	if !strings.Contains(all, `title="unavailable">✕</span>`) {
 		t.Error("?all=1 lacks the unavailable mark")
 	}
+	// Not orderable: no cart.
+	if _, gone, ok := strings.Cut(all, `title="gone">KS-GONE</span>`); !ok || strings.HasPrefix(gone, `<a class="ord"`) {
+		t.Error("?all=1: a sold-out server has a cart")
+	}
 
 	if !strings.Contains(body, `<link rel="icon" type="image/svg+xml" href="icon.svg?v=`+iconVersion+`">`) {
 		t.Error("/ lacks the app icon")
@@ -245,9 +264,8 @@ func TestCompact(t *testing.T) {
 			t.Errorf("shortDC(%s) = %q", dc, got)
 		}
 	}
-	// Every order link the catalog makes is the order icon, a range overview too; anything else stays a link.
-	ps := linkify("a https://eco.ovhcloud.com/fr/ b https://www.ovhcloud.com/fr/bare-metal/ c https://status.ovhcloud.com/x")
-	if len(ps) != 6 || !ps[1].Order || !ps[3].Order || ps[5].Order || ps[5].Text != "link ↗" {
+	ps := linkify("a https://eco.ovhcloud.com/fr/ b")
+	if len(ps) != 3 || ps[1].Href != "https://eco.ovhcloud.com/fr/" || ps[1].Text != "link ↗" || ps[2].Text != " b" {
 		t.Errorf("linkify %+v", ps)
 	}
 	if got := thousands(15234); got != "15'234" {

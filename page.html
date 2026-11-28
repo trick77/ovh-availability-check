@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="refresh" content="60">
+<noscript><meta http-equiv="refresh" content="60"></noscript>
 <title>{{.Title}}</title>
 <link rel="icon" type="image/svg+xml" href="icon.svg?v={{.IconVersion}}">
 <style>
@@ -147,31 +147,47 @@ table.v .setup .pd { margin-right: 4px; }
 .axis div:last-child { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--axis); }
 .quiet { margin-top: 16px; font-size: 13px; color: var(--muted); }
 
-.log { list-style: none; margin: 0; padding: 6px 0; font-size: 14px; }
-.log li { display: grid; grid-template-columns: 104px 48px 1fr; gap: 12px; padding: 7px 22px; border-bottom: 1px solid var(--border-soft); align-items: baseline; }
-.log li:last-child { border-bottom: 0; }
-.log .when { color: var(--muted); font-variant-numeric: tabular-nums; }
-.log .ev { font-size: 12px; font-weight: 500; }
-.log .ev.in { color: var(--online); } .log .ev.out { color: var(--danger-ink); } .log .ev.price { color: var(--s1); }
-.log .nm { font-weight: 500; }
-.log .pill { font-size: 11.5px; padding: 0 7px; gap: 5px; }
-.log .pill.on, .log .pill.slow { padding-left: 6px; }
-
-.upd { padding: 12px 22px; border-bottom: 1px solid var(--border-soft); }
-.upd:last-child { border-bottom: 0; }
-.upd .t { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
-.upd .t .tag { margin-right: 0; }
-.upd .t b { font-weight: 500; }
-.upd .t .when { color: var(--muted); font-size: 13px; }
-.upd .t .pill { font-size: 11.5px; padding: 0 8px; margin-left: auto; }
-.upd .it { display: grid; grid-template-columns: minmax(10em, 15em) 1fr auto auto auto; gap: 4px 14px; align-items: center; margin-top: 7px; font-size: 13.5px; }
-.upd .it .spec { color: var(--muted); }
-.upd .it .pr { font-variant-numeric: tabular-nums; text-align: right; }
-.upd .it .pill { font-size: 11.5px; padding: 0 7px; gap: 5px; }
-.upd .it .pill.on, .upd .it .pill.slow { padding-left: 6px; }
+/* Activity: stock log + pushes + digests, one line per entry on fixed columns, so the rows read as a table (user). */
+.act { list-style: none; margin: 0; padding: 4px 0; }
+.act > li { border-bottom: 1px solid var(--border-soft); }
+.act > li:last-child { border-bottom: 0; }
+.act .row { display: grid; grid-template-columns: 76px 58px minmax(150px, 1.1fr) minmax(0, 1.5fr) 118px minmax(110px, 1fr) 160px 16px;
+  align-items: center; gap: 12px; padding: 7px 22px; font-size: 13.5px; min-height: 38px; }
+.act .when { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12.5px; white-space: nowrap; }
+.act .kind { font-size: 10.5px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; border-radius: 4px; padding: 1px 6px; justify-self: start; }
+.act .kind.in { color: var(--online); background: rgba(90,160,106,.12); }
+.act .kind.out { color: var(--danger-ink); background: rgba(193,70,56,.12); }
+.act .kind.price { color: #7fb0f0; background: rgba(57,135,229,.12); }
+.act .kind.digest { color: #b3aaf2; background: rgba(144,133,233,.14); }
+.act .srv { display: flex; align-items: baseline; gap: 7px; min-width: 0; white-space: nowrap; overflow: hidden; }
+.act .srv .name { font-weight: 500; }
+.act .srv .code { margin-left: 0; }
+.act .spec { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.act .pr { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.act .pr .old { margin-right: 4px; }
+.act .pr .down { color: var(--online); } .act .pr .up { color: var(--danger-ink); }
+.act .dcs { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; min-width: 0; }
+.act .after { color: var(--muted); font-size: 12.5px; margin-left: 4px; white-space: nowrap; }
+.act .pill { font-size: 11.5px; padding: 0 7px; gap: 5px; line-height: 18px; }
+.act .pill.on, .act .pill.slow { padding-left: 6px; }
+.act .pill.sent { color: var(--muted); }
+.act .del { justify-self: start; min-width: 0; }
+.act .end { justify-self: end; display: inline-flex; }
+.act .dig { color: var(--ink-dim); grid-column: 3 / 6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.act details > summary { list-style: none; cursor: pointer; }
+.act details > summary::-webkit-details-marker { display: none; }
+.act .chev { width: 14px; height: 14px; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s; }
+.act details[open] .chev { transform: rotate(90deg); }
+.act details > summary:hover .chev { stroke: var(--ink); }
+.act details > summary:focus-visible { outline: 2px solid var(--s3); outline-offset: -2px; border-radius: 6px; }
+.act .body { margin: 0 22px 12px 168px; padding: 10px 14px; border-left: 2px solid rgba(144,133,233,.45); color: var(--ink-dim);
+  font-size: 13px; max-width: 75ch; white-space: pre-wrap; background: rgba(255,255,255,.015); border-radius: 0 6px 6px 0; }
 .lnk { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
 .lnk:hover { color: var(--ink); }
-.upd .body { margin: 6px 0 0; font-size: 13px; color: var(--ink-dim); white-space: pre-wrap; }
+.act li.fresh { animation: fresh 2.4s ease-out; }
+@keyframes fresh { from { background: rgba(90,160,106,.14); } to { background: transparent; } }
+@media (prefers-reduced-motion: reduce) { .act .chev { transition: none; } .act li.fresh { animation: none; } }
+.srvname { display: inline-flex; align-items: center; gap: 6px; }
 
 .foot { margin-top: 30px; font-size: 12.5px; color: var(--faint); }
 
@@ -184,12 +200,15 @@ table.v .setup .pd { margin-right: 4px; }
   .tile .v { font-size: 28px; }
   .hist { padding: 14px 16px; }
   .hrow, .axis { grid-template-columns: 64px 1fr; gap: 8px; }
-  .log li { grid-template-columns: 84px 40px 1fr; gap: 8px; padding: 7px 14px; }
-  .upd { padding: 12px 16px; }
-  .upd .it { grid-template-columns: 1fr auto; }
-  .upd .it .spec { grid-column: 1 / -1; grid-row: 2; }
-  .upd .it .pills { grid-column: 1; grid-row: 3; }
-  .upd .it .ord { grid-column: 2; grid-row: 3; justify-self: end; }
+  .act .row { grid-template-columns: 70px 40px minmax(0, 1fr) auto; gap: 4px 8px; padding: 9px 14px; }
+  .act .spec { display: none; }
+  .act .when { grid-row: 1; }
+  .act .srv, .act .dig { grid-column: 3; grid-row: 1; }
+  .act .end { grid-column: 4; grid-row: 1; }
+  .act .pr { grid-column: 1 / 3; grid-row: 2; text-align: left; }
+  .act .dcs { grid-column: 3; grid-row: 2; }
+  .act .del { grid-column: 4; grid-row: 2; justify-self: end; }
+  .act .body { margin: 0 14px 12px; }
 }
 </style>
 </head>
@@ -197,9 +216,9 @@ table.v .setup .pd { margin-right: 4px; }
 <header class="top">
   <div class="wordmark">OVH restock</div>
   <div class="meta">
-    <span><i class="dot{{if .PollErr}} bad{{end}}"></i>polled <b title="{{abs .PolledAt}}">{{ago .PolledAt}}</b></span>
+    <span><i class="dot{{if .PollErr}} bad{{end}}"></i>polled <b title="{{abs .PolledAt}}"{{if not .PolledAt.IsZero}} data-at="{{.PolledAt.Unix}}"{{end}}>{{ago .PolledAt}}</b></span>
     <span>every {{.Interval}}</span>
-    <span>catalog <b title="{{abs .CatalogAt}}">{{ago .CatalogAt}}</b></span>
+    <span>catalog <b title="{{abs .CatalogAt}}"{{if not .CatalogAt.IsZero}} data-at="{{.CatalogAt.Unix}}"{{end}}>{{ago .CatalogAt}}</b></span>
     <span class="chans">{{if .Channels}}notify {{range .Channels}}<span class="pill">{{.}}</span>{{end}}{{else}}<span class="pill bad">no notification channel</span>{{end}}{{range .ChannelsOff}}<span class="pill faint" title="switched off with ! in BACKEND_NOTIFY_URLS"><s>{{.}}</s> off</span>{{end}}</span>
   </div>
   <a class="gh" href="https://github.com/trick77/ovh-restock" title="Source on GitHub" aria-label="Source on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
@@ -262,11 +281,11 @@ table.v .setup .pd { margin-right: 4px; }
 {{if and .History .Quiet}}  <div class="quiet">{{len .Quiet}} more servers without stock in {{.Days}} days: {{range $i, $q := .Quiet}}{{if lt $i 12}}{{if $i}}, {{end}}{{$q}}{{end}}{{end}}{{if gt (len .Quiet) 12}} …{{end}}</div>{{end}}
 </section>
 
-{{if .Changes}}
-<div class="h2"><h2>Stock changes</h2><p>Wanted and just above, newest first.</p></div>
-<section class="panel">
-<ul class="log">
-{{range .Changes}}  <li><span class="when" title="{{abs .At}}">{{ago .At}}</span><span class="ev {{.Kind}}">{{.Kind}}</span><span><b class="nm">{{.Name}}</b>{{if .Code}}<span class="code">{{.Code}}</span>{{end}} <span class="sub">{{.Text}}</span>{{if .DC.Text}} <span class="{{.DC.Class}}" title="{{.DC.Title}}">{{.DC.Text}}</span>{{end}}{{if .Extra}} <span class="sub">{{.Extra}}</span>{{end}}</span></li>
+{{if .Activity}}
+<div class="h2"><h2>Activity</h2><p>Stock, prices, pushes and digests of wanted and just-above servers, newest first.</p></div>
+<section class="panel" id="activity">
+<ul class="act">
+{{range .Activity}}  <li data-key="{{.At.Unix}}-{{.Kind}}-{{.FQN}}{{.Text}}">{{if .Body}}<details><summary class="row">{{template "actrow" .}}<span class="end"><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span></summary><p class="body">{{range .Body}}{{if .Href}}<a class="lnk" href="{{.Href}}" title="{{.Href}}">{{.Text}}</a>{{else}}{{.Text}}{{end}}{{end}}</p></details>{{else}}<div class="row">{{template "actrow" .}}<span class="end"></span></div>{{end}}</li>
 {{end}}</ul>
 </section>
 {{end}}
@@ -283,16 +302,6 @@ table.v .setup .pd { margin-right: 4px; }
 </section>
 {{end}}
 
-{{if .Updates}}
-<div class="h2"><h2>Updates</h2><p>Restocks and weekly digests, pushed or not.</p></div>
-<section class="panel">
-{{range .Updates}}  <div class="upd"><div class="t"><span class="tag">{{.Kind}}</span><b>{{.Head}}</b><span class="when" title="{{abs .At}}">{{ago .At}}</span><span class="{{.Delivery.Class}}"{{if .Delivery.Title}} title="{{.Delivery.Title}}"{{end}}>{{.Delivery.Text}}</span></div>
-{{range .Items}}    <div class="it"><span class="nm"><span class="name">{{.Name}}</span>{{if .Code}}<span class="code">{{.Code}}</span>{{end}}</span><span class="spec">{{.Spec}}</span>{{if .Price}}<span class="pr">{{.Price}}</span>{{end}}<span class="pills">{{range .DCs}}<span class="{{.Class}}" title="{{.Title}}">{{.Text}}</span>{{end}}</span>{{if .OrderURL}}{{template "order" .OrderURL}}{{end}}</div>
-{{end}}{{if .Body}}    <p class="body">{{range .Body}}{{if .Order}}{{template "order" .Href}}{{else if .Href}}<a class="lnk" href="{{.Href}}" title="{{.Href}}">{{.Text}}</a>{{else}}{{.Text}}{{end}}{{end}}</p>
-{{end}}  </div>
-{{end}}</section>
-{{end}}
-
 {{if .ShowAll}}
 <div class="h2"><h2>All {{.AllCount}} variants</h2><p>Every configuration listed in these datacenters.</p><a class="more" href="./">hide</a></div>
 <section class="panel scroll">{{template "rows" (rowsOf .All $)}}</section>
@@ -301,10 +310,85 @@ table.v .setup .pd { margin-right: 4px; }
 {{end}}
 <div class="foot">{{if .Since}}Tracking since {{abs .Since}}. {{end}}Prices from the FR catalog, net of VAT.{{if .Ref}} CPU figures: PassMark.{{end}} Source on <a href="https://github.com/trick77/ovh-restock">GitHub</a>.</div>
 </main>
+<script>
+// Live update (user: the full reload every minute made the page jump while reading). /events says when a poll ran;
+// the page is fetched and only the parts that changed are swapped: scroll, open digests and the range stay. Without
+// the stream (refused, or failing) the same swap runs every minute; without JS the <noscript> reload does.
+(() => {
+  const ago = (s) => {
+    const d = Date.now() / 1000 - s;
+    if (d < 60) return "<1m ago";
+    if (d < 3600) return Math.floor(d / 60) + "m ago";
+    if (d < 36000) { const h = Math.floor(d / 3600), m = Math.floor(d % 3600 / 60); return (m ? h + "h " + m + "m" : h + "h") + " ago"; }
+    if (d < 172800) return Math.floor(d / 3600) + "h ago";
+    return Math.floor(d / 86400) + "d ago";
+  };
+  const tick = () => document.querySelectorAll("[data-at]").forEach((el) => { el.textContent = ago(+el.dataset.at); });
+  // norm is a section as compared: ticking ages, the fresh highlight and open entries are no change. The other
+  // ages ("now · 2h") are server text; a section whose stock didn't change differs only there, and is swapped then.
+  const norm = (el) => {
+    const c = el.cloneNode(true);
+    c.querySelectorAll("[data-at]").forEach((x) => { x.textContent = ""; });
+    c.querySelectorAll(".fresh").forEach((x) => x.classList.remove("fresh"));
+    c.querySelectorAll("details[open]").forEach((x) => x.removeAttribute("open"));
+    return c.outerHTML;
+  };
+  const keys = (sel) => new Set([...document.querySelectorAll(sel)].map((el) => el.closest("li")?.dataset.key));
+  let busy = false;
+  async function refresh() {
+    if (busy) return;
+    busy = true;
+    try {
+      const r = await fetch(location.href, { cache: "no-store" });
+      if (!r.ok) return;
+      const doc = new DOMParser().parseFromString(await r.text(), "text/html");
+      const open = keys(".act details[open]"), seen = keys(".act li[data-key] > *");
+      const meta = document.querySelector("header .meta"), nmeta = doc.querySelector("header .meta");
+      if (meta && nmeta && meta.outerHTML !== nmeta.outerHTML) meta.replaceWith(nmeta);
+      const a = document.querySelector("main"), b = doc.querySelector("main");
+      if (!a || !b) return;
+      // Tables scrolled sideways keep their place (phone: the DC columns).
+      const lefts = [...a.querySelectorAll(".scroll")].map((el) => el.scrollLeft);
+      if (a.children.length !== b.children.length) a.replaceChildren(...b.children);
+      else [...b.children].forEach((n, i) => { if (norm(a.children[i]) !== norm(n)) a.children[i].replaceWith(n); });
+      a.querySelectorAll(".scroll").forEach((el, i) => { if (lefts[i]) el.scrollLeft = lefts[i]; });
+      document.querySelectorAll(".act li[data-key]").forEach((li) => {
+        if (open.has(li.dataset.key)) li.querySelector("details")?.setAttribute("open", "");
+        else if (seen.size && !seen.has(li.dataset.key)) li.classList.add("fresh");
+      });
+      document.title = doc.title;
+      tick();
+    } catch (e) {
+      // offline or mid-deploy: the next poll tries again
+    } finally {
+      busy = false;
+    }
+  }
+  let every = 0, es = null;
+  const fallback = () => { if (!every) every = setInterval(refresh, 60000); };
+  // A hidden tab gives its stream back: over plain http a browser holds 6 connections per host, and every open tab's
+  // stream would take one. Back in view it catches up at once.
+  const connect = () => {
+    if (!("EventSource" in window)) return fallback();
+    let fails = 0;
+    es = new EventSource("events");
+    es.addEventListener("poll", () => { fails = 0; refresh(); });
+    // Closed for good (a 503 at the stream cap, a 502 mid-deploy): the browser won't retry, the timer takes over.
+    es.onerror = () => { if (es.readyState === EventSource.CLOSED || ++fails >= 3) { es.close(); fallback(); } };
+  };
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) { es?.close(); es = null; clearInterval(every); every = 0; }
+    else { connect(); refresh(); }
+  });
+  if (!document.hidden) connect();
+  setInterval(tick, 30000);
+})();
+</script>
 </body>
 </html>
 {{define "order"}}<a class="ord" href="{{.}}" title="{{.}}" aria-label="order"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg></a>{{end}}
-{{define "server"}}<span class="name" title="{{.FQN}}">{{or .Name .PlanCode}}</span><span class="l2">{{with code .Name .PlanCode}}<span class="code">{{.}}</span>{{end}}{{template "order" .OrderURL}}</span>{{end}}
+{{define "server"}}<span class="srvname"><span class="name" title="{{.FQN}}">{{or .Name .PlanCode}}</span>{{if not .Out}}{{template "order" .OrderURL}}{{end}}</span>{{with code .Name .PlanCode}}<span class="l2"><span class="code">{{.}}</span></span>{{end}}{{end}}
+{{define "actrow"}}<span class="when" data-at="{{.At.Unix}}" title="{{abs .At}}">{{ago .At}}</span><span class="kind {{.Kind}}">{{.Kind}}</span>{{if .Text}}<span class="dig">{{.Text}}</span>{{else}}<span class="srv"><span class="name">{{.Name}}</span>{{if .Code}}<span class="code">{{.Code}}</span>{{end}}</span><span class="spec">{{.Spec}}</span><span class="pr">{{if .Old}}<span class="old">{{.Old}}</span><span class="{{.PriceClass}}">{{.Price}}</span>{{else}}{{.Price}}{{end}}</span>{{end}}<span class="dcs">{{range .DCs}}<span class="{{.Class}}" title="{{.Title}}">{{.Text}}</span>{{end}}{{if .After}}<span class="after">{{.After}}</span>{{end}}</span><span class="del">{{if .Delivery.Text}}<span class="{{.Delivery.Class}}"{{if .Delivery.Title}} title="{{.Delivery.Title}}"{{end}}>{{.Delivery.Text}}</span>{{end}}</span>{{end}}
 {{define "cpu"}}{{.CPUName}}{{if .Cores}}<span class="l2 ct">{{.Cores}}</span>{{end}}{{end}}
 {{define "rows"}}<table class="t v">
 <tr><th>Server</th><th>CPU</th>{{if .Page.Ref}}<th class="num" title="CPU Mark against {{.Page.RefCPU}}">Multi</th><th class="num" title="Single thread rating against {{.Page.RefCPU}}">Single</th>{{end}}<th class="num">RAM</th><th>Disks</th><th class="num" title="monthly, setup below">€/mo</th><th title="Last seen in stock">Last seen</th>{{range .Page.DCLabels}}<th class="dcc" title="{{.Title}}">{{.Text}}</th>{{end}}</tr>
