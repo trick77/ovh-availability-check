@@ -12,10 +12,11 @@ import (
 
 var wishSchema = map[string]any{
 	"type": "object", "additionalProperties": false,
-	"required": []string{"name", "ram_min_gb", "ram_max_gb", "disk", "disk_min_tb", "cpu", "price_max_eur",
+	"required": []string{"name", "plans", "ram_min_gb", "ram_max_gb", "disk", "disk_min_tb", "cpu", "price_max_eur",
 		"cpu_min_pct", "unclear"},
 	"properties": map[string]any{
 		"name":          map[string]any{"type": "string"},
+		"plans":         map[string]any{"type": "array", "items": map[string]any{"type": "string"}},
 		"ram_min_gb":    map[string]any{"type": "integer"},
 		"ram_max_gb":    map[string]any{"type": "integer"},
 		"disk":          map[string]any{"type": "string", "enum": []string{"", "nvme", "ssd", "hdd"}},
@@ -36,6 +37,7 @@ const wishPrompt = `You turn a user's wish for a dedicated server, written in an
 	`are listed in the data.
 - cpu_min_pct: only when the user relates speed to the reference CPU in the data: -10 is "at most 10 % slower", ` +
 	`20 "at least 20 % faster"; null otherwise.
+- plans: product codes or names the user names ("KS-LE-3", "27skle03-v1"), exactly as written; [] otherwise.
 - name: a short label for the wish.
 - unclear: each part of the wish that maps to no field ("quiet", "good network"), in the user's words.`
 
@@ -54,6 +56,9 @@ func (s *Service) Wish(ctx context.Context, text, ref string) (watch.Want, []str
 		return watch.Want{}, nil, fmt.Errorf("answer: %w", err)
 	}
 	a.Disk = strings.ToLower(a.Disk)
+	if len(a.Plans) == 0 {
+		a.Plans = nil // omitted from the printed block
+	}
 	if err := a.Check(ref != ""); err != nil {
 		return a.Want, a.Unclear, fmt.Errorf("the wish doesn't check: %w", err)
 	}

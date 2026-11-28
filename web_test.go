@@ -1,11 +1,10 @@
 package main
 
 import (
-	"encoding/json"
+	"context"
+	"maps"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -38,7 +37,8 @@ func TestPage(t *testing.T) {
 	gone := ks2
 	gone.FQN, gone.Name, gone.Stock = "gone", "KS-GONE", map[string]string{"gra": "unavailable"}
 	cfg := watch.Config{Datacenters: []string{"gra"}, Interval: watch.Duration(2 * time.Minute),
-		Want:         []watch.Want{{Name: "cheap", PriceMax: 30}, {Name: "typo", CPU: "pentium"}},
+		Want: []watch.Want{{Name: "cheap", PriceMax: 30}, {Name: "typo", CPU: "pentium"},
+			{Name: "typo plan", Plans: []string{"KS-9"}}},
 		ReferenceCPU: "Intel Xeon E3-1230 v6"}
 	// Three hours of history: KS-2 came into gra an hour ago, after a price cut.
 	now := time.Now()
@@ -46,17 +46,22 @@ func TestPage(t *testing.T) {
 	before := []watch.Variant{gone}
 	var s watch.State
 	for t := now.Add(-3 * time.Hour); t.Before(now.Add(-time.Hour)); t = t.Add(2 * time.Minute) {
-		s = s.Observe(before, cfg.Wanted, t, 2*time.Minute)
+		s = s.Observe(before, t, 2*time.Minute)
 	}
 	old := ks2
 	old.Rent = 28.99
-	s, _ = s.ObservePrices([]watch.Variant{old}, now.Add(-3*time.Hour))
-	s, _ = s.ObservePrices(vs, now.Add(-2*time.Hour))
+	s = s.ObservePrices([]watch.Variant{old}, now.Add(-3*time.Hour))
+	s = s.ObservePrices(vs, now.Add(-2*time.Hour))
 	for t := now.Add(-time.Hour); !t.After(now); t = t.Add(2 * time.Minute) {
-		s = s.Observe(vs, cfg.Wanted, t, 2*time.Minute)
+		s = s.Observe(vs, t, 2*time.Minute)
 	}
-	s = s.AddPush(watch.Push{At: now, Title: "OVH: 1 server in stock", Body: "KS-2", Err: "failed on channel 1 (ntfy)"})
-	w := &watcher{cfg: cfg, channels: ch, off: []string{"smtp"}, variants: vs, polledAt: now, state: s}
+	s = s.AddEvent(watch.Event{At: now.Add(-time.Hour), Kind: watch.KindRestock, Title: "OVH: 1 server in stock",
+		Body: "KS-2 · gra\nhttps://eco.ovhcloud.com/fr/kimsufi/ks-2/", Delivery: "failed on channel 1 (ntfy)", Retry: true,
+		Items: watch.Items(vs, []watch.Pair{{FQN: ks2.FQN, DC: "gra"}})})
+	// An imported push: text only, its link shown short.
+	s = s.AddEvent(watch.Event{At: now.Add(-2 * time.Hour), Kind: watch.KindRestock, Title: "OVH: 1 server in stock",
+		Body: "KS-1 · rbx\nhttps://eco.ovhcloud.com/fr/kimsufi/ks-1/", Delivery: watch.NoChannel})
+	w := &watcher{cfg: cfg, channels: ch, off: []string{"smtp"}, variants: vs, polledAt: now, catalogAt: now, state: s}
 	get := func(path string) string {
 		rec := httptest.NewRecorder()
 		w.routes().ServeHTTP(rec, httptest.NewRequest("GET", path, nil))
@@ -86,11 +91,21 @@ func TestPage(t *testing.T) {
 	if strings.Contains(body, "s3cret") || strings.Contains(body, "ntfy.example.com") {
 		t.Error("page leaks the notify URL")
 	}
-	for _, want := range []string{"<h2>Notifications</h2>", "notify: ", ">smtp</s> off", "Last 30 days", `href="?days=7"`,
-		"Just above", "multi </span><span class=\"x up\""} { // the tile's figures coloured like the table
+	for _, want := range []string{"<h2>Updates</h2>", `notify <span class="pill">channel 1 (ntfy)</span>`, "<s>smtp</s> off",
+		"Last 30 days", `href="?days=7"`, "Just above", "multi </span><span class=\"x up\"", // the tile's figures coloured like the table
+		`<span class="code">24sk202</span>`, // the product code beside the name
+		`<span class="pill bad" title="no watched variant has this product">KS-9</span>`,
+		`<span class="pill">≤ 30 €/mo</span>`,
+		"failed on channel 1 (ntfy) · retrying", `<span class="pill faint"`, // deliveries
+		`<span class="pill slow" title="gra: 72H">gra</span>`, // the restock's DC, and the log's
+		`href="https://eco.ovhcloud.com/fr/kimsufi/ks-1/" title="https://eco.ovhcloud.com/fr/kimsufi/ks-1/">order ↗</a>`,
+	} {
 		if !strings.Contains(body, want) {
 			t.Errorf("/ lacks %q", want)
 		}
+	}
+	if strings.Contains(body, ">https://") {
+		t.Error("/ shows a full link")
 	}
 	if strings.Contains(body, "Recent pushes") || strings.Contains(body, "push: ") {
 		t.Error("/ still says push")
@@ -125,16 +140,17 @@ func TestPage(t *testing.T) {
 	}
 
 	// A known pattern: the line under the name, the next window in the bar and the tile.
-	dir := t.TempDir()
 	next := predict.Window{From: now.Add(20 * time.Hour), To: now.Add(21 * time.Hour)}
-	b, _ := json.Marshal(map[string]predict.Prediction{ks2.FQN: {Pattern: true, Kind: predict.Weekly,
-		Summary: "back Tue and Thu around 06:00", Next: next, Hits: 2, Tries: 3, Asked: now, Model: "m"}})
-	if err := os.WriteFile(filepath.Join(dir, "p.json"), b, 0o600); err != nil {
-		t.Fatal(err)
+	preds := func(next predict.Window) *predict.Service {
+		t.Helper()
+		svc, err := predict.New(t.Context(), predict.Options{Store: predStore{ks2.FQN: {Pattern: true, Kind: predict.Weekly,
+			Summary: "back Tue and Thu around 06:00", Next: next, Hits: 2, Tries: 3, Asked: now, Model: "m"}}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return svc
 	}
-	if w.predict, err = predict.New(predict.Options{Path: filepath.Join(dir, "p.json")}); err != nil {
-		t.Fatal(err)
-	}
+	w.predict = preds(next)
 	body = get("/")
 	for _, want := range []string{"back Tue and Thu around 06:00", "next likely", "2 of 3 windows hit",
 		`class="h-next"`, "Next likely"} {
@@ -152,15 +168,7 @@ func TestPage(t *testing.T) {
 	if b := ks2Block(body); !strings.Contains(b, `class="hrow"`) || strings.Contains(b, `class="nofc"`) {
 		t.Error("a variant with a predicted window is hatched")
 	}
-	next = predict.Window{From: now.Add(72 * time.Hour), To: now.Add(73 * time.Hour)}
-	b, _ = json.Marshal(map[string]predict.Prediction{ks2.FQN: {Pattern: true, Kind: predict.Weekly,
-		Summary: "back Tue and Thu around 06:00", Next: next, Hits: 2, Tries: 3, Asked: now, Model: "m"}})
-	if err := os.WriteFile(filepath.Join(dir, "p.json"), b, 0o600); err != nil {
-		t.Fatal(err)
-	}
-	if w.predict, err = predict.New(predict.Options{Path: filepath.Join(dir, "p.json")}); err != nil {
-		t.Fatal(err)
-	}
+	w.predict = preds(predict.Window{From: now.Add(72 * time.Hour), To: now.Add(73 * time.Hour)})
 	if b := ks2Block(get("/?days=7")); !strings.Contains(b, `class="hrow"`) || strings.Contains(b, `class="nofc"`) {
 		t.Error("7 days: a pattern whose next window is past the bar is hatched")
 	}
@@ -182,6 +190,17 @@ func TestPage(t *testing.T) {
 	if rec.Code != 200 || !strings.Contains(rec.Header().Get("Cache-Control"), "immutable") {
 		t.Errorf("font: %d %q", rec.Code, rec.Header().Get("Cache-Control"))
 	}
+}
+
+// predStore is a predict.Store that only loads.
+type predStore map[string]predict.Prediction
+
+func (p predStore) Predictions(context.Context) (map[string]predict.Prediction, error) {
+	return maps.Clone(p), nil
+}
+
+func (predStore) SavePredictions(context.Context, map[string]predict.Prediction, []string) error {
+	return nil
 }
 
 func TestCompact(t *testing.T) {

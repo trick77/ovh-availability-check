@@ -14,19 +14,22 @@ rhythm, when the next one is likely.
 
 The screenshot shows live stock with a sample history.
 
-- **Wishes, not product codes.** `"disk": "nvme", "price_max_eur": 30, "ram_min_gb": 64`: every variant OVH sells in
-  your datacenters is checked, prices include the RAM and disk options and the mandatory add-ons.
+- **Wishes, not only product codes.** `"disk": "nvme", "price_max_eur": 30, "ram_min_gb": 64`: every variant OVH
+  sells in your datacenters is checked, prices include the RAM and disk options and the mandatory add-ons. `plans`
+  narrows a wish to products by name or code.
 - **Pushed once.** A server is pushed when it comes into stock, not again while it stays; when it sells out and
   returns, it is pushed again. SMTP, ntfy, Pushover, Telegram and more (shoutrrr URLs); a leading `!` switches one
   off. Every start sends a test push to the channels that are on, except one that took one in the last 10 minutes.
+  Every restock is kept as an update on the page, pushed or not; one no channel took is sent again while in stock.
 - **How fast is it.** Cores, threads and the multi- and single-thread speed against a CPU of your choice, from
   PassMark figures. `cpu_min_pct` keeps out what is too slow.
 - **History.** 30 or 7 days per server and datacenter, stock changes, price changes, and the servers just above a
-  wish (one rule missed narrowly), which are tracked too.
+  wish (one rule missed narrowly). Every server's stock and price is recorded, wanted or not, so a new wish starts
+  with its history.
 - **Restock patterns (optional).** With an LLM configured, servers that restock often enough are checked for a
   rhythm ("back Tue and Thu around 06:00"). The model only proposes: the code drops any pattern the counted restocks
   don't bear out, so no pattern is shown as none. A weekly digest and `-wish` (a wish in plain words) come with it.
-- **One container**, no database, no login: the page is read-only.
+- **One container**, SQLite in `data/app.db` (only changes are written), no login: the page is read-only.
 
 ## Setup
 
@@ -66,6 +69,7 @@ A wish takes a server when every rule it sets holds; any wish taking it is enoug
 
 | Rule | Means |
 | --- | --- |
+| `plans` | products, any of them: name or code (`["KS-LE-3", "27skle03-v1"]`), any case, dashes and spaces aside, exact |
 | `ram_min_gb`, `ram_max_gb` | memory in GB |
 | `disk` | `nvme`, `ssd` or `hdd`: at least one disk group of that kind |
 | `disk_min_tb` | raw disk in TB, of `disk`'s kind when set |
@@ -73,8 +77,15 @@ A wish takes a server when every rule it sets holds; any wish taking it is enoug
 | `cpu_min_pct` | multithread speed against `reference_cpu` in percent: `-10` is at most 10 % slower |
 | `price_max_eur` | monthly price in EUR, net of VAT, from the FR catalog |
 
-Unknown keys are refused, so a typo can't widen a wish. `-wish "nvme, 64 GB, under 30 €"` writes a block for you
+Unknown keys are refused, so a typo can't widen a wish; a `plans` entry no watched server has is flagged red on the
+page. The page shows each server's code beside its name. `-wish "nvme, 64 GB, under 30 €"` writes a block for you
 (needs the LLM).
+
+## Upgrading from 0.3
+
+0.4 keeps the state in `data/app.db` instead of JSON files. The first start imports `state.json`, `prices.json`,
+`predictions.json` and `hello.json` and renames them `*.imported`; nothing to do but pull and restart. Stock history
+of servers outside your wishes starts with the upgrade.
 
 ## Development
 

@@ -11,6 +11,7 @@ import (
 	"maps"
 	"math"
 	"net/http"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -48,6 +49,7 @@ var fontFiles, fontVersion = func() (map[string][]byte, string) {
 var page = template.Must(template.New("page").Funcs(template.FuncMap{
 	"ago":    ago,
 	"abs":    abs,
+	"code":   code,
 	"sub":    func(a, b int) int { return a - b },
 	"rowsOf": func(rs []row, p *pageData) rowsArg { return rowsArg{Rows: rs, Page: p} },
 }).Parse(pageHTML))
@@ -95,7 +97,27 @@ type pageData struct {
 	Changes     []changeRow
 	Prices      []priceRow
 	MorePrices  bool
-	Pushes      []watch.Push
+	Updates     []updateRow
+}
+
+// updateRow is one event: a restock's servers, or a digest's (or an imported push's) text.
+type updateRow struct {
+	At       time.Time
+	Kind     string // Restock, Digest
+	Head     string // "2 servers", or the title
+	Delivery cell
+	Items    []updateItem
+	Body     []bodyPart // when there are no items
+}
+
+type updateItem struct {
+	Name, Code, Spec, Price, OrderURL string
+	DCs                               []cell
+}
+
+// bodyPart is a stretch of text, or a link shown short (Href set).
+type bodyPart struct {
+	Text, Href string
 }
 
 // cell is a table cell worked out in Go, so the template only prints: text, a CSS class, a tooltip.
@@ -113,7 +135,7 @@ type tile struct {
 // silent case a typo or a renamed spec makes, so the page flags it.
 type wantRow struct {
 	Label   string
-	Rule    string
+	Rule    []cell // one pill per criterion
 	All     int
 	Near    int // just above it
 	InStock int
@@ -135,12 +157,12 @@ type row struct {
 }
 
 type histVariant struct {
-	Name, Desc string
-	Near       string // the rule it misses, when just above a wish
-	Was        cell
-	Pattern    patternLine
-	Rows       []histRow
-	NoForecast bool // no predicted window: the bar's future is hatched, without text (user)
+	Name, Code, Desc string
+	Near             string // the rule it misses, when just above a wish
+	Was              cell
+	Pattern          patternLine
+	Rows             []histRow
+	NoForecast       bool // no predicted window: the bar's future is hatched, without text (user)
 }
 
 type patternLine struct {
@@ -168,18 +190,19 @@ type rect struct {
 }
 
 type changeRow struct {
-	At    time.Time
-	Kind  string // in, out, price
-	Text  string
-	DC    string
-	Extra string
+	At         time.Time
+	Kind       string // in, out, price
+	Name, Code string
+	Text       string
+	DC         cell // a pill: 1H or 72H on an in
+	Extra      string
 }
 
 type priceRow struct {
-	At                time.Time
-	Name, Config      string
-	Rent, Setup       cell
-	OldRent, OldSetup string // set when that part changed
+	At                 time.Time
+	Name, Code, Config string
+	Rent, Setup        cell
+	OldRent, OldSetup  string // set when that part changed
 }
 
 func (w *watcher) routes() http.Handler {
@@ -220,7 +243,8 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 		d.DCLabels = append(d.DCLabels, cell{Text: shortDC(dc), Title: dc})
 	}
 	now := time.Now()
-	d.Since, d.Pushes = state.Since, state.Pushes
+	d.Since = state.Since
+	d.Updates = updates(state.Events)
 	if c, ok := ovh.CPU(w.cfg.ReferenceCPU); ok && c.Mark > 0 {
 		d.Ref, d.RefCPU = &c, shortCPU(w.cfg.ReferenceCPU)
 	}
@@ -245,7 +269,11 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 	for i, want := range w.cfg.Want {
-		wr := wantRow{Label: want.Label(i), Rule: rule(want)}
+		var unknown []string
+		if !d.CatalogAt.IsZero() { // names come with the catalog
+			unknown = want.UnknownPlans(vs)
+		}
+		wr := wantRow{Label: want.Label(i), Rule: rule(want, unknown)}
 		var matched []watch.Variant
 		for _, v := range vs {
 			if want.Matches(v) {
@@ -268,7 +296,7 @@ func (w *watcher) page(rw http.ResponseWriter, r *http.Request) {
 		d.HistNowPct = fmt.Sprintf("%.3f%%", float64(d.HistNow)*100/float64(d.HistW))
 	}
 	d.Almost = d.almost(scope, w.cfg, state, now)
-	d.Changes = changes(scope, vs, state, now)
+	d.Changes = changes(scope, state, now)
 	d.Prices, d.MorePrices = priceChanges(vs, w.cfg, state, d.ShowAll)
 	d.Tiles = tiles(d, wanted, scope, preds, state, now)
 
@@ -436,7 +464,7 @@ func history(scope []watch.Variant, c watch.Config, preds map[string]predict.Pre
 	}
 	var active, idle []histVariant
 	for _, v := range scope {
-		h := histVariant{Name: cmp.Or(v.Name, v.PlanCode), Desc: desc(v)}
+		h := histVariant{Name: cmp.Or(v.Name, v.PlanCode), Code: code(v.Name, v.PlanCode), Desc: desc(v)}
 		h.Near, _ = c.NearMiss(v)
 		p, hasP := preds[v.FQN]
 		h.Pattern = patternCell(p, hasP, now)
@@ -454,14 +482,9 @@ func history(scope []watch.Variant, c watch.Config, preds map[string]predict.Pre
 			h.Was = cell{Text: "was " + money(ps[len(ps)-2].Rent) + " until " + ps[len(ps)-1].At.Local().Format("02.01."),
 				Class: "was"}
 		}
-		// Sold out is drawn from the variant's first span on: before it, it may not have been wanted, and nobody
-		// tracked it. That is no data, not sold out.
-		var tracked time.Time
-		for k, sp := range s.Spans {
-			if strings.HasPrefix(k, v.FQN+"@") && len(sp) > 0 && (tracked.IsZero() || sp[0].From.Before(tracked)) {
-				tracked = sp[0].From
-			}
-		}
+		// Sold out is drawn from when the variant was tracked on: before, only in-scope pairs had history (until
+		// 0.4). That is no data, not sold out.
+		tracked := s.TrackedFrom(v.FQN)
 		var base []rect
 		for _, p := range s.Polled {
 			if p.To.Before(tracked) {
@@ -474,15 +497,15 @@ func history(scope []watch.Variant, c watch.Config, preds map[string]predict.Pre
 		stocked := false
 		// The DCs it is listed in now, plus any it had stock in: OVH drops a DC from the list at times.
 		dcs := slices.Collect(maps.Keys(v.Stock))
-		for k := range s.Spans {
-			if dc, ok := strings.CutPrefix(k, v.FQN+"@"); ok && !slices.Contains(dcs, dc) {
+		for dc := range s.Spans[v.FQN] {
+			if !slices.Contains(dcs, dc) {
 				dcs = append(dcs, dc)
 			}
 		}
 		slices.Sort(dcs)
 		for _, dc := range dcs {
 			hr := histRow{DC: shortDC(dc), Rects: base}
-			for _, sp := range s.Spans[watch.Key(v.FQN, dc)] {
+			for _, sp := range s.Spans[v.FQN][dc] {
 				class, kind := "h-in", "1H"
 				if sp.Slow {
 					class, kind = "h-slow", "72H"
@@ -584,30 +607,33 @@ func config(v watch.Variant) string {
 	return strings.Join(parts, " · ")
 }
 
+// inScope is scope as a filter for watch.State.Changes: the state keeps every pair, the page shows these.
+func inScope(scope []watch.Variant) func(string) bool {
+	in := make(map[string]bool, len(scope))
+	for _, v := range scope {
+		in[v.FQN] = true
+	}
+	return func(fqn string) bool { return in[fqn] }
+}
+
 // changes is the stock log: in/out of in-scope pairs from the spans, and the price changes of scope.
-func changes(scope, all []watch.Variant, s watch.State, now time.Time) []changeRow {
+func changes(scope []watch.Variant, s watch.State, now time.Time) []changeRow {
 	byFQN := map[string]watch.Variant{}
-	for _, v := range all {
+	for _, v := range scope {
 		byFQN[v.FQN] = v
 	}
-	label := func(fqn string) string {
-		v, ok := byFQN[fqn]
-		if !ok {
-			return fqn
-		}
-		l := cmp.Or(v.Name, v.PlanCode) + " · " + config(v)
-		if v.Priced {
-			l += " · " + money(v.Rent) + " €"
-		}
-		return l
-	}
 	var out []changeRow
-	for _, c := range s.Changes() {
-		r := changeRow{At: c.At, Kind: "out", Text: label(c.FQN), DC: shortDC(c.DC)}
+	for _, c := range s.Changes(inScope(scope)) {
+		v := byFQN[c.FQN]
+		r := changeRow{At: c.At, Kind: "out", Name: cmp.Or(v.Name, v.PlanCode), Code: code(v.Name, v.PlanCode),
+			Text: config(v), DC: cell{Text: shortDC(c.DC), Class: "pill", Title: c.DC}}
+		if v.Priced {
+			r.Text += " · " + money(v.Rent) + " €"
+		}
 		if c.In {
-			r.Kind = "in"
+			r.Kind, r.DC.Class, r.DC.Title = "in", "pill on", c.DC+": 1H"
 			if c.Slow {
-				r.Extra = "72H"
+				r.DC.Class, r.DC.Title = "pill slow", c.DC+": 72H"
 			}
 		} else {
 			r.Extra = "after " + compact(c.For)
@@ -621,8 +647,9 @@ func changes(scope, all []watch.Variant, s watch.State, now time.Time) []changeR
 			if now.Sub(ps[i].At) > watch.Window || ps[i].Rent == ps[i-1].Rent {
 				continue
 			}
-			out = append(out, changeRow{At: ps[i].At, Kind: "price",
-				Text: cmp.Or(v.Name, v.PlanCode) + " · " + config(v) + " · " + money(ps[i-1].Rent) + " € → " + money(ps[i].Rent) + " €"})
+			out = append(out, changeRow{At: ps[i].At, Kind: "price", Name: cmp.Or(v.Name, v.PlanCode),
+				Code: code(v.Name, v.PlanCode),
+				Text: config(v) + " · " + money(ps[i-1].Rent) + " € → " + money(ps[i].Rent) + " €"})
 		}
 	}
 	slices.SortStableFunc(out, func(a, b changeRow) int { return b.At.Compare(a.At) })
@@ -640,7 +667,7 @@ func priceChanges(vs []watch.Variant, c watch.Config, s watch.State, all bool) (
 		ps := s.Prices[v.FQN]
 		for i := 1; i < len(ps); i++ {
 			p, q := ps[i-1], ps[i]
-			r := priceRow{At: q.At, Name: cmp.Or(v.Name, v.PlanCode), Config: config(v),
+			r := priceRow{At: q.At, Name: cmp.Or(v.Name, v.PlanCode), Code: code(v.Name, v.PlanCode), Config: config(v),
 				Rent: cell{Text: money(q.Rent), Class: "sub"}, Setup: cell{Text: money(q.Setup), Class: "sub"}}
 			if q.Rent != p.Rent {
 				r.OldRent, r.Rent = money(p.Rent), moved(q.Rent, p.Rent)
@@ -771,7 +798,7 @@ func tiles(d pageData, wanted, scope []watch.Variant, preds map[string]predict.P
 
 	var n24 int
 	var lens []time.Duration
-	for _, c := range s.Changes() { // not d.Changes: that list is cut for the page
+	for _, c := range s.Changes(inScope(scope)) { // not d.Changes: that list is cut for the page
 		if now.Sub(c.At) <= 24*time.Hour {
 			n24++
 		}
@@ -802,28 +829,131 @@ func (d *pageData) almost(scope []watch.Variant, c watch.Config, s watch.State, 
 	return out
 }
 
-// rule spells a wish out: "RAM ≤ 64 GB, NVME, ≤ 30 €/mo".
-func rule(w watch.Want) string {
-	var p []string
+// rule spells a wish out, a pill per criterion: "KS-LE-3", "RAM ≤ 64 GB", "NVME", "≤ 30 €/mo". A plan in unknown
+// (no watched variant has it) is flagged: a typo would wait forever.
+func rule(w watch.Want, unknown []string) []cell {
+	var p []cell
+	add := func(s string) { p = append(p, cell{Text: s, Class: "pill"}) }
+	for _, pl := range w.Plans {
+		if slices.Contains(unknown, pl) {
+			p = append(p, cell{Text: pl, Class: "pill bad", Title: "no watched variant has this product"})
+			continue
+		}
+		add(pl)
+	}
 	if w.RAMMin > 0 {
-		p = append(p, "RAM ≥ "+itoa(w.RAMMin)+" GB")
+		add("RAM ≥ " + itoa(w.RAMMin) + " GB")
 	}
 	if w.RAMMax > 0 {
-		p = append(p, "RAM ≤ "+itoa(w.RAMMax)+" GB")
+		add("RAM ≤ " + itoa(w.RAMMax) + " GB")
 	}
 	if w.Disk != "" {
-		p = append(p, strings.ToUpper(w.Disk))
+		add(strings.ToUpper(w.Disk))
 	}
 	if w.DiskMin > 0 {
-		p = append(p, "disk ≥ "+ftoa(w.DiskMin)+" TB")
+		add("disk ≥ " + ftoa(w.DiskMin) + " TB")
 	}
 	if w.CPU != "" {
-		p = append(p, "CPU “"+w.CPU+"”")
+		add("CPU “" + w.CPU + "”")
+	}
+	if w.CPUMinPct != nil {
+		add(fmt.Sprintf("CPU ≥ %+d %%", *w.CPUMinPct))
 	}
 	if w.PriceMax > 0 {
-		p = append(p, "≤ "+ftoa(w.PriceMax)+" €/mo")
+		add("≤ " + ftoa(w.PriceMax) + " €/mo")
 	}
-	return strings.Join(p, ", ")
+	return p
+}
+
+// code is the product code shown beside a name, "" when the name already is the code (no catalog name).
+func code(name, plan string) string {
+	if name == "" || name == plan {
+		return ""
+	}
+	return plan
+}
+
+const maxUpdates = 20
+
+// updates are the newest events for the page.
+func updates(es []watch.Event) []updateRow {
+	var out []updateRow
+	for _, e := range es[:min(len(es), maxUpdates)] {
+		u := updateRow{At: e.At, Kind: "Restock", Head: e.Title, Delivery: deliveryCell(e)}
+		if e.Kind == watch.KindDigest {
+			u.Kind = "Digest"
+		}
+		for _, it := range e.Items {
+			ui := updateItem{Name: cmp.Or(it.Name, it.PlanCode), Code: code(it.Name, it.PlanCode), OrderURL: it.OrderURL}
+			var spec []string
+			if it.CPU != "" {
+				spec = append(spec, shortCPU(it.CPU))
+			}
+			spec = append(spec, itoa(it.RAM)+" GB")
+			if len(it.Disks) > 0 {
+				spec = append(spec, strings.Join(it.Disks, " + "))
+			}
+			ui.Spec = strings.Join(spec, " · ")
+			if it.Priced {
+				ui.Price = money(it.Rent) + " €"
+			}
+			for _, d := range it.DCs {
+				c := cell{Text: shortDC(d.DC), Class: "pill on", Title: d.DC + ": 1H"}
+				if d.Slow {
+					c.Class, c.Title = "pill slow", d.DC+": 72H"
+				}
+				ui.DCs = append(ui.DCs, c)
+			}
+			u.Items = append(u.Items, ui)
+		}
+		if len(u.Items) > 0 {
+			u.Head = "1 server"
+			if n := len(u.Items); n != 1 {
+				u.Head = itoa(n) + " servers"
+			}
+		} else {
+			u.Body = linkify(e.Body)
+		}
+		out = append(out, u)
+	}
+	return out
+}
+
+func deliveryCell(e watch.Event) cell {
+	switch {
+	case e.Delivery == watch.Sent:
+		return cell{Text: e.Delivery, Class: "pill"}
+	case e.Delivery == watch.NoChannel:
+		return cell{Text: e.Delivery, Class: "pill faint", Title: "BACKEND_NOTIFY_URLS has no channel on"}
+	case e.Retry:
+		return cell{Text: e.Delivery + " · retrying", Class: "pill bad", Title: "sent again each poll while in stock"}
+	}
+	return cell{Text: e.Delivery, Class: "pill bad"}
+}
+
+var urlRE = regexp.MustCompile(`https?://\S+`)
+
+// linkify splits a push text into text and its links, each shown short: "order ↗" for a Kimsufi order page (the
+// only one OVH has per server), "link ↗" for anything else.
+func linkify(s string) []bodyPart {
+	var out []bodyPart
+	last := 0
+	for _, m := range urlRE.FindAllStringIndex(s, -1) {
+		if m[0] > last {
+			out = append(out, bodyPart{Text: s[last:m[0]]})
+		}
+		u := s[m[0]:m[1]]
+		label := "link ↗"
+		if strings.HasPrefix(u, "https://eco.ovhcloud.com/") && strings.Contains(u, "/kimsufi/") {
+			label = "order ↗"
+		}
+		out = append(out, bodyPart{Text: label, Href: u})
+		last = m[1]
+	}
+	if last < len(s) {
+		out = append(out, bodyPart{Text: s[last:]})
+	}
+	return out
 }
 
 // shortDC drops a 3-AZ region's prefix, so seven DC columns fit beside the table: "eu-west-par-a" → "par-a".

@@ -3,7 +3,6 @@ package predict
 import (
 	"context"
 	"math/rand/v2"
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -99,8 +98,8 @@ func waitIdle(t *testing.T, s *Service) {
 
 func TestZeroBudgetIsOff(t *testing.T) {
 	srv := llmwiretest.NewServer(t)
-	s, err := New(Options{Client: srv.Client(), Model: llmwiretest.ChatModel, DailyCalls: 0,
-		Path: filepath.Join(t.TempDir(), "p.json"), Loc: zurich})
+	s, err := New(t.Context(), Options{Client: srv.Client(), Model: llmwiretest.ChatModel, DailyCalls: 0,
+		Loc: zurich})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -142,7 +141,7 @@ func TestDigestOneRestockManyDCs(t *testing.T) {
 	a := nowT.Add(-50 * time.Hour).UTC()
 	st := synth(nil, 0)
 	for _, dc := range []string{"gra", "rbx", "sbg"} {
-		st.Spans[watch.Key(fqn, dc)] = []watch.Span{{From: a, To: a.Add(time.Hour), Gone: a.Add(time.Hour + 2*time.Minute)}}
+		addSpan(&st, fqn, dc, watch.Span{From: a, To: a.Add(time.Hour), Gone: a.Add(time.Hour + 2*time.Minute)})
 	}
 	v := watch.Variant{FQN: fqn, Name: "KS-A", RAM: 32, Disks: []ovh.Disk{{Count: 1, SizeGB: 2000, Kind: "hdd"}},
 		Rent: 10, Priced: true}

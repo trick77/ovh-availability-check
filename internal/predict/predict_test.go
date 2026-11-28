@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"math/rand/v2"
-	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -47,9 +46,8 @@ func TestGate(t *testing.T) {
 
 func TestHistoryMergesDCs(t *testing.T) {
 	s := synth([]time.Time{nowT.Add(-50 * time.Hour)}, time.Hour)
-	k := watch.Key(fqn, "rbx")
 	a := nowT.Add(-50*time.Hour + 10*time.Minute).UTC()
-	s.Spans[k] = []watch.Span{{From: a, To: a.Add(time.Hour), Gone: a.Add(time.Hour + 2*time.Minute)}}
+	addSpan(&s, fqn, "rbx", watch.Span{From: a, To: a.Add(time.Hour), Gone: a.Add(time.Hour + 2*time.Minute)})
 	h := Of(s, fqn, nowT)
 	if len(h.Ins) != 1 || len(h.Events[0].DCs) != 2 {
 		t.Errorf("one restock in two DCs: %+v", h.Events)
@@ -155,8 +153,8 @@ func service(t *testing.T, reply string) (*Service, *llmwiretest.Server) {
 	t.Helper()
 	srv := llmwiretest.NewServer(t)
 	srv.SetReply(reply)
-	s, err := New(Options{Client: srv.Client(), Model: llmwiretest.ChatModel, DailyCalls: 3,
-		Path: filepath.Join(t.TempDir(), "predictions.json"), Loc: zurich})
+	s, err := New(t.Context(), Options{Client: srv.Client(), Model: llmwiretest.ChatModel, DailyCalls: 3,
+		Store: &memStore{}, Loc: zurich})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -216,9 +214,8 @@ func TestUpdateAsksOnChangeOnly(t *testing.T) {
 		t.Error("asked without a change")
 	}
 	// A new departure: asked again, once 6 h have passed.
-	k := watch.Key(fqn, "gra")
 	a := nowT.Add(time.Hour).UTC()
-	st.Spans[k] = append(st.Spans[k], watch.Span{From: a, To: a.Add(time.Hour), Gone: a.Add(time.Hour + 2*time.Minute)})
+	addSpan(&st, fqn, "gra", watch.Span{From: a, To: a.Add(time.Hour), Gone: a.Add(time.Hour + 2*time.Minute)})
 	st.Polled[len(st.Polled)-1].To = nowT.Add(3 * time.Hour)
 	s.Update(st, []string{fqn}, nowT.Add(3*time.Hour))
 	if len(s.jobs) != 0 {
@@ -236,7 +233,7 @@ func TestUpdateAsksOnChangeOnly(t *testing.T) {
 }
 
 func TestNoModelAsksNothing(t *testing.T) {
-	s, err := New(Options{Path: filepath.Join(t.TempDir(), "p.json")})
+	s, err := New(t.Context(), Options{Store: &memStore{}})
 	if err != nil || s.Configured() {
 		t.Fatal(err)
 	}
@@ -253,11 +250,19 @@ func TestPersist(t *testing.T) {
 	p, _ := s.Ask(context.Background(), h, nowT)
 	s.preds[fqn] = p
 	s.save()
-	s2, err := New(Options{Path: s.o.Path, Loc: zurich})
+	s2, err := New(t.Context(), Options{Store: s.o.Store, Loc: zurich})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if got, ok := s2.Get(fqn); !ok || !got.Pattern || len(got.Slots) != 2 || !got.Next.From.Equal(p.Next.From) {
 		t.Errorf("reloaded %+v", got)
+	}
+	// Gone from the service: gone from the store.
+	s.mu.Lock()
+	delete(s.preds, fqn)
+	s.mu.Unlock()
+	s.save()
+	if got, _ := s.o.Store.Predictions(t.Context()); len(got) != 0 {
+		t.Errorf("deleted prediction kept: %v", got)
 	}
 }

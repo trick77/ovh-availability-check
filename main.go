@@ -15,6 +15,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -28,6 +29,7 @@ import (
 
 	"github.com/trick77/ovh-restock/internal/ovh"
 	"github.com/trick77/ovh-restock/internal/predict"
+	"github.com/trick77/ovh-restock/internal/store"
 	"github.com/trick77/ovh-restock/internal/watch"
 
 	// The page's times are in TZ; distroless has no zoneinfo.
@@ -68,7 +70,7 @@ var apiBase = ovh.API
 // the tests swap for a fake.
 var llmCfg = llmwire.Config{}
 
-func llmFromEnv(dataDir string) (*predict.Service, error) {
+func llmFromEnv(ctx context.Context, st predict.Store) (*predict.Service, error) {
 	model := os.Getenv("BACKEND_LLM_MODEL")
 	client, err := predict.FromEnv(model, llmCfg)
 	if err != nil {
@@ -83,11 +85,7 @@ func llmFromEnv(dataDir string) (*predict.Service, error) {
 	if client == nil {
 		slog.Info("no LLM: predictions, digest and -wish are off", "model", model)
 	}
-	path := ""
-	if dataDir != "" {
-		path = filepath.Join(dataDir, "predictions.json")
-	}
-	return predict.New(predict.Options{Client: client, Model: model, DailyCalls: daily, Path: path, Loc: time.Local})
+	return predict.New(ctx, predict.Options{Client: client, Model: model, DailyCalls: daily, Store: st, Loc: time.Local})
 }
 
 // wishCmd prints the want block for a wish in plain words.
@@ -102,7 +100,7 @@ func wishCmd(ctx context.Context, text string) error {
 	case !errors.Is(err, fs.ErrNotExist):
 		return err
 	}
-	svc, err := llmFromEnv("") // no predictions file: -wish keeps nothing
+	svc, err := llmFromEnv(ctx, nil) // no store: -wish keeps nothing
 	if err != nil {
 		return err
 	}
@@ -154,18 +152,22 @@ func serve(ctx context.Context, addr string, notifyTest, digestNow bool) error {
 	if err != nil {
 		return err
 	}
-	statePath := filepath.Join(dataDir, "state.json")
-	state, err := watch.LoadState(statePath)
+	db, err := store.Open(ctx, dataDir)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = db.Close() }()
+	state, err := db.Load(ctx)
 	if err != nil {
 		return err
 	}
 	slog.Info("config", "version", version.String(), "datacenters", cfg.Datacenters, "interval", cfg.Interval.String(), "wants", len(cfg.Want),
 		"channels", channels.Labels(), "off", off)
 	if channels == nil {
-		slog.Warn(noChannel + ": nothing is pushed, and nothing counts as pushed")
+		slog.Warn(noChannel + ": restocks are kept as events on the page, nothing is pushed")
 	}
 
-	svc, err := llmFromEnv(dataDir)
+	svc, err := llmFromEnv(ctx, db)
 	if err != nil {
 		return err
 	}
@@ -175,12 +177,12 @@ func serve(ctx context.Context, addr string, notifyTest, digestNow bool) error {
 
 	client := ovh.NewClient()
 	client.Base = apiBase
-	w := &watcher{cfg: cfg, client: client, channels: channels, off: off, state: state, statePath: statePath, predict: svc,
-		digestNow: digestNow}
+	w := &watcher{cfg: cfg, client: client, channels: channels, off: off, state: state, saved: state, db: db,
+		predict: svc, digestNow: digestNow}
 	var wg sync.WaitGroup
 	if channels != nil {
 		// Beside the poll: a channel that hangs holds no restock push back.
-		wg.Go(func() { hello(ctx, urls, dataDir, time.Now()) })
+		wg.Go(func() { hello(ctx, urls, db, time.Now()) })
 	}
 	if svc.Configured() {
 		wg.Go(func() { svc.Run(ctx) })
@@ -202,17 +204,20 @@ func serve(ctx context.Context, addr string, notifyTest, digestNow bool) error {
 }
 
 type watcher struct {
-	cfg       watch.Config
-	client    *ovh.Client
-	channels  *notify.Channels
-	off       []string // channels switched off with "!", by scheme, for the page
-	statePath string
+	cfg      watch.Config
+	client   *ovh.Client
+	channels *notify.Channels
+	off      []string // channels switched off with "!", by scheme, for the page
+	db       *store.Store
+	// saved is what the database holds: Save writes the diff to it. A failed save leaves it, so the next one carries
+	// the change too.
+	saved watch.State
 
-	catalog     *ovh.Catalog
-	catalogAt   time.Time
-	pricesDirty bool // prices.json lags the state
-	predict     *predict.Service
-	digestNow   bool // -digest-now: send the digest on the first poll with a catalog
+	catalog      *ovh.Catalog
+	catalogAt    time.Time
+	predict      *predict.Service
+	digestNow    bool // -digest-now: make the digest on the first poll with a catalog
+	plansChecked bool // wishes' unknown plans logged, after the first catalog
 
 	mu       sync.Mutex
 	state    watch.State
@@ -256,51 +261,77 @@ func (w *watcher) poll(ctx context.Context) {
 	if w.catalog == nil {
 		return
 	}
-	now := time.Now()
-	// In scope: wanted or just above a wish. Their history is what the page draws and the prediction reads.
-	state = state.Observe(vs, w.cfg.InScope, now, time.Duration(w.cfg.Interval))
-	state, moved := state.ObservePrices(vs, now)
-	// A failed write is retried every poll: the next change may be months away.
-	if moved || w.pricesDirty {
-		w.pricesDirty = true
-		if err := state.SavePrices(w.statePath); err != nil {
-			slog.Error("prices", "err", err)
-		} else {
-			w.pricesDirty = false
+	if !w.plansChecked {
+		w.plansChecked = true
+		for i, want := range w.cfg.Want {
+			if u := want.UnknownPlans(vs); len(u) > 0 {
+				slog.Warn("wish names a product no watched variant has", "wish", want.Label(i), "plans", u)
+			}
 		}
 	}
+	now := time.Now()
+	// Every pair, wanted or not: a wish added later finds its history there.
+	state = state.Observe(vs, now, time.Duration(w.cfg.Interval))
+	state = state.ObservePrices(vs, now)
 	cur := watch.Current(w.cfg, vs)
 	fresh := state.New(cur)
-	sent := false
-	if len(fresh) > 0 && w.channels != nil {
-		title, body := watch.Message(vs, fresh)
-		state, sent = w.send(state, now, title, body, notify.High)
+	// Restocks no channel took are sent again while their pairs are in stock without a break: still evented
+	// (Notified), so a pair that sold out and came back goes out once, as fresh. Retries and fresh pairs share one
+	// push: a hanging channel costs one timeout per poll, not one per pending event.
+	var retried []watch.Event
+	pairs := slices.Clone(fresh)
+	for _, e := range state.Events {
+		if !e.Retry {
+			continue
+		}
+		n := len(pairs)
+		for _, p := range e.Pairs() {
+			k := watch.Key(p.FQN, p.DC)
+			if _, ok := cur[k]; ok && slices.Contains(state.Notified, k) && !slices.Contains(pairs, p) {
+				pairs = append(pairs, p)
+			}
+		}
+		if len(pairs) == n || w.channels == nil {
+			state = state.SetDelivery(e, e.Delivery, false) // nothing left to send
+			continue
+		}
+		retried = append(retried, e)
 	}
-	next := state.Next(cur, fresh, sent)
-	// The weekly digest, Sunday 18:00. The state is saved first, this poll's pushed pairs and the digest marked
-	// sent: a crash while the model words it loses this week's digest rather than sending a stock push or the
-	// digest twice. Worded in the poll: one call a week, up to 2 minutes, within the gap slack.
-	if w.predict.Configured() && w.channels != nil &&
-		(w.digestNow || predict.DigestDue(now, latest(next.DigestAt, next.Since), time.Local)) {
+	if len(pairs) > 0 {
+		title, body := watch.Message(vs, pairs)
+		delivery, retry := w.deliver(title, body, notify.High)
+		for _, e := range retried {
+			state = state.SetDelivery(e, delivery, retry)
+		}
+		if len(fresh) > 0 {
+			title, body := watch.Message(vs, fresh)
+			state = state.AddEvent(watch.Event{At: now, Kind: watch.KindRestock, Title: title, Body: body,
+				Delivery: delivery, Retry: retry, Items: watch.Items(vs, fresh)})
+		}
+	}
+	next := state.Next(cur, fresh)
+	// The weekly digest, Sunday 18:00, kept as an event with or without a channel. The state is saved first, this
+	// poll's restock and the digest marked made: a crash while the model words it loses this week's digest rather
+	// than sending a restock or the digest twice. Worded in the poll: one call a week, up to 2 minutes, within the
+	// gap slack.
+	if w.predict.Configured() && (w.digestNow || predict.DigestDue(now, latest(next.DigestAt, next.Since), time.Local)) {
 		w.digestNow = false
 		next.DigestAt = now
-		if err := next.Save(w.statePath); err != nil {
-			slog.Error("state", "err", err)
-		}
+		w.save(ctx, next)
 		if d := predict.BuildDigest(next, vs, w.cfg, w.predict.All(), now, time.Local); !d.Empty() {
 			dctx, cancel := context.WithTimeout(ctx, 2*time.Minute)
 			title, body := w.predict.Words(dctx, d)
 			cancel()
-			next, _ = w.send(next, now, title, body, notify.Normal)
+			delivery, _ := w.deliver(title, body, notify.Normal)
+			next = next.AddEvent(watch.Event{At: now, Kind: watch.KindDigest, Title: title, Body: body, Delivery: delivery})
 		}
 	}
-	// Kept in memory even when the save fails: the page still shows the push, and it isn't sent again before a
+	// Kept in memory even when the save fails: the page still shows the event, and it isn't sent again before a
 	// restart.
 	w.mu.Lock()
 	w.state = next
 	w.mu.Unlock()
-	if err := next.Save(w.statePath); err != nil {
-		slog.Error("state", "err", err)
+	if !w.save(ctx, next) {
 		return
 	}
 	// Predictions: windows rolled forward, and the model asked about variants whose stock changed.
@@ -312,6 +343,19 @@ func (w *watcher) poll(ctx context.Context) {
 	}
 	w.predict.Update(next, scope, now)
 	slog.Info("polled", "variants", len(vs), "wanted_in_stock", len(cur), "new", len(fresh))
+}
+
+// save writes next's diff against what the database holds. A shutdown mid-poll still saves: the poll's events are
+// in next.
+func (w *watcher) save(ctx context.Context, next watch.State) bool {
+	sctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 30*time.Second)
+	defer cancel()
+	if err := w.db.Save(sctx, w.saved, next); err != nil {
+		slog.Error("state", "err", err)
+		return false
+	}
+	w.saved = next
+	return true
 }
 
 // notifyURLs splits BACKEND_NOTIFY_URLS into the channels to use and the ones switched off with a leading "!",
@@ -336,9 +380,12 @@ func notifyURLs(s string) (on, off []string, err error) {
 // an update right after a deploy). A failed one never quiets the next start: that start is the one checking the fix.
 const helloQuiet = 10 * time.Minute
 
-// helloMark in the data dir: when each channel last took a start's test push, by a hash of its URL (the URL holds
-// secrets). A channel added or changed since has no entry and is tested at once.
-const helloMark = "hello.json"
+// helloMarks keep when each channel last took a start's test push, by a hash of its URL (the URL holds secrets). A
+// channel added or changed since has no entry and is tested at once.
+type helloMarks interface {
+	Hello(ctx context.Context) (map[string]time.Time, error)
+	SaveHello(ctx context.Context, took map[string]time.Time) error
+}
 
 func urlKey(u string) string {
 	h := sha256.Sum256([]byte(u))
@@ -348,14 +395,11 @@ func urlKey(u string) string {
 // hello sends the start's test push to the channels not switched off with "!" (urls) that took none within
 // helloQuiet: a dead channel shows now, not at the first restock. Not kept in the push list: the page shows
 // restocks. A shutdown cuts the send; what was cut counts as not taken.
-func hello(ctx context.Context, urls []string, dataDir string, now time.Time) {
-	path := filepath.Join(dataDir, helloMark)
-	took := map[string]time.Time{}
-	if b, err := os.ReadFile(path); err == nil { //nolint:gosec // G304: the operator's BACKEND_DATA_DIR
-		if err := json.Unmarshal(b, &took); err != nil {
-			slog.Warn("start's test push: mark unreadable, every channel is tested", "err", err)
-			took = map[string]time.Time{}
-		}
+func hello(ctx context.Context, urls []string, marks helloMarks, now time.Time) {
+	took, err := marks.Hello(ctx)
+	if err != nil {
+		slog.Warn("start's test push: marks unreadable, every channel is tested", "err", err)
+		took = map[string]time.Time{}
 	}
 	var due, labels []string
 	for i, u := range urls {
@@ -392,9 +436,8 @@ func hello(ctx context.Context, urls []string, dataDir string, now time.Time) {
 		keep[urlKey(due[i])] = now
 		slog.Info("start's test push sent", "channel", labels[i])
 	}
-	b, _ := json.Marshal(keep)
-	if err := os.WriteFile(path, b, 0o600); err != nil { //nolint:gosec // G703: the operator's BACKEND_DATA_DIR
-		slog.Warn("start's test push: mark not written", "err", err)
+	if err := marks.SaveHello(context.WithoutCancel(ctx), keep); err != nil {
+		slog.Warn("start's test push: marks not written", "err", err)
 	}
 }
 
@@ -405,26 +448,27 @@ func latest(a, b time.Time) time.Time {
 	return b
 }
 
-// send pushes one message and keeps it in the state's list; sent is false only when no channel took it.
-func (w *watcher) send(state watch.State, now time.Time, title, body string, sev notify.Severity) (watch.State, bool) {
-	p := watch.Push{At: now, Title: title, Body: body}
-	err := w.channels.SendMessage(notify.Message{Title: title, Body: body, Severity: sev})
-	var se *notify.SendError
-	// Partial: another channel took it. Sending again would repeat it there.
-	sent := err == nil || (errors.As(err, &se) && se.Partial)
-	if err != nil {
-		// The page has no login: it names the failed channels only. The error text may quote the URL (an ntfy
-		// topic is its secret); it goes to the log.
-		p.Err = "failed"
-		if se != nil && len(se.Failed) > 0 {
-			p.Err = "failed on " + strings.Join(se.Failed, ", ")
-			if se.Partial {
-				p.Err = "partly " + p.Err
-			}
-		}
-		slog.Warn("push", "err", err)
-	} else {
-		slog.Info("pushed", "title", title)
+// deliver pushes one message to the channels: delivery as an event keeps it, retry when no channel took it.
+func (w *watcher) deliver(title, body string, sev notify.Severity) (delivery string, retry bool) {
+	if w.channels == nil {
+		return watch.NoChannel, false
 	}
-	return state.AddPush(p), sent
+	err := w.channels.SendMessage(notify.Message{Title: title, Body: body, Severity: sev})
+	if err == nil {
+		slog.Info("pushed", "title", title)
+		return watch.Sent, false
+	}
+	slog.Warn("push", "err", err)
+	// The page has no login: it names the failed channels only. The error text may quote the URL (an ntfy topic is
+	// its secret); it goes to the log.
+	var se *notify.SendError
+	delivery = "failed"
+	if errors.As(err, &se) && len(se.Failed) > 0 {
+		delivery = "failed on " + strings.Join(se.Failed, ", ")
+		if se.Partial {
+			// Another channel took it: sending again would repeat it there.
+			return "partly " + delivery, false
+		}
+	}
+	return delivery, true
 }

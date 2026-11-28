@@ -28,13 +28,15 @@ type Config struct {
 
 // Want is one wish. Every field set must hold; unset fields don't filter.
 type Want struct {
-	Name     string  `json:"name,omitempty"`
-	RAMMin   int     `json:"ram_min_gb,omitempty"`
-	RAMMax   int     `json:"ram_max_gb,omitempty"`
-	Disk     string  `json:"disk,omitempty"`        // nvme, ssd or hdd: at least one disk group of that kind
-	DiskMin  float64 `json:"disk_min_tb,omitempty"` // raw TB, of Disk's kind when Disk is set
-	CPU      string  `json:"cpu,omitempty"`         // case-insensitive substring of the CPU name
-	PriceMax float64 `json:"price_max_eur,omitempty"`
+	Name string `json:"name,omitempty"`
+	// Plans are the products the wish takes, any one of them: planCode ("27skle03-v1") or name ("KS-LE-3").
+	Plans    []string `json:"plans,omitempty"`
+	RAMMin   int      `json:"ram_min_gb,omitempty"`
+	RAMMax   int      `json:"ram_max_gb,omitempty"`
+	Disk     string   `json:"disk,omitempty"`        // nvme, ssd or hdd: at least one disk group of that kind
+	DiskMin  float64  `json:"disk_min_tb,omitempty"` // raw TB, of Disk's kind when Disk is set
+	CPU      string   `json:"cpu,omitempty"`         // case-insensitive substring of the CPU name
+	PriceMax float64  `json:"price_max_eur,omitempty"`
 	// CPUMinPct is the least multithread speed against reference_cpu, in percent: -10 is at most 10 % slower,
 	// 20 at least 20 % faster. A pointer: 0 ("as fast") is a real value.
 	CPUMinPct *int `json:"cpu_min_pct,omitempty"`
@@ -116,8 +118,14 @@ func (c *Config) check() error {
 
 // Check checks one wish; rated tells whether a reference_cpu is set (cpu_min_pct needs one).
 func (w Want) Check(rated bool) error {
-	if w == (Want{Name: w.Name}) {
+	if len(w.Plans) == 0 && w.RAMMin == 0 && w.RAMMax == 0 && w.Disk == "" && w.DiskMin == 0 && w.CPU == "" &&
+		w.PriceMax == 0 && w.CPUMinPct == nil {
 		return errors.New("no criterion, it would match every server")
+	}
+	for _, p := range w.Plans {
+		if normPlan(p) == "" {
+			return errors.New("empty entry in plans")
+		}
 	}
 	switch strings.ToLower(w.Disk) {
 	case "", "nvme", "ssd", "hdd":

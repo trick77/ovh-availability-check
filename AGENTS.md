@@ -1,7 +1,7 @@
 # AGENTS.md
 
-OVH dedicated server stock watcher. Go, stdlib + `trick77/toolkit` (notify, llmwire). No JS, page is
-`html/template`.
+OVH dedicated server stock watcher. Go, stdlib + `trick77/toolkit` (notify, llmwire), SQLite (ncruces, kit
+migrate). No JS, page is `html/template`.
 
 ## OVH API facts (measured 2026-11)
 
@@ -32,13 +32,19 @@ OVH dedicated server stock watcher. Go, stdlib + `trick77/toolkit` (notify, llmw
 - Starts with the deploy. Nothing before the first catalog: `Wanted` needs CPU/price, spans would start late.
 - A pause over 3 intervals + 5 min ends every streak and span: the page must not claim stock nobody saw. Slack:
   polls are an interval apart after each ends, a hanging catalog takes 2×90 s. Only a poll that finds a pair gone
-  logs "out"; a span that starts unseen (first poll, gap, restart, turned wanted while in stock) logs no "in".
-- A pair that stops being wanted while in stock (price rise, config edit) keeps its span until it sells out, or
-  the log would show a fake "out".
-- Spans only for in-scope pairs (user): wanted or *just above* a wish (one rule missed narrowly: price ≤ +10 %, RAM
-  one step, disk ≤ 10 %; CPU/disk kind never). Kept 90 days (a weekly rhythm needs > 4 repeats). Prices stored only
-  on change; a line chart was rejected (user: they change too rarely), the page shows the delta instead.
-- Page style = ../trakk's Warm Editorial dark tokens + fonts, dark only (user choice).
+  logs "out"; a span that starts unseen (first poll after a start, gap) logs no "in".
+- Spans for every pair (user: a new wish must not wait weeks; ≤ 0.3 in-scope only). Page/log/digest/LLM read
+  in-scope: wanted or *just above* (one rule missed narrowly: price ≤ +10 %, RAM one step, disk ≤ 10 %). Before
+  `AllSince`: no data, no gate time. Kept 90 d (weekly rhythm needs > 4 repeats). Price chart rejected (user).
+- Style: ../trakk's Warm Editorial dark (user). Pills = states/DCs; product code muted mono, no pill (user); links
+  short, never the full URL.
+
+## Storage (why)
+
+- `data/app.db`, one tx per poll, only the diff (user: only changes; 19.5k pairs, 5.7k in stock, 2026-11). Schema:
+  `docs/schema.md`, generated.
+- ≤ 0.3 JSON imported once (`internal/store/legacy.go`); drop it once prod ran 0.4. Variants with a span before
+  `AllSince` were in scope then: tracked from `Since`, or their predictions die at the upgrade.
 
 ## LLM (internal/predict, why)
 
@@ -55,7 +61,10 @@ OVH dedicated server stock watcher. Go, stdlib + `trick77/toolkit` (notify, llmw
 
 ## Push logic (why)
 
-- State holds pushed (fqn, dc) pairs, not the last snapshot: a wish added later must fire for stock already there.
+- State holds evented (fqn, dc) pairs, not the last snapshot: a wish added later must fire for stock already there.
+- Events, not pushes (user): restocks + digests are events, delivered or not. No channel → evented anyway, a
+  channel added later sends nothing for stock already there. None took it → resent on the same event, one push per
+  poll with the fresh pairs (a hanging channel would stall the poll per event); partly taken never.
 - No decision before the first catalog: price/CPU wishes would fail, drop their pairs, and re-push once it loads.
 - Sold out sends nothing (user choice).
 - Start test push like ../trakk (user), channels without `!`. Per channel quiet 10 min (restart loop); failed never.

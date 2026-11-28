@@ -45,10 +45,12 @@ type History struct {
 	LastGone time.Time     // the newest departure: a new one is what triggers a call
 }
 
-// Of builds fqn's history from the state. Arrivals in several DCs within sameArrival count once.
+// Of builds fqn's history from the state. Arrivals in several DCs within sameArrival count once. Observed counts
+// from when fqn was tracked on (watch.State.TrackedFrom): a variant only watched since every pair is would
+// otherwise pass the 14-day gate on its first days.
 func Of(s watch.State, fqn string, now time.Time) History {
 	h := History{FQN: fqn, Polled: s.Polled}
-	from := now.Add(-watch.Keep)
+	from := maxT(now.Add(-watch.Keep), s.TrackedFrom(fqn))
 	for _, p := range s.Polled {
 		a, b := maxT(p.From, from), p.To
 		if b.After(a) {
@@ -56,16 +58,14 @@ func Of(s watch.State, fqn string, now time.Time) History {
 		}
 	}
 	var spans []watch.Span
-	for k, sp := range s.Spans {
-		if f, _ := splitKey(k); f == fqn {
-			spans = append(spans, sp...)
-		}
+	for _, sp := range s.Spans[fqn] {
+		spans = append(spans, sp...)
 	}
 	h.InShare = share(spans, from, h.Observed)
 
 	var raw []Event
-	for _, c := range s.Changes() {
-		if c.FQN != fqn || c.At.Before(from) {
+	for _, c := range s.ChangesOf(fqn) {
+		if c.At.Before(from) {
 			continue
 		}
 		raw = append(raw, Event{At: c.At, In: c.In, DCs: []string{c.DC}, For: c.For})
@@ -217,13 +217,4 @@ func maxT(a, b time.Time) time.Time {
 		return a
 	}
 	return b
-}
-
-func splitKey(k string) (fqn, dc string) {
-	for i := len(k) - 1; i >= 0; i-- {
-		if k[i] == '@' {
-			return k[:i], k[i+1:]
-		}
-	}
-	return k, ""
 }
